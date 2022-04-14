@@ -1,0 +1,56 @@
+@import "index.scss";
+
+.navbar {
+    background-color: $sub!important;
+    top: 0;
+    position: sticky;
+    white-space: nowrap;
+
+    .container {
+        height: 100%;
+
+        .navbar-brand {
+            font-family: $font-brand;
+            font-weight: bold;
+
+            display: flex;
+            align-items: center;
+
+            height: 45px;
+            width: 100px;
+
+            img {
+                height: 60%;
+                width: auto;
+
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+        }
+    }
+
+    // Site Brand
+    #brand {
+        color: $base;
+    }
+
+    // Nav items
+    .nav-item, .nav-link {
+        font-family: $font-brand;
+        // text-decoration: underline;
+        text-transform: capitalize;
+        font-size: 14px;
+
+        .dropdown-item {
+            font-size: 12px;
+        }
+
+        &:focus{
+            font-weight: 600;
+        }
+    }
+
+    // Bottom Separate Line
+    border-top: solid 1px $sub;
+    border-bottom: solid 1px $background-gray-dark;
+}

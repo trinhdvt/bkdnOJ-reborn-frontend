@@ -1,0 +1,35 @@
+@import "../../index.scss";
+
+.subheader {
+    // Top Border Line
+    // border-top: solid 1px $background-gray-dark;
+
+    height: 20px;
+    line-height: 18px;
+
+    text-align: left;
+    font-size: xx-small;
+
+    .float-left {
+        .left-padder {
+            padding-left: 50px;
+            padding-right: 50px;
+            font-size: 9px !important;
+            text-align: center;
+        }
+        span {
+            margin-right: 10px;
+        }
+    }
+    .float-right {
+        span {
+            margin: 0 5px;
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+
+    // Bottom Border Line
+    border-bottom: dashed 1px $background-gray-dark;
+}
