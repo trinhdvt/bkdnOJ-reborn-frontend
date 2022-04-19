@@ -9,7 +9,7 @@ import ErrorBox from 'components/ErrorBox/ErrorBox';
 
 import './SignUp.scss';
 
-import { log, error } from 'helpers/logger';
+import { log } from 'helpers/logger';
 
 export default class SignUp extends React.Component {
     constructor(props) {
@@ -72,7 +72,7 @@ export default class SignUp extends React.Component {
             return <Navigate to='/sign-in' />
 
         return (
-            <Form className="sign-up-form" onSubmit={(e) => this.submitHandler(e)}>
+            <Form className="sign-up-form shadow rounded" onSubmit={(e) => this.submitHandler(e)}>
                 <fieldset className="disabled-on-submit-wrapper" disabled={this.state.submitted}>
                     <h4>Sign Up</h4>
                     <ErrorBox errors={errors} />

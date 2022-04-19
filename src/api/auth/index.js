@@ -1,11 +1,10 @@
 import axiosClient from "api/axiosClient";
-import axios from "axios";
 
 const signIn = (data) => {
     return axiosClient.post('/sign-in/', JSON.stringify(data));
 }
 
-const signOut = (data) => {
+const signOut = () => {
     return axiosClient.get('/sign-out/');
 }
 
@@ -13,6 +12,8 @@ const signUp = (data) => {
     return axiosClient.post('/sign-up/', JSON.stringify(data));
 }
 
-export default {
+const AuthAPI = {
     signIn, signOut, signUp
-}
+};
+
+export default AuthAPI;

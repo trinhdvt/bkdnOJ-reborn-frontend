@@ -38,7 +38,7 @@ class UserProfile extends React.Component {
         const {profile, loaded} = this.state;
 
         return (
-            <Container className='user-profile'>
+            <Container className='user-profile shadow rounded'>
                 <h4>User Profile</h4>
                 {
                     !loaded

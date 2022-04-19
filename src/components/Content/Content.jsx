@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Container } from 'react-bootstrap';
+import React from 'react';
 
 import { connect } from "react-redux"
 import { increaseCounter, decreaseCounter, multiplyCounter } from "redux/Counter/actions.js"
@@ -19,7 +18,7 @@ class Content extends React.Component {
         const {num} = this.state;
 
         return (
-            <div className="content-div">
+            <div className="content-div shadow rounded">
                 <div className="row d-block">
                     Content goes here.
                 </div>

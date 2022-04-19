@@ -3,10 +3,6 @@ import './SubHeader.scss';
 import { Container } from 'react-bootstrap';
 
 class SubHeader extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className='subheader expand-sm'>

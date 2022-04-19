@@ -54,6 +54,11 @@
                     background: $sub !important;
                 }
             }
+
+            .dropdown-menu {
+                position: absolute;
+                left: -450%;
+            }
         }
     }
 
@@ -78,11 +83,6 @@
         &:focus {
             font-weight: 600;
         }
-    }
-
-    .navbar-nav .dropdown-menu {
-        position: absolute;
-        left: -450%;
     }
 
     // Bottom Separate Line

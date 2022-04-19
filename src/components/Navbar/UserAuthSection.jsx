@@ -68,7 +68,8 @@ class UserAuthSection extends React.Component {
                     <div className="nav-link" id="fake">
                         {`Hello, ${user.username}!`}
                     </div>
-                    <NavDropdown id="basic-nav-dropdown">
+                    <NavDropdown id="basic-nav-dropdown-userauth"
+                    >
                         {
                             user.is_staff &&
                             <NavDropdown.Item as={Link} to="/admin" >

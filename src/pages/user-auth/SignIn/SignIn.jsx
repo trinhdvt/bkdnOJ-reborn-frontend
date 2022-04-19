@@ -11,7 +11,7 @@ import ErrorBox from 'components/ErrorBox/ErrorBox';
 import './SignIn.scss';
 
 import { __ls_set_access_token, __ls_set_refresh_token } from 'helpers/localStorageHelpers';
-import { log, error } from 'helpers/logger';
+import { log } from 'helpers/logger';
 
 export default class SignIn extends React.Component {
     constructor(props) {
@@ -81,7 +81,7 @@ export default class SignIn extends React.Component {
             return <Navigate to='/profile' />
 
         return (
-            <Form className="sign-in-form" onSubmit={(e) => this.submitHandler(e)}>
+            <Form className="sign-in-form shadow rounded" onSubmit={(e) => this.submitHandler(e)}>
                 <fieldset className="disabled-on-submit-wrapper" disabled={this.state.submitted}>
                     <h4>Sign In</h4>
                     <ErrorBox errors={errors} />
