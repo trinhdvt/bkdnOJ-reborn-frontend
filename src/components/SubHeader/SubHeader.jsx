@@ -2,7 +2,11 @@ import React from 'react';
 import './SubHeader.scss';
 import { Container } from 'react-bootstrap';
 
-export default class SubHeader extends React.Component {
+class SubHeader extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
             <div className='subheader expand-sm'>
@@ -23,3 +27,5 @@ export default class SubHeader extends React.Component {
         )
     }
 }
+
+export default SubHeader;

@@ -1,7 +1,7 @@
-@import "index.scss";
+@import "global.scss";
 
 .navbar {
-    background-color: $sub!important;
+    background-color: $sub !important;
     top: 0;
     position: sticky;
     white-space: nowrap;
@@ -27,6 +27,34 @@
                 margin-right: 5px;
             }
         }
+
+        .navbar-user-auth {
+            flex: 1;
+            .nav-link {
+                margin-right: 10px;
+                border-radius: 4px;
+                line-height: 10px;
+                border: solid 1px $base;
+                background: rgb(255, 255, 255);
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 1) 0%,
+                    rgba(240, 240, 240, 1) 70%,
+                    rgb(228, 228, 228) 100%
+                );
+
+                color: $base;
+
+                padding-left: 5px;
+                padding-right: 5px;
+
+                &#fake {
+                    margin-right: 5px;
+                    border: solid 1px $sub;
+                    background: $sub !important;
+                }
+            }
+        }
     }
 
     // Site Brand
@@ -35,7 +63,9 @@
     }
 
     // Nav items
-    .nav-item, .nav-link {
+    .nav-item,
+    .nav-link,
+    .nav-link-fake {
         font-family: $font-brand;
         // text-decoration: underline;
         text-transform: capitalize;
@@ -45,9 +75,14 @@
             font-size: 12px;
         }
 
-        &:focus{
+        &:focus {
             font-weight: 600;
         }
+    }
+
+    .navbar-nav .dropdown-menu {
+        position: absolute;
+        left: -450%;
     }
 
     // Bottom Separate Line

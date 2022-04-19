@@ -1,0 +1,3 @@
+export const LS_ACCESS_TOKEN = "LS_ACCESS_TOKEN";
+export const LS_REFRESH_TOKEN = "LS_REFRESH_TOKEN";
+export const LS_AUTH_USER = "LS_AUTH_USER";
