@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/bkdnOJ-reborn-frontend/static/css/main.0781f355.css",
+    "main.css": "/bkdnOJ-reborn-frontend/static/css/main.aa3aca60.css",
     "main.js": "/bkdnOJ-reborn-frontend/static/js/main.0b684902.js",
     "static/media/bkdn-uni-flag.png": "/bkdnOJ-reborn-frontend/static/media/bkdn-uni-flag.6093ea649f2018e006cf.png",
     "static/media/bkdnoj-dropflag.png": "/bkdnOJ-reborn-frontend/static/media/bkdnoj-dropflag.44da85845554beb21edc.png",
     "static/media/bkdnoj-favicon-noring.png": "/bkdnOJ-reborn-frontend/static/media/bkdnoj-favicon-noring.511c5427228206a9820c.png",
     "static/media/loading.gif": "/bkdnOJ-reborn-frontend/static/media/loading.ee4bc3452e905326fc76.gif",
     "index.html": "/bkdnOJ-reborn-frontend/index.html",
-    "main.0781f355.css.map": "/bkdnOJ-reborn-frontend/static/css/main.0781f355.css.map",
+    "main.aa3aca60.css.map": "/bkdnOJ-reborn-frontend/static/css/main.aa3aca60.css.map",
     "main.0b684902.js.map": "/bkdnOJ-reborn-frontend/static/js/main.0b684902.js.map"
   },
   "entrypoints": [
-    "static/css/main.0781f355.css",
+    "static/css/main.aa3aca60.css",
     "static/js/main.0b684902.js"
   ]
 }
