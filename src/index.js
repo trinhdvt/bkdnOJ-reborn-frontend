@@ -1,21 +1,34 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.scss';
-import {Navbar, Header, SubHeader, Footer, Content} from './components/index.js';
-import {Container} from 'react-bootstrap';
+import {createRoot} from 'react-dom/client';
 
-ReactDOM.render(
+// Redux
+import { Provider } from 'react-redux';
+import store from 'redux/store.js'
+
+// Toastify
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import App from 'App';
+
+const rootElement = document.getElementById('root');
+const root = createRoot(rootElement);
+
+root.render(
   <React.StrictMode>
-    <Header/>
-    <Navbar/>
-    <SubHeader/>
-
-    {/* <Container style={{marginTop: "30px", marginBottom: "30px", border: "solid", height: "1200px"}}>
-      Hello!
-    </Container> */}
-    <Content/>
-
-    <Footer/>
-  </React.StrictMode>,
-  document.getElementById('root')
+  <Provider store={store}>
+    <App />
+    <ToastContainer
+      position="bottom-right" 
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+    />
+  </Provider>
+  </React.StrictMode>
 );

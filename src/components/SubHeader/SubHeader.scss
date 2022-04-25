@@ -1,8 +1,9 @@
-@import "../../index.scss";
+@import "global.scss";
 
 .subheader {
     // Top Border Line
     // border-top: solid 1px $background-gray-dark;
+    background-color: $background-gray;
 
     height: 20px;
     line-height: 18px;

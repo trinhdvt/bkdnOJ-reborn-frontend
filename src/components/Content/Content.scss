@@ -1,11 +1,16 @@
-@import "../../index.scss";
+@import "global.scss";
 
-.content {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    min-height: 1000px;
+.content-div {
+    width: 80vw;
+    height: 30vh;
 
-    border: solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: solid 2px $base;
+    border-radius: 3px;
     background-color: white;
 
     text-align: center;

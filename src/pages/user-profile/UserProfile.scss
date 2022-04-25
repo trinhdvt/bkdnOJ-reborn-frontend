@@ -1,0 +1,35 @@
+@import "global.scss";
+
+.user-profile {
+    width: 80vw;
+    min-height: 30vh;
+
+    border: solid 2px $base;
+    border-radius: 3px;
+    background-color: white;
+
+    overflow: auto;
+    overflow-wrap: break-word;
+    text-align: center;
+
+    position: relative;
+
+    padding: 15px;
+
+    .avatar {
+        max-width: 200px;
+    }
+
+
+    .user-profile-loader {
+        position: absolute !important;
+        top: 45% !important;
+        margin: 0 !important;
+    }
+    
+    .section-title {
+        font-weight: bold;
+    }
+}
+
+

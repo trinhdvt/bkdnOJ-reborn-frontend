@@ -1,23 +1,32 @@
 import React from 'react';
-import BTNavbar from 'react-bootstrap/Navbar';
-import { Container, Nav, NavDropdown, Item, Image } from 'react-bootstrap';
-import icon from 'assets/images/bkdnoj-favicon-noring.png';
 
+import { Container, Nav, NavDropdown, Image } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+
+import BTNavbar from 'react-bootstrap/Navbar';
+
+import icon from 'assets/images/bkdnoj-favicon-noring.png';
 import './Navbar.scss'
+
+import RDUserAuthSection from './UserAuthSection';
 
 export default class Navbar extends React.Component {
     render() {
         return (
             <BTNavbar bg="light" expand="md" className="navbar py-0" id="navbar" fixed="top">
                 <Container>
-                    <BTNavbar.Brand id="brand" href="#home">
-                        <Image src={icon} id="site-brand"/>
+                    <BTNavbar.Brand as={Link} id="brand" to="/">
+                        <Image src={icon} id="site-brand" />
                         <span>bkdnOJ</span>
                     </BTNavbar.Brand>
 
-                    <BTNavbar.Toggle aria-controls="basic-navbar-nav"/>
+                    <Nav className="navbar-user-auth d-flex flex-row justify-content-end d-md-none">
+                        <RDUserAuthSection />
+                    </Nav>
+
+                    <BTNavbar.Toggle aria-controls="basic-navbar-nav" />
                     <BTNavbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto">
+                        <Nav className="">
                             <Nav.Link href="#post">Post</Nav.Link>
                             <Nav.Link href="#problem">Problem</Nav.Link>
                             <NavDropdown title="Contests" id="basic-nav-dropdown">
@@ -29,6 +38,10 @@ export default class Navbar extends React.Component {
                             <Nav.Link href="#user">User</Nav.Link>
                         </Nav>
                     </BTNavbar.Collapse>
+
+                    <Nav className="navbar-user-auth flex-row justify-content-end d-none d-md-flex">
+                        <RDUserAuthSection />
+                    </Nav>
                 </Container>
             </BTNavbar>
         )
