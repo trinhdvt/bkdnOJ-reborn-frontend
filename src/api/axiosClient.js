@@ -3,8 +3,14 @@ import axios from 'axios';
 import { __ls_get_access_token, __ls_remove_credentials } from 'helpers/localStorageHelpers';
 import { log } from 'helpers/logger';
 
+const test_env = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+const test_connection_url = 
+    `${process.env.REACT_APP_DEV_BACKEND_URL}:${process.env.REACT_APP_DEV_BACKEND_PORT}/`
+const prod_connection_url = 
+    `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/`
+
 const axiosClient = axios.create({
-    baseURL: `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/`,
+    baseURL: (test_env ? test_connection_url : prod_connection_url),
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
