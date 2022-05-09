@@ -2,7 +2,9 @@
 
 .content-div {
     width: 80vw;
-    height: 30vh;
+    min-height: 40vh;
+    padding-top: 20px;
+    padding-bottom: 20px;
 
     display: flex;
     flex-direction: column;

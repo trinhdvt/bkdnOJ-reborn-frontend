@@ -65,7 +65,7 @@ export default class SignUp extends React.Component {
 
     render() {
         const { errors, redirect } = this.state;
-        const LEFT_COL = 4;
+        const LEFT_COL = 5;
         const RIGHT_COL = 12 - LEFT_COL;
 
         if (redirect)
@@ -74,9 +74,9 @@ export default class SignUp extends React.Component {
         return (
             <Form className="sign-up-form shadow rounded" onSubmit={(e) => this.submitHandler(e)}>
                 <fieldset className="disabled-on-submit-wrapper" disabled={this.state.submitted}>
-                    <h4>Sign Up</h4>
+                    <h4 className="mb-3">Sign Up</h4>
                     <ErrorBox errors={errors} />
-                    <Form.Group as={Row} className="m-3" controlId="formPlaintextUsername">
+                    <Form.Group as={Row} className="mb-2 " controlId="formPlaintextUsername">
                         <Form.Label column lg={LEFT_COL} className="required"> Username </Form.Label>
                         <Col lg={RIGHT_COL}>
                             <Form.Control type="input" placeholder="Enter your Username" required
@@ -85,7 +85,7 @@ export default class SignUp extends React.Component {
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} className="m-3" controlId="formPlaintextEmail">
+                    <Form.Group as={Row} className="mb-2" controlId="formPlaintextEmail">
                         <Form.Label column lg={LEFT_COL} className="required"> Email </Form.Label>
                         <Col lg={RIGHT_COL}>
                             <Form.Control type="email" placeholder="Enter your Email" required
@@ -94,7 +94,7 @@ export default class SignUp extends React.Component {
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} className="m-3" controlId="formPlaintextPassword">
+                    <Form.Group as={Row} className="mb-2" controlId="formPlaintextPassword">
                         <Form.Label column lg={LEFT_COL} className="required"> Password </Form.Label>
                         <Col lg={RIGHT_COL}>
                             <Form.Control type="password" placeholder="Enter your Password" required
@@ -103,7 +103,7 @@ export default class SignUp extends React.Component {
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} className="m-3" controlId="formPlaintextPasswordConfirm">
+                    <Form.Group as={Row} className="mb-3" controlId="formPlaintextPasswordConfirm">
                         <Form.Label column lg={LEFT_COL} className="required"> Password Confirmation </Form.Label>
                         <Col lg={RIGHT_COL}>
                             <Form.Control type="password" placeholder="Re-enter your Password" required
