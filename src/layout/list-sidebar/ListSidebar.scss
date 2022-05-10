@@ -1,63 +1,126 @@
 @import 'global.scss';
 
-div.row {
+.list-sidebar-wrapper {
   width: 100%;
-  div.table-col {
-  }
-}
 
-.offcanvas {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 1110;
-  top: 0;
-  right: 0;
+  .row {
+    width: 100%;
 
-  background-color: $base;
+    .offcanvas {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1110;
+      top: 0;
+      right: 0;
 
-  overflow-x: hidden;
-  transition: 0.3s;
-  padding-top: 60px;
+      background-color: $base;
+      overflow: hidden;
 
-  a {
-    // padding-top: 16px;
-    padding: 8px;
-    text-decoration: none;
-    font-size: 20px;
-    display: block;
-    transition: .3s;
-    color: $sub-dark;
+      transition: 0.3s;
+      padding-top: 60px;
 
-    &:hover {
-      color: $sub;
+      a {
+        // padding-top: 16px;
+        padding: 8px;
+        text-decoration: none;
+        font-size: 20px;
+        display: block;
+        transition: .3s;
+        color: $sub-dark;
+
+        &:hover {
+          color: $sub;
+        }
+      }
+
+      .offcanvasCloseBtn-wrapper {
+        position: absolute;
+        right: 30px;
+        bottom: 30px;
+
+        .offcanvasCloseBtn {
+          z-index: 1200;
+
+          font-size: 24px;
+          line-height: 24px;
+          text-align: center;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          height: 50px;
+          width: 50px;
+
+          color: $sub !important;
+          border: solid 4px $sub !important;
+          border-radius: 50% !important;
+        }
+      }
+
+      div.side-component {
+        margin: 10px;
+        border: solid 2px $sub-dark;
+        background-color: $sub;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 50px;
+        white-space: nowrap;
+      }
+    }
+
+    .offcanvas-menu {
+      transition: margin-right .3s;
+      padding: 16px;
+
+      .offcanvasOpenBtn-wrapper {
+        position: absolute;
+
+        .offcanvasOpenBtn {
+          position: fixed;
+          right: 30px;
+          bottom: 30px;
+          z-index: 1100;
+
+          font-size: 24px;
+          line-height: 24px;
+          text-align: center;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          height: 50px;
+          width: 50px;
+
+          color: $sub !important;
+          border: solid 4px $sub !important;
+          border-radius: 50% !important;
+        }
+
+      }
+    }
+
+    @media screen and (max-height: 450px) {
+      .offcanvas {padding-top: 34px;}
+      .offcanvas a {font-size: 16px;}
+      .offcanvas .canvasCloseBtn {font-size: 24px;}
     }
   }
 
-  .canvasCloseBtn {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-
-    color: $sub !important;
-
-    &:hover {
-      right: 15px;
-    }
+  @import "bootstrap/scss/functions";
+  @import "bootstrap/scss/variables";
+  @import "bootstrap/scss/mixins";
+  @import "bootstrap/scss/_buttons.scss";
+  .btn-dark {
+    @include button-variant($base, darken($base, 7.5%), darken($base, 10%), lighten($base,5%), lighten($base, 10%), darken($base,30%));
   }
-}
 
-
-#offcanvas-menu {
-  transition: margin-right .3s;
-  padding: 16px;
-}
-
-@media screen and (max-height: 450px) {
-  .offcanvas {padding-top: 34px;}
-  .offcanvas a {font-size: 16px;}
-  .offcanvas .canvasCloseBtn {font-size: 24px;}
+  .btn-outline-dark {
+    @include button-outline-variant($base, #222222, lighten($base,5%), $base);
+  }
 }
