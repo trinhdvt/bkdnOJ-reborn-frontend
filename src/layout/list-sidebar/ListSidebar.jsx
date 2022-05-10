@@ -40,7 +40,7 @@ class MainContent extends React.Component {
     )
 
     return (
-      <div className="offcanvas-menu border border-primary" id="offcanvas-menu">
+      <div className="offcanvas-menu main-component shadow rounded" id="offcanvas-menu">
         { children }
         <div className="offcanvasOpenBtn-wrapper">
           <Button className="offcanvasOpenBtn btn-dark" onClick={() => this.props.toggle()}>
@@ -65,8 +65,6 @@ export default class ListSidebar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      list_component: undefined,
-      sidebar: [], // a list of components
       offcanvasShow: false,
     }
   }
@@ -81,7 +79,7 @@ export default class ListSidebar extends React.Component {
 
     return (
       <div className="list-sidebar-wrapper">
-        <Row className="d-block d-md-none row">
+        <Row className="d-block d-md-none">
           <OutsideAlerter 
             children={ 
               <Offcanvas 
@@ -99,14 +97,14 @@ export default class ListSidebar extends React.Component {
 
         </Row>
 
-        <Row className="d-none d-md-flex row">
-          <Col md={8} className='table-col center border border-primary'>
+        <Row className="d-none d-md-flex">
+          <Col md={8} className="center main-component rounded shadow">
             { mainContent }
           </Col>
-          <Col md={4} className="comp-col center border border-warning">
+          <Col md={4} className="center">
             {
               sideComponents.map( (comp, indx) => (
-                <div key={`side-component-${indx}`} className="border border-danger">
+                <div key={`side-component-${indx}`} className="side-component rounded shadow">
                   {comp}
                 </div>
               ))  

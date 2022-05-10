@@ -1,0 +1,44 @@
+@import 'global.scss';
+
+.problem-table {
+  a {
+    color: darkblue;
+    &:hover {
+      color: $base;
+    }
+  }
+
+  h4 {
+    margin: unset;
+    padding: 4px;
+
+    font-size: medium;
+
+    font-family: $font-codeforces;
+    background-color: $background-gray;
+  }
+  th, td {
+    font-size: 14px;
+    font-family: $font-codeforces;
+  }
+  table {
+    margin: unset;
+  }
+
+  .problem-table-footer {
+    margin: 10px;
+
+    hr {
+      margin: unset;
+    }
+    height: 16px;
+    text-align: right;
+
+    span {
+      font-size: $font-codeforces;
+      a {
+        padding: 0 5px;
+      }
+    }
+  }
+}

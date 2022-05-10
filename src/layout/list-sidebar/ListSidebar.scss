@@ -1,10 +1,15 @@
 @import 'global.scss';
 
+.main-component {
+  padding: unset;
+}
+
 .list-sidebar-wrapper {
   width: 100%;
 
   .row {
     width: 100%;
+    margin: unset;
 
     .offcanvas {
       height: 100%;
@@ -21,7 +26,6 @@
       padding-top: 60px;
 
       a {
-        // padding-top: 16px;
         padding: 8px;
         text-decoration: none;
         font-size: 20px;
@@ -75,7 +79,7 @@
 
     .offcanvas-menu {
       transition: margin-right .3s;
-      padding: 16px;
+      // padding: 16px;
 
       .offcanvasOpenBtn-wrapper {
         position: absolute;
@@ -109,6 +113,18 @@
       .offcanvas {padding-top: 34px;}
       .offcanvas a {font-size: 16px;}
       .offcanvas .canvasCloseBtn {font-size: 24px;}
+    }
+
+    .main-component {
+      background-color: $sub;
+      border: solid 2px $base;
+    }
+
+    .side-component {
+      background-color: $sub;
+      border: solid 2px $base;
+      margin-bottom: 15px;
+      height: 150px;
     }
   }
 

@@ -28,6 +28,14 @@
       border-left: solid 1px $background-gray;
 
       line-height: 38px;
+
+      &.bugs {
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+          color: red;
+        }
+      }
     }
   }
 }

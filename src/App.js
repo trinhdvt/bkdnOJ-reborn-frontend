@@ -11,6 +11,7 @@ import { Navbar, Header, SubHeader, Footer, Content } from './components/index.j
 import { SignIn, SignUp, SignOut, UserProfile } from 'pages/index.js';
 
 import { ListSidebar } from 'layout';
+import { ProblemList } from 'pages/problem'
 
 // Styles
 import 'App.scss';
@@ -34,7 +35,7 @@ export default class App extends React.Component {
               <Route path="/profile" element={<UserProfile />} />
 
               <Route path="/problem" element={
-                <ListSidebar />
+                <ListSidebar mainContent={<ProblemList />}/>
               } />
             </Routes>
           </Container>
