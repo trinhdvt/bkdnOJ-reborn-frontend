@@ -30,28 +30,6 @@ class Offcanvas extends React.Component {
   }
 }
 
-class MainContent extends React.Component {
-  render() {
-    const children = this.props.children || (
-      <>
-        <h2>Offcanvas Push Example</h2>
-        <p>Please pass a React component to `children` in order to replace this message.</p>
-      </>
-    )
-
-    return (
-      <div className="offcanvas-menu main-component shadow rounded" id="offcanvas-menu">
-        { children }
-        <div className="offcanvasOpenBtn-wrapper">
-          <Button className="offcanvasOpenBtn btn-dark" onClick={() => this.props.toggle()}>
-            ⭰
-          </Button>
-        </div>
-      </div>
-    )
-  }
-}
-
 /*
  * A better name would be 8-4 layout. This layout will display
    main content by 8 | side content 4 on wide screen. On mobile,
@@ -79,28 +57,43 @@ export default class ListSidebar extends React.Component {
 
     return (
       <div className="list-sidebar-wrapper">
-        <Row className="d-block d-md-none">
-          <OutsideAlerter 
-            children={ 
-              <Offcanvas 
-                closeCanvas={() => this.close()}
-                sideComponents={sideComponents}
-              /> 
-            }
-            isDetecting={this.state.offcanvasShow}
-            outsideClickHandler={() => this.close()}
-          />
+        <Row>
+          <div className="d-block d-md-none">
+            <OutsideAlerter 
+              children={ 
+                <Offcanvas 
+                  closeCanvas={() => this.close()}
+                  sideComponents={sideComponents}
+                /> 
+              }
+              isDetecting={this.state.offcanvasShow}
+              outsideClickHandler={() => this.close()}
+            />
+          </div>
 
-          <MainContent toggle={() => this.toggle()}
-            children={mainContent}
-          />
-
-        </Row>
-
-        <Row className="d-none d-md-flex">
-          <Col md={8} className="center main-component rounded shadow">
-            { mainContent }
+          <Col md={8}>
+            <div className="offcanvas-menu main-component shadow rounded" id="offcanvas-menu">
+              { mainContent }
+              <div className="offcanvasOpenBtn-wrapper">
+                <Button className="offcanvasOpenBtn btn-dark d-block d-md-none" onClick={() => this.toggle()}>
+                  ⭰
+                </Button>
+              </div>
+            </div>
           </Col>
+
+          <Col md={4} className="side-bar center d-none d-md-flex">
+            {
+              sideComponents.map( (comp, indx) => (
+                <div key={`side-component-${indx}`} className="side-component rounded shadow">
+                  {comp}
+                </div>
+              ))  
+            }
+          </Col> 
+        </Row>
+{/* 
+        <Row className="d-none d-md-flex">
           <Col md={4} className="center">
             {
               sideComponents.map( (comp, indx) => (
@@ -110,7 +103,7 @@ export default class ListSidebar extends React.Component {
               ))  
             }
           </Col> 
-        </Row> 
+        </Row>  */}
       </div>
     )
   }

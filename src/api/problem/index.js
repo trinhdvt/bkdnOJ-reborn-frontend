@@ -3,8 +3,8 @@ import axiosClient from "api/axiosClient";
 const getProblems = (params) => {
     return axiosClient.get('/problem/', (params && { params: {...params} }));
 }
-const getProblemDetails = ({name}) => {
-    return axiosClient.get(`/problem/${name}`);
+const getProblemDetails = ({shortname}) => {
+    return axiosClient.get(`/problem/${shortname}`);
 }
 const submitToProblem = ({name, data}) => {
     return axiosClient.post(`/problem/${name}`, JSON.stringify(data));

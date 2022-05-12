@@ -82,12 +82,12 @@ class ProblemList extends React.Component {
         <Table responsive hover size="sm" striped bordered className="rounded">
           <thead>
             <tr>
-              <th>#</th>
-              <th style={{width: "30%"}}>Title</th>
-              <th>Points</th>
-              <th>Solved</th>
-              <th>AC%</th>
-              <th></th>
+              <th style={{width: "20%"}}>#</th>
+              <th style={{minWidth: "30%"}}>Title</th>
+              <th style={{width: "12%"}}>Points</th>
+              <th style={{width: "10%"}}>Solved</th>
+              <th style={{width: "10%"}}>AC%</th>
+              <th style={{width: "5%"}}></th>
             </tr>
           </thead>
           <tbody>

@@ -4,14 +4,15 @@ import { Container } from 'react-bootstrap';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Helpers
-import ScrollToTop from 'helpers/ReactRouter/ScrollToTop';
+import ScrollToTop from 'helpers/react-router/ScrollToTop';
 
 // Components
 import { Navbar, Header, SubHeader, Footer, Content } from './components/index.js';
 import { SignIn, SignUp, SignOut, UserProfile } from 'pages/index.js';
 
 import { ListSidebar } from 'layout';
-import { ProblemList } from 'pages/problem'
+import { ProblemList, ProblemDetail } from 'pages/problem'
+import PDFViewer from 'components/PDFViewer/PDFViewer';
 
 // Styles
 import 'App.scss';
@@ -34,9 +35,15 @@ export default class App extends React.Component {
               <Route path="/sign-out" element={<SignOut />} />
               <Route path="/profile" element={<UserProfile />} />
 
+              <Route path="/test/pdf" element={ <PDFViewer /> } />
+
               <Route path="/problem" element={
                 <ListSidebar mainContent={<ProblemList />}/>
               } />
+              <Route path="/problem/:shortname" 
+                element={<ListSidebar mainContent={<ProblemDetail />}
+              />
+              }/>
             </Routes>
           </Container>
         </div>
