@@ -2,7 +2,7 @@
 
 .problem-table {
   a {
-    color: darkblue;
+    color: $blue-dark;
     &:hover {
       color: $base;
     }
@@ -20,6 +20,7 @@
   th, td {
     font-size: 14px;
     font-family: $font-codeforces;
+    vertical-align: middle;
   }
   table {
     margin: unset;
@@ -34,11 +35,5 @@
     height: 16px;
     text-align: right;
 
-    span {
-      font-size: $font-codeforces;
-      a {
-        padding: 0 5px;
-      }
-    }
   }
 }

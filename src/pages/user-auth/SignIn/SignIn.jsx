@@ -83,7 +83,7 @@ export default class SignIn extends React.Component {
         return (
             <Form className="sign-in-form shadow rounded" onSubmit={(e) => this.submitHandler(e)}>
                 <fieldset className="disabled-on-submit-wrapper" disabled={this.state.submitted}>
-                    <h4 className="mb-3">Sign In</h4>
+                    <h4>Sign In</h4>
                     <ErrorBox errors={errors} />
                     <Form.Group as={Row} className="mb-2" controlId="formPlaintextUsername">
                         <Form.Label column sm={LEFT_COL} className="required">

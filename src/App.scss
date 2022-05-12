@@ -76,3 +76,18 @@ label.required::after {
   -webkit-box-shadow: inset 0 0 4px $base;
   background: $background-gray;
 }
+
+// Toastify
+.Toastify__toast-body {
+  font-family: $font-codeforces;
+  font-size: 14px;
+}
+.Toastify__toast--error {
+  background: $red-lighter !important;
+}
+.Toastify__toast--success {
+  background: $blue-lighter !important;
+}
+.Toastify__toast--warning {
+  background: $orange-lighter !important;
+}

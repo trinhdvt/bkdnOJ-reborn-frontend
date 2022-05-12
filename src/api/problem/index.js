@@ -1,7 +1,7 @@
 import axiosClient from "api/axiosClient";
 
-const getProblems = () => {
-    return axiosClient.get('/problem/');
+const getProblems = (params) => {
+    return axiosClient.get('/problem/', (params && { params: {...params} }));
 }
 const getProblemDetails = ({name}) => {
     return axiosClient.get(`/problem/${name}`);
