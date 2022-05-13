@@ -11,7 +11,7 @@ export default class SubmitModal extends React.Component {
     return (
       <Modal show={this.props.show} 
           onHide={() => this.props.onHide()}
-          className="submit-modal modal-xl"
+          className="submit-modal"
           backdrop="static"
           keyboard={false}
         >

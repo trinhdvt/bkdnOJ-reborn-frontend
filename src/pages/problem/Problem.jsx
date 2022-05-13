@@ -15,10 +15,10 @@ class ProblemListItem extends React.Component {
     const {shortname, title, solved_count, attempted_count, points} = this.props;
     return (
       <tr>
-        <td>
+        <td className="text-truncate" style={{maxWidth: "100px"}}>
           <Link to={`/problem/${shortname}`}>{shortname}</Link>
         </td>
-        <td>
+        <td className="text-truncate" style={{maxWidth: "300px"}}>
           <Link to={`/problem/${shortname}`}>{title}</Link>
         </td>
         <td>{points}</td>
@@ -82,7 +82,7 @@ class ProblemList extends React.Component {
           <thead>
             <tr>
               <th style={{width: "20%"}}>#</th>
-              <th style={{minWidth: "30%"}}>Title</th>
+              <th style={{minWidth: "30%", maxWidth: "50%"}}>Title</th>
               <th style={{width: "12%"}}>Points</th>
               <th style={{width: "10%"}}>Solved</th>
               <th style={{width: "10%"}}>AC%</th>
