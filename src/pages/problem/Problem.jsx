@@ -7,7 +7,6 @@ import { FaPaperPlane } from 'react-icons/fa';
 import { SpinLoader, ErrorBox } from 'components';
 import problemApi from 'api/problem';
 
-
 import './Problem.scss'
 import 'styles/ClassicPagination.scss';
 

@@ -136,16 +136,4 @@
     border: solid 2px $sub-dark;
     height: 150px;
   }
-
-  @import "bootstrap/scss/functions";
-  @import "bootstrap/scss/variables";
-  @import "bootstrap/scss/mixins";
-  @import "bootstrap/scss/_buttons.scss";
-  .btn-dark {
-    @include button-variant($base, darken($base, 7.5%), darken($base, 10%), lighten($base,5%), lighten($base, 10%), darken($base,30%));
-  }
-
-  .btn-outline-dark {
-    @include button-outline-variant($base, #222222, lighten($base,5%), $base);
-  }
 }

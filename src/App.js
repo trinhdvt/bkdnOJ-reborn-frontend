@@ -12,6 +12,7 @@ import { SignIn, SignUp, SignOut, UserProfile } from 'pages/index.js';
 
 import { ListSidebar } from 'layout';
 import { ProblemList, ProblemDetail } from 'pages/problem'
+import { Submit } from 'pages/submit';
 import PDFViewer from 'components/PDFViewer/PDFViewer';
 
 // Styles
@@ -41,9 +42,11 @@ export default class App extends React.Component {
                 <ListSidebar mainContent={<ProblemList />}/>
               } />
               <Route path="/problem/:shortname" 
-                element={<ListSidebar mainContent={<ProblemDetail />}
+                element={<ListSidebar mainContent={<ProblemDetail />} />}
               />
-              }/>
+              <Route path="/problem/:shortname/submit" 
+                element={<ListSidebar mainContent={<Submit />} />}
+              />
             </Routes>
           </Container>
         </div>
@@ -54,4 +57,4 @@ export default class App extends React.Component {
       </BrowserRouter>
     )
   }
-}
+} 

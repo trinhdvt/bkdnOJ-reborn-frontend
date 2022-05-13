@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {Row, Col} from 'react-bootstrap';
+import {Row, Col } from 'react-bootstrap';
 
 import problemAPI from 'api/problem';
 import { SpinLoader } from 'components';
@@ -9,9 +9,9 @@ import { withParams } from 'helpers/react-router'
 import { FaPaperPlane } from 'react-icons/fa';
 
 import PDFViewer from 'components/PDFViewer/PDFViewer';
+import { SubmitModal } from 'pages/submit';
 
 import './ProblemDetail.scss';
-
 class ProblemDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -19,8 +19,13 @@ class ProblemDetail extends React.Component {
     this.shortname = shortname;
     this.state = { 
       data: undefined, loaded: false, errors: null, shortname: shortname,
+
+      submitFormShow: false,
     };
   }
+
+  handleSubmitFormOpen() { this.setState({ submitFormShow: true })}
+  handleSubmitFormClose() { this.setState({ submitFormShow: false })}
 
   onDocumentLoadSuccess({ numPages }) {
     this.setState({ numPages })
@@ -52,6 +57,7 @@ class ProblemDetail extends React.Component {
 
   render() {
 
+
     return (
       <div className="problem-info">
         <h4 className="problem-title"> 
@@ -79,9 +85,16 @@ class ProblemDetail extends React.Component {
                 </ul>
               </Col>
               <Col sm={3} className="options">
-                <Link to="/submit" className="btn">
+                <Link to="#" className="btn" 
+                  onClick={() => this.handleSubmitFormOpen()}>
                   Submit <FaPaperPlane/>
                 </Link>
+
+                <SubmitModal show={this.state.submitFormShow} 
+                  onHide={() => this.handleSubmitFormClose()}
+                  lang={this.state.data.allowed_languages}
+                />
+
                 <Link to="/submit" className="btn">Test</Link>
               </Col>
             </Row>

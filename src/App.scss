@@ -62,13 +62,14 @@ label.required::after {
 }
 
 ::-webkit-scrollbar {
+  height: 12px;
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.6); 
   border-radius: 10px;
-  background: $base;
+  // background: $base;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -90,4 +91,20 @@ label.required::after {
 }
 .Toastify__toast--warning {
   background: $orange-lighter !important;
+}
+
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/_buttons.scss";
+.btn-dark {
+  @include button-variant($base, darken($base, 7.5%), darken($base, 10%), lighten($base,5%), lighten($base, 10%), darken($base,30%));
+  color: $sub;
+  &:hover, &:focus {
+    color: $sub;
+  }
+}
+.btn-outline-dark {
+  @include button-outline-variant($base, #222222, lighten($base,5%), $base);
+  color: $sub;
 }
