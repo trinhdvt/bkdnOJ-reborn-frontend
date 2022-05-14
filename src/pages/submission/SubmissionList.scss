@@ -1,0 +1,90 @@
+@import 'global.scss';
+
+.submission-table {
+  a {
+    color: $blue-dark;
+    &:hover {
+      color: $base;
+    }
+  }
+
+  h4 {
+    margin: unset;
+    padding: 4px;
+
+    font-size: medium;
+
+    font-family: $font-codeforces;
+    background-color: $background-gray;
+  }
+  th, td {
+    font-size: 14px;
+    font-family: $font-codeforces;
+    vertical-align: middle;
+  }
+  table {
+    margin: unset;
+  }
+
+  .submission-table-footer {
+    margin: 10px;
+
+    hr {
+      margin: unset;
+    }
+    height: 16px;
+    text-align: right;
+
+  }
+  .verdict {
+    font-weight: bold;
+    font-family: $font-codeforces;
+
+    &.ac {
+      color: $accepted;
+    }
+
+    &.wa, &.tle, &.mle, &.ole {
+      color: $not-accepted;
+    }
+
+    &.ir, &.rte {
+      color: $runtime-error;
+    }
+
+    &.ie, &.ce {
+      color: $system-error;
+    }
+
+    @media (min-width: 992px) {
+      span { display: none; }
+      &.ac::after {
+        content: "Accepted"
+      }
+      &.wa::after {
+        content: "Wrong Answer"
+      }
+      &.tle::after {
+        content: "Time Limit Exceeded"
+      }
+      &.mle::after {
+        content: "Memory Limit Exceeded"
+      }
+      &.ole::after {
+        content: "Output Limit Exceeded"
+      }
+      &.ir::after {
+        content: "Invalid Return"
+      }
+      &.rte::after {
+        content: "Runtime Error"
+      }
+      &.ie::after {
+        content: "Internal Error"
+      }
+      &.ce::after {
+        content: "Compile Error"
+      }
+    }
+  }
+}

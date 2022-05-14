@@ -29,7 +29,8 @@ export default class Navbar extends React.Component {
                         <Nav className="">
                             <Nav.Link href="#post">Post</Nav.Link>
                             <Nav.Link as={Link} to="/problem">Problem</Nav.Link>
-                            <NavDropdown title="Contests" id="basic-nav-dropdown">
+                            <Nav.Link as={Link} to="/submission">Submission</Nav.Link>
+                            <NavDropdown title="Contest" id="basic-nav-dropdown">
                                 <NavDropdown.Item href="#action/3.1">Upcoming</NavDropdown.Item>
                                 <NavDropdown.Item href="#action/3.2">Ongoing</NavDropdown.Item>
                                 <NavDropdown.Item href="#action/3.3">Past</NavDropdown.Item>
