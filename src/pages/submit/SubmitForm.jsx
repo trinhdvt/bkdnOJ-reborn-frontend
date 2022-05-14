@@ -6,6 +6,7 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { modes, modesByName } from 'ace-builds/src-noconflict/ext-modelist';
+import problemApi from 'api/problem';
 
 import {
   __ls_get_code_editor, __ls_set_code_editor 
@@ -41,10 +42,28 @@ export default class SubmitForm extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.submitting !== this.props.submitting) {
+      const data = {
+        language: this.state.selectedLang.id,
+        source: this.state.code,
+      }
+      const prob = this.props.prob
+      problemApi.submitToProblem({name: prob, data})
+        .then((res) => {
+          console.log(res)
+          alert('ok')
+        })
+        .catch((err) => {
+          console.log(err)
+          alert('no')
+        })
+    }
+  }
+
   componentDidMount() {
     const data = __ls_get_code_editor()
     this.setState({...data})
-    // console.log('Mounting:', data)
   }
 
   getAceMode() {

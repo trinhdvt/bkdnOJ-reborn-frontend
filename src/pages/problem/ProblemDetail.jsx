@@ -92,6 +92,7 @@ class ProblemDetail extends React.Component {
 
                 <SubmitModal show={this.state.submitFormShow} 
                   onHide={() => this.handleSubmitFormClose()}
+                  prob={this.state.data.shortname}
                   lang={this.state.data.allowed_languages}
                 />
 

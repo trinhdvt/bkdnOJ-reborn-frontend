@@ -7,7 +7,7 @@ const getProblemDetails = ({shortname}) => {
     return axiosClient.get(`/problem/${shortname}`);
 }
 const submitToProblem = ({name, data}) => {
-    return axiosClient.post(`/problem/${name}`, JSON.stringify(data));
+    return axiosClient.post(`/problem/${name}/submit/`, JSON.stringify(data));
 }
 
 const problemAPI = {

@@ -7,6 +7,13 @@ import SubmitForm from './SubmitForm';
 import './SubmitModal.scss'
 
 export default class SubmitModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      submitting: false,
+    }
+  }
+
   render() {
     return (
       <Modal show={this.props.show} 
@@ -23,24 +30,31 @@ export default class SubmitModal extends React.Component {
         </Modal.Header>
 
         <Modal.Body>
-          <SubmitForm lang={this.props.lang}/>
+          <SubmitForm prob={this.props.prob} lang={this.props.lang} submitting={this.state.submitting}/>
         </Modal.Body>
 
         <Modal.Footer>
           <div className="note">
-            <div style={{height: "100%", width: "auto", margin: "auto", 
-              display: "flex", verticalAlign: "center"}}>
-              <BsExclamationCircle />
-            </div>
-            <span>This editor only store your most recent code. 
-              Using multiple editors can cause conflict.</span>
+          {
+            !this.state.submitting 
+            ? <>
+              <div style={{height: "100%", width: "auto", margin: "auto", 
+                display: "flex", verticalAlign: "center"}}>
+                <BsExclamationCircle />
+              </div>
+              <span>This editor only store your most recent code. 
+                Using multiple editors can cause conflict.</span>
+            </>
+            : <div class="note loading_3dot">Submitting</div>
+          }
           </div>
 
           <Button variant="secondary" 
             onClick={() => this.props.onHide()}>Close</Button>
           
           <Button variant="dark"
-            onClick={() => alert("Submitted!")}
+            onClick={() => this.setState({submitting: true})}
+            disabled={this.state.submitting}
           >
             {"Submit "}<FaPaperPlane size={12}/>
           </Button>
