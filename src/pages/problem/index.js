@@ -1,6 +1,6 @@
 import { ProblemList } from './Problem';
-import ProblemDetail from './ProblemDetail';
+import ProblemDetails from './ProblemDetails';
 
 export {
-    ProblemList, ProblemDetail
+    ProblemList, ProblemDetails
 };

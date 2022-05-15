@@ -45,7 +45,7 @@ export default class SubmitModal extends React.Component {
               <span>This editor only store your most recent code. 
                 Using multiple editors can cause conflict.</span>
             </>
-            : <div class="note loading_3dot">Submitting</div>
+            : <div className="note loading_3dot">Submitting</div>
           }
           </div>
 

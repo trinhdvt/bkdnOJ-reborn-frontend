@@ -11,9 +11,9 @@ import { Navbar, Header, SubHeader, Footer, Content } from './components/index.j
 import { SignIn, SignUp, SignOut, UserProfile } from 'pages/index.js';
 
 import { ListSidebar } from 'layout';
-import { ProblemList, ProblemDetail } from 'pages/problem'
+import { ProblemList, ProblemDetails } from 'pages/problem'
 import { Submit } from 'pages/submit';
-import { SubmissionList } from 'pages/submission'
+import { SubmissionList, SubmissionDetails } from 'pages/submission'
 import PDFViewer from 'components/PDFViewer/PDFViewer';
 
 // Styles
@@ -43,7 +43,7 @@ export default class App extends React.Component {
                 <ListSidebar mainContent={<ProblemList />}/>
               } />
               <Route path="/problem/:shortname" 
-                element={<ListSidebar mainContent={<ProblemDetail />} />}
+                element={<ListSidebar mainContent={<ProblemDetails />} />}
               />
               <Route path="/problem/:shortname/submit" 
                 element={<ListSidebar mainContent={<Submit />} />}
@@ -53,7 +53,7 @@ export default class App extends React.Component {
                 <ListSidebar mainContent={<SubmissionList />}/>
               } />
               <Route path="/submission/:id" element={
-                <ListSidebar mainContent={<SubmissionList />}/>
+                <ListSidebar mainContent={<SubmissionDetails />}/>
               } />
 
             </Routes>

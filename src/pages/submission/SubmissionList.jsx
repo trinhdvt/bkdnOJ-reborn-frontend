@@ -43,11 +43,13 @@ class SubListItem extends React.Component {
     return dateFormatter(date);
   }
   render() {
-    const {id, problem, user, result, time, memory, date} = this.props;
+    const {id, problem, user, status, result, time, memory, date} = this.props;
+    const verdict = (status === "D" ? result : status);
+
     return (
       <tr>
         <td className="text-truncate">
-            {id}
+          <Link to={`/submission/${id}`}>{id}</Link>
         </td>
         <td className="text-truncate" style={{maxWidth: "200px"}}>
           <Link to={`/problem/${problem.shortname}`}>{problem.title}</Link>
@@ -55,14 +57,18 @@ class SubListItem extends React.Component {
         <td className="text-truncate" >
           <Link to={`/user/${user}`}>{user}</Link>
         </td>
-        <td className={`verdict ${result.toLowerCase()}`}
-          data-toggle="tooltip" data-placement="right" title={`${getVerdict(result)}`}
-        >
-            <span>{result}</span>
-        </td>
+        
+        {
+          <td className={`verdict ${verdict.toLowerCase()}`}
+            // data-toggle="tooltip" data-placement="right" title={`${getVerdict(verdict)}`}
+          >
+              <span>{verdict}</span>
+          </td>
+        }
+
         <td>{this.parseTime(time)}</td>
         <td>{this.parseMemory(memory)}</td>
-        <td>{this.parseDate(date)}</td>
+        <td style={{minWidth: "100px"}}>{this.parseDate(date)}</td>
       </tr>
     )
   }
@@ -120,7 +126,7 @@ class SubmissionList extends React.Component {
               <th>#</th>
               <th>Problem</th>
               <th>Author</th>
-              <th>Verdict</th>
+              <th>Status</th>
               <th>Time</th>
               <th>Memory</th>
               <th>Date</th>

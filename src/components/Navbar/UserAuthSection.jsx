@@ -34,7 +34,7 @@ class UserAuthSection extends React.Component {
         })
         .catch((err) => {
             __ls_remove_credentials();
-            toast.error("You are already logged out!");
+            // toast.error("You are already logged out!");
         })
         .finally(() => {
             this.setState({redirect: true})

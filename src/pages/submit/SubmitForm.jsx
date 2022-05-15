@@ -1,13 +1,16 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import {Form} from 'react-bootstrap';
 
 import AceEditor from "react-ace";
 
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/ext-language_tools";
-import { modes, modesByName } from 'ace-builds/src-noconflict/ext-modelist';
+// import "ace-builds/src-noconflict/theme-github";
+// import "ace-builds/src-noconflict/ext-language_tools";
+// import { modesByName } from 'ace-builds/src-noconflict/ext-modelist';
+import { CodeEditor } from 'components/CodeEditor';
 import problemApi from 'api/problem';
 
+import { DEFAULT_LANG_SHORTNAME } from 'constants/aceEditorMode';
 import {
   __ls_get_code_editor, __ls_set_code_editor 
 } from 'helpers/localStorageHelpers';
@@ -15,9 +18,6 @@ import {
 import 'helpers/importAllAceMode';
 import './SubmitForm.scss';
 
-const FALLBACK_ACE_MODE = 'plain_text';
-const DEFAULT_ACE_MODE = 'c_cpp';
-const DEFAULT_LANG_SHORTNAME = 'C++17';
 
 export default class SubmitForm extends React.Component {
   constructor(props) {
@@ -39,6 +39,7 @@ export default class SubmitForm extends React.Component {
 
       lang : props.lang,
       id2LangMap,
+      redirect: false,
     }
   }
 
@@ -52,11 +53,11 @@ export default class SubmitForm extends React.Component {
       problemApi.submitToProblem({name: prob, data})
         .then((res) => {
           console.log(res)
-          alert('ok')
+          this.setState({ redirect: `/submission/${res.data.id}` })
         })
         .catch((err) => {
           console.log(err)
-          alert('no')
+          alert('Cannot submit')
         })
     }
   }
@@ -64,13 +65,6 @@ export default class SubmitForm extends React.Component {
   componentDidMount() {
     const data = __ls_get_code_editor()
     this.setState({...data})
-  }
-
-  getAceMode() {
-    return (
-      !!modesByName[this.state.selectedLang.ace] 
-      ? this.state.selectedLang.ace 
-      : FALLBACK_ACE_MODE)
   }
 
   onCodeEditorChange() {
@@ -96,6 +90,11 @@ export default class SubmitForm extends React.Component {
   }
 
   render() {
+    if (!!this.state.redirect) {
+      // this.setState({redirect: false})
+      return <Navigate to={`${this.state.redirect}`} />
+    }
+    
     return (
       <Form className="submit-form">
         <Form.Group className="select-div" >
@@ -113,7 +112,7 @@ export default class SubmitForm extends React.Component {
 
         <Form.Group className="mt-1">
           <Form.Label>Code:</Form.Label>
-          <AceEditor
+          {/* <AceEditor
             mode={this.getAceMode()}
             theme="github"
             onChange={(val) => this.onCodeChange(val)}
@@ -121,17 +120,14 @@ export default class SubmitForm extends React.Component {
             name="submit-form-code-editor"
             editorProps={{ $blockScrolling: true }}
             style={styles.ace}
+          /> */}
+          <CodeEditor 
+            onCodeChange={(val) => this.onCodeChange(val)}
+            code={this.state.code}
+            ace={this.state.selectedLang.ace}
           />
         </Form.Group>
       </Form>
     )
   }
-}
-
-const styles = {
-  ace: {
-    width: "100%",
-    maxHeight: "300px",
-    overflow: "auto",
-  }
-}
+};
