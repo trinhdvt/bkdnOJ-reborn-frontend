@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux"
 import { increaseCounter, decreaseCounter, multiplyCounter } from "redux/Counter/actions.js"
+import { setTitle } from "helpers/setTitle";
 
 import {Row, Col} from 'react-bootstrap';
 
@@ -10,10 +11,11 @@ import "./Content.scss";
 
 class Content extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {
-          num: 0
-        }
+      super(props);
+      this.state = {
+        num: 0
+      }
+      setTitle();
     }
 
     render() {

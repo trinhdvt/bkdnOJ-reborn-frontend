@@ -21,13 +21,17 @@
       }
 
       .modal-footer {
+        @import "styles/SubmissionVerdict.scss";
         .note {
           display: flex;
           align-items: center;
           column-gap: 5px;
 
-          span {
+          span.warning {
             font-size: 10px;
+          }
+          span {
+            font-size: 14px;
           }
 
           text-align: left;

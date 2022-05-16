@@ -16,7 +16,7 @@
     color: $runtime-error;
   }
 
-  &.qu, &.g {
+  &.qu, &.g, &.p, &.sc {
     color: $queued;
   }
 
@@ -24,7 +24,7 @@
     color: $system-error;
   }
 
-  @media (min-width: 992px) {
+  @media (min-width: 768px) {
     span { display: none; }
     &.ac::after {
     content: "Accepted"
@@ -50,8 +50,14 @@
     &.qu::after {
     content: "Waiting.."
     }
+    &.p::after {
+    content: "Processing.."
+    }
     &.g::after {
     content: "Judging.."
+    }
+    &.sc::after {
+    content: "Skipped"
     }
     &.ie::after {
     content: "Internal Error"

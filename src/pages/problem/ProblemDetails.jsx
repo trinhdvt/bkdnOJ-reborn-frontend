@@ -5,6 +5,7 @@ import {Row, Col } from 'react-bootstrap';
 import problemAPI from 'api/problem';
 import { SpinLoader } from 'components';
 import { withParams } from 'helpers/react-router'
+import { setTitle } from 'helpers/setTitle';
 
 import { FaPaperPlane } from 'react-icons/fa';
 
@@ -38,6 +39,7 @@ class ProblemDetails extends React.Component {
           data: res.data,
           loaded: true,
         })
+        setTitle(`Prob. ${res.data.title}`)
       })
       .catch((err) => {
         this.setState({

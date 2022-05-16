@@ -6,10 +6,18 @@ const getSubmissions = (params) => {
 const getSubmissionDetails = ({id}) => {
     return axiosClient.get(`/submission/${id}`);
 }
+const getSubmissionResult = ({id}) => {
+    return axiosClient.get(`/submission/${id}/testcase`);
+}
+const getSubmissionResultCase = ({id, case_num}) => {
+    return axiosClient.get(`/submission/${id}/testcase/${case_num}`);
+}
 
 const submissionApi = {
     getSubmissions,
     getSubmissionDetails,
+    getSubmissionResult,
+    getSubmissionResultCase,
 }
 
 export default submissionApi;

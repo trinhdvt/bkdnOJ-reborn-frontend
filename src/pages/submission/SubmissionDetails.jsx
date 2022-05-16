@@ -8,6 +8,9 @@ import { CodeEditor } from 'components/CodeEditor';
 
 import { withParams } from 'helpers/react-router'
 import { parseTime, parseMem } from 'helpers/textFormatter';
+import { setTitle } from 'helpers/setTitle'
+
+import { STOP_POLL_STATUSES, NO_DETAIL_STATUSES } from 'constants/statusFilter';
 
 import './SubmissionDetails.scss';
 
@@ -40,36 +43,65 @@ class SubmissionDetails extends React.Component {
     super(props);
     const { id } = this.props.params;
     this.state = { 
-      id: id,
-      data: undefined, loaded: false, errors: null,
+      id: id, 
+      loaded: false, errors: null,
+      data: { 
+        status: ".",
+      }, 
     };
   }
 
-  componentDidMount() {
-    submissionAPI.getSubmissionDetails({id: this.state.id})
+  fetch() {
+    submissionAPI.getSubmissionDetails({id : this.state.id})
       .then((res) => {
-        this.setState({
-          data: res.data,
-          loaded: true,
-        })
+        setTitle(`Sub#${res.data.id}`)
+        this.setState({ data: res.data, })
       })
       .catch((err) => {
-        this.setState({
-          loaded: true,
-          errors: err,
-        })
+        this.setState({ errors: err, })
+        console.log('Error when Polling', err)
       })
+      .finally(() => {
+        this.setState({ loaded: true })
+      })
+  }
+  pollResult() { 
+    if (STOP_POLL_STATUSES.includes(this.state.data.status)) {
+      clearInterval(this.timer)
+      return;
+    }
+    this.fetch();
+  }
+  componentDidMount() {
+    this.fetch();
+    if (! STOP_POLL_STATUSES.includes(this.state.data.status))
+      this.timer = setInterval(() => this.pollResult(), 2000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer)
   }
 
   render() {
-    const { data } = this.state;
+    const { data, loaded } = this.state;
+    let verdict = 'QU';
+    if (loaded)
+      verdict = (data.status === "D" ? data.result : data.status);
+    const polling = (loaded && data.status !== 'D');
+
     return (
       <div className="submission-info">
         <h4 className="submission-title"> 
-          { !this.state.loaded ? <span><SpinLoader/> Loading...</span> : `Submission # ${data.id}` }
+          { 
+            !loaded ? 
+            <span><SpinLoader/> Loading...</span> : 
+            <span>
+              {`Submission # ${data.id}`}
+              {polling && <div className="loading_3dot"></div>}
+            </span>
+          }
         </h4>
         <hr/>
-        <div className="submission-details">
+        <div className={`submission-details ${loaded && "text-left"}`}>
           { 
             !this.state.loaded ? <span><SpinLoader/> Loading...</span> 
             : <>
@@ -95,8 +127,8 @@ class SubmissionDetails extends React.Component {
                   </Col>
                   <Col >
                     <span><strong>Result:</strong>
-                      <span className={`verdict ${data.result.toLowerCase()}`}>
-                        <span>{data.result}</span>
+                      <span className={`verdict ${verdict.toLowerCase()}`}>
+                        <span>{verdict}</span>
                       </span>
                     </span>
                   </Col>

@@ -7,6 +7,7 @@ import { FaPaperPlane } from 'react-icons/fa';
 import { SpinLoader, ErrorBox } from 'components';
 import submissionApi from 'api/submission';
 import dateFormatter from 'helpers/dateFormatter';
+import { setTitle } from 'helpers/setTitle';
 
 import './SubmissionList.scss'
 import 'styles/ClassicPagination.scss';
@@ -84,6 +85,7 @@ class SubmissionList extends React.Component {
       loaded: false,
       errors: null,
     }
+    setTitle(`Submissions`)
   }
 
   callApi(params) {

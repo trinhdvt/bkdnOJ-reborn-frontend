@@ -6,6 +6,7 @@ import { FaPaperPlane } from 'react-icons/fa';
 
 import { SpinLoader, ErrorBox } from 'components';
 import problemApi from 'api/problem';
+import { setTitle } from 'helpers/setTitle';
 
 import './Problem.scss'
 import 'styles/ClassicPagination.scss';
@@ -25,7 +26,7 @@ class ProblemListItem extends React.Component {
         <td>{solved_count}</td>
         <td>{attempted_count === 0 ? '?' : `${(solved_count*100.0/attempted_count).toFixed(2)}%`}</td>
         <td>
-          <Link to={`/problem/${shortname}/submit`}><FaPaperPlane/></Link>
+          {/* <Link to={`/problem/${shortname}/submit`}><FaPaperPlane/></Link> */}
         </td>
       </tr>
     )
@@ -42,6 +43,7 @@ class ProblemList extends React.Component {
       loaded: false,
       errors: null,
     }
+    setTitle('Problems')
   }
 
   callApi(params) {

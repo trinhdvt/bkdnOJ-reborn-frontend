@@ -2,11 +2,6 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import {Form} from 'react-bootstrap';
 
-import AceEditor from "react-ace";
-
-// import "ace-builds/src-noconflict/theme-github";
-// import "ace-builds/src-noconflict/ext-language_tools";
-// import { modesByName } from 'ace-builds/src-noconflict/ext-modelist';
 import { CodeEditor } from 'components/CodeEditor';
 import problemApi from 'api/problem';
 
@@ -52,8 +47,9 @@ export default class SubmitForm extends React.Component {
       const prob = this.props.prob
       problemApi.submitToProblem({name: prob, data})
         .then((res) => {
-          console.log(res)
-          this.setState({ redirect: `/submission/${res.data.id}` })
+          // console.log(res)
+          // this.setState({ redirect: `/submission/${res.data.id}` })
+          this.props.setSubId(res.data.id)
         })
         .catch((err) => {
           console.log(err)
@@ -90,10 +86,10 @@ export default class SubmitForm extends React.Component {
   }
 
   render() {
-    if (!!this.state.redirect) {
-      // this.setState({redirect: false})
-      return <Navigate to={`${this.state.redirect}`} />
-    }
+    // if (!!this.state.redirect) {
+    //   // this.setState({redirect: false})
+    //   return <Navigate to={`${this.state.redirect}`} />
+    // }
     
     return (
       <Form className="submit-form">
@@ -125,6 +121,7 @@ export default class SubmitForm extends React.Component {
             onCodeChange={(val) => this.onCodeChange(val)}
             code={this.state.code}
             ace={this.state.selectedLang.ace}
+            readOnly={this.props.submitting}
           />
         </Form.Group>
       </Form>

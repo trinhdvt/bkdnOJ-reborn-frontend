@@ -10,6 +10,7 @@ import { log } from 'helpers/logger';
 import SpinLoader from 'components/SpinLoader/SpinLoader';
 import './UserProfile.scss';
 import { __ls_set_auth_user } from 'helpers/localStorageHelpers';
+import { setTitle } from 'helpers/setTitle';
 
 class UserProfile extends React.Component {
     constructor(props) {
@@ -18,6 +19,7 @@ class UserProfile extends React.Component {
             profile: {},
             loaded: false,
         }
+        setTitle('Profile')
     }
 
     componentDidMount() {

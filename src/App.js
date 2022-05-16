@@ -7,13 +7,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from 'helpers/react-router/ScrollToTop';
 
 // Components
-import { Navbar, Header, SubHeader, Footer, Content } from './components/index.js';
-import { SignIn, SignUp, SignOut, UserProfile } from 'pages/index.js';
-
 import { ListSidebar } from 'layout';
+import { Navbar, Header, SubHeader, Footer, Content } from './components/index.js';
+
+import { SignIn, SignUp, SignOut, UserProfile } from 'pages/index.js';
+import { SubmissionList, SubmissionDetails } from 'pages/submission'
 import { ProblemList, ProblemDetails } from 'pages/problem'
 import { Submit } from 'pages/submit';
-import { SubmissionList, SubmissionDetails } from 'pages/submission'
+import { setTitle } from 'helpers/setTitle';
+
 import PDFViewer from 'components/PDFViewer/PDFViewer';
 
 // Styles
