@@ -49,7 +49,7 @@ class Content extends React.Component {
                       <div className="big-title pt-2 pb-2">
                         <h4 className="">Bách Khoa Đà Nẵng Online Judge 2.0</h4>
                         <div className="title">
-                          <h5 className="">Version <span className="code-markup">ALPHA</span></h5>
+                          <h5 className="">Version <span className="code-markup">preALPHA</span></h5>
                         </div>
                       </div>
                       <span className="subtext text-center">Your new online platform for practicing and hosting programming contests, for Vietnam Central Province.</span>

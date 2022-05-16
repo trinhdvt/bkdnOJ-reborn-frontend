@@ -32,7 +32,7 @@ export default class Header extends React.Component {
                         </Link>
                     </div>
                     <span>bkdnOJ v2.0</span>
-                    <span>version ALPHA</span>
+                    <span>pre-ALPHA</span>
                     {/* <span>Bugs are to be expected, please report them to lambda.nvat@gmail.com</span> */}
                     {/* <span>🇻🇳 Tiếng Việt</span>
                     <span>🇬🇧 English</span> */}
