@@ -96,7 +96,7 @@ class ProblemDetails extends React.Component {
                     lang={this.state.data.allowed_languages}
                   />
 
-                  <Link to="/submit" className="btn">Test</Link>
+                  {/* <Link to="/submit" className="btn">Test</Link> */}
                 </Col>
               </Row>
               <div className="problem-pdf shadow">

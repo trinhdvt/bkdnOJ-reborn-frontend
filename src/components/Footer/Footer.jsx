@@ -29,42 +29,45 @@ export default class Footer extends React.Component {
 
                         <Col xs={12} md={8} className="col link-section">
                             <div className="subcategory">
-                                <h4>Title 1</h4>
+                                <h4>Về chúng tôi</h4>
                                 <p>
-                                    <a href="#">Link 1</a>
-                                    <a href="#">Link 2</a>
-                                    <a href="#">Link 3</a>
+                                    <a href="https://dut.udn.vn/">Đại học Bách Khoa - Đại học Đà Nẵng</a>
+                                    <a href="http://dut.udn.vn/KhoaCNTT">Khoa CNTT</a>
+                                    <a href="#">Đội IOI{"&"}ICPC BKĐN</a>
+                                    <a href="https://github.com/BKDN-University">Đội phát triển bkdnOJ v2.0</a>
                                 </p>
                             </div>
 
                             <div className="subcategory">
-                                <h4>Title 2</h4>
+                                <h4>Đường dẫn liên quan</h4>
                                 <p>
-                                    <a href="#">Link 1</a>
-                                    <a href="#">Link 2</a>
-                                    <a href="#">Link 3</a>
-                                    <a href="#">Link 3</a>
-                                    <a href="#">Link 3</a>
-                                    <a href="#">Link 3</a>
+                                    <a href="https://icpc.global/regionals/abouticpc">About ICPC</a>
+                                    <a href="https://www.olp.vn/">Olympic Tin học VN</a>
+                                    <a href="https://vnoi.info/">Diễn đàn Tin học VNOI</a>
                                 </p>
                             </div>
 
                             <div className="subcategory">
-                                <h4>Title 3</h4>
+                                <h4>Các OJ khác</h4>
                                 <p>
-                                    <a href="#">Link 1</a>
-                                    <a href="#">Link 2</a>
-                                    <a href="#">Link 3</a>
+                                    <a href="https://codeforces.com/">Codeforces</a>
+                                    <a href="https://atcoder.jp/">AtCoder</a>
+                                    <a href="https://dmoj.ca/">DMOJ</a>
+                                    <a href="https://onlinejudge.org/index.php">UVa OJ</a>
+                                    <a href="https://oj.vnoi.info/">VNOJ</a>
+                                    <a href="https://lqdoj.edu.vn/">LQDOJ</a>
+                                    <a href="http://ntucoder.net/">NtuCoder</a>
                                 </p>
                             </div>
+
                         </Col>
                     </Row>
 
                     <Row className="lower-row">
                         <Col xs={12} className="col">
                             <pre id="footer-note">
-                                Bach Khoa Da Nang Online Judge - bkdnOJ v2.0 © 2022{"\n"}
-                                Built by BKDN's Informatics Olympic and ICPC Team{"\n"}
+                                bkdnOJ v2.0 - version α - 2022{"\n"}
+                                Build by BKDN Informatics Olympic {"&"} ICPC Team{"\n"}
                                 University of Science and Technology - University of Danang{"\n"}
                             </pre>
                         </Col>

@@ -27,16 +27,16 @@ export default class Navbar extends React.Component {
                     <BTNavbar.Toggle aria-controls="basic-navbar-nav" />
                     <BTNavbar.Collapse id="basic-navbar-nav">
                         <Nav className="">
-                            <Nav.Link href="#post">Post</Nav.Link>
+                            {/* <Nav.Link href="#post">Post</Nav.Link> */}
                             <Nav.Link as={Link} to="/problem">Problem</Nav.Link>
                             <Nav.Link as={Link} to="/submission">Submission</Nav.Link>
-                            <NavDropdown title="Contest" id="basic-nav-dropdown">
+                            {/* <NavDropdown title="Contest" id="basic-nav-dropdown">
                                 <NavDropdown.Item href="#action/3.1">Upcoming</NavDropdown.Item>
                                 <NavDropdown.Item href="#action/3.2">Ongoing</NavDropdown.Item>
                                 <NavDropdown.Item href="#action/3.3">Past</NavDropdown.Item>
-                            </NavDropdown>
-                            <Nav.Link href="#organization">Organization</Nav.Link>
-                            <Nav.Link href="#user">User</Nav.Link>
+                            </NavDropdown> */}
+                            {/* <Nav.Link href="#organization">Organization</Nav.Link>
+                            <Nav.Link href="#user">User</Nav.Link> */}
                         </Nav>
                     </BTNavbar.Collapse>
 

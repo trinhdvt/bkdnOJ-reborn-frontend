@@ -57,7 +57,7 @@ export default class SubmitForm extends React.Component {
         })
         .catch((err) => {
           console.log(err)
-          alert('Cannot submit')
+          // alert('Cannot submit')
         })
     }
   }
