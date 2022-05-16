@@ -55,6 +55,7 @@ export default class Footer extends React.Component {
                                     <a href="https://dmoj.ca/">DMOJ</a>
                                     <a href="https://onlinejudge.org/index.php">UVa OJ</a>
                                     <a href="https://oj.vnoi.info/">VNOJ</a>
+                                    <a href="https://onlinejudge.u-aizu.ac.jp/home">Aizu OJ</a>
                                     <a href="https://lqdoj.edu.vn/">LQDOJ</a>
                                     <a href="http://ntucoder.net/">NtuCoder</a>
                                 </p>
@@ -66,7 +67,7 @@ export default class Footer extends React.Component {
                     <Row className="lower-row">
                         <Col xs={12} className="col">
                             <pre id="footer-note">
-                                bkdnOJ v2.0 - version α - 2022{"\n"}
+                                bkdnOJ v2.0 - pre.Alpha - 2022{"\n"}
                                 Build by BKDN Informatics Olympic {"&"} ICPC Team{"\n"}
                                 University of Science and Technology - University of Danang{"\n"}
                             </pre>

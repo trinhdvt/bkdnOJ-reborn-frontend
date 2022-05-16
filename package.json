@@ -1,7 +1,7 @@
 {
   "name": "bkdnoj",
-  "homepage": "https://bkdn-university.github.io/bkdnOJ-reborn-frontend/",
-  "version": "0.1.0",
+  "homepage": "",
+  "version": "0.4.0",
   "private": true,
   "dependencies": {
     "@react-pdf-viewer/core": "^3.3.2",
