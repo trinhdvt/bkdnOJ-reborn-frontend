@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.da820eb9.css",
-    "main.js": "/static/js/main.a7695e70.js",
+    "main.js": "/static/js/main.ec81aa8b.js",
     "static/media/bkdn-uni-flag.png": "/static/media/bkdn-uni-flag.6093ea649f2018e006cf.png",
     "static/media/bkdn-uni-icon-white.png": "/static/media/bkdn-uni-icon-white.361ade9a004daed664ca.png",
     "static/media/bkdnoj-dropflag.png": "/static/media/bkdnoj-dropflag.44da85845554beb21edc.png",
@@ -9,10 +9,10 @@
     "static/media/loading.gif": "/static/media/loading.ee4bc3452e905326fc76.gif",
     "index.html": "/index.html",
     "main.da820eb9.css.map": "/static/css/main.da820eb9.css.map",
-    "main.a7695e70.js.map": "/static/js/main.a7695e70.js.map"
+    "main.ec81aa8b.js.map": "/static/js/main.ec81aa8b.js.map"
   },
   "entrypoints": [
     "static/css/main.da820eb9.css",
-    "static/js/main.a7695e70.js"
+    "static/js/main.ec81aa8b.js"
   ]
 }
