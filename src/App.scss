@@ -11,7 +11,7 @@ body {
   // background-color: $background-gray;
   // min-height: 800px;
   background-color: $base;
-  min-width: 400px;
+  min-width: 360px;
   height: 100%;
 }
 
@@ -24,41 +24,20 @@ h1, h2, h3, h4, h5 {
   color: $base;
 }
 
-.content-wrapper {
+button.btn-svg {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-items: center;
+  column-gap: 5px;
+}
 
-  // border: solid 2px $base;
-  // border-radius: 3px;
-  // margin-top: 20px;
-  // margin-bottom: 20px;
-	background: linear-gradient(to bottom,
-    $background-gray 0%, $background-gray 10%,
-    $sub 60%, $sub 100%
-  );
-  text-align: center;
-  background-repeat:space;
-  
-  .content {
-    margin: 30px 0;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    text-align: center;
+label.required {
+  white-space: pre;
+  font-weight: bold;
+  &::after {
+    content: "*";
+    color: red;
   }
-}
-
-.react-icons {
-  // vertical-align: middle;
-  margin-right: 5px;
-}
-
-label.required::after {
-  content: "*";
-  color: red;
 }
 
 ::-webkit-scrollbar {
@@ -107,6 +86,17 @@ label.required::after {
 .btn-outline-dark {
   @include button-outline-variant($base, #222222, lighten($base,5%), $base);
   color: $sub;
+}
+.btn-light {
+  @include button-variant($sub, darken($sub, 7.5%), darken($sub, 10%), lighten($sub,5%), lighten($sub, 10%), darken($sub,30%));
+  color: $base;
+  &:hover, &:focus {
+    color: $base;
+  }
+}
+.btn-outline-light {
+  @include button-outline-variant($sub, #222222, lighten($sub,5%), $sub);
+  color: $base;
 }
 
 @-webkit-keyframes rotating /* Safari and Chrome */ {

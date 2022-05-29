@@ -12,8 +12,12 @@ const signUp = (data) => {
     return axiosClient.post('/sign-up/', JSON.stringify(data));
 }
 
+const whoAmI = () => {
+    return axiosClient.get('/verify/')
+}
+
 const AuthAPI = {
-    signIn, signOut, signUp
+    signIn, signOut, signUp, whoAmI
 };
 
 export default AuthAPI;

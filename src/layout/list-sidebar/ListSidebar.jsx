@@ -1,5 +1,7 @@
 import React from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
+import { BiArrowFromRight, BiArrowFromLeft } from 'react-icons/bi';
+
 import { log } from 'helpers/logger';
 
 import './ListSidebar.scss';
@@ -22,7 +24,7 @@ class Offcanvas extends React.Component {
 
         <div className="offcanvasCloseBtn-wrapper">
           <Button id="offcanvasCloseBtn" className="offcanvasCloseBtn btn-dark hidden" onClick={() => this.props.closeCanvas()}>
-            ⭲
+            <BiArrowFromLeft />
           </Button>
         </div>
       </div>
@@ -76,7 +78,7 @@ export default class ListSidebar extends React.Component {
               { mainContent }
               <div className="offcanvasOpenBtn-wrapper">
                 <Button className="offcanvasOpenBtn btn-dark d-block d-md-none" onClick={() => this.toggle()}>
-                  ⭰
+                  <BiArrowFromRight />
                 </Button>
               </div>
             </div>

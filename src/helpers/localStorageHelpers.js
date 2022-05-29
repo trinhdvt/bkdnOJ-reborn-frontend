@@ -1,6 +1,7 @@
 import { 
     LS_ACCESS_TOKEN, LS_AUTH_USER, 
-    LS_REFRESH_TOKEN, LS_CODE_EDITOR 
+    LS_REFRESH_TOKEN, LS_CODE_EDITOR,
+    LS_GEN_USER_CSV_LOG,
 } from "constants/localStorageKeys";
 
 export function __ls_set_access_token(token) {
@@ -40,4 +41,11 @@ export function __ls_set_code_editor(code) {
 }
 export function __ls_remove_code_editor() {
     localStorage.removeItem(LS_CODE_EDITOR)
+}
+
+export function __ls_get_user_csv_log() {
+    return localStorage.getItem(LS_GEN_USER_CSV_LOG) || []
+}
+export function __ls_set_user_csv_log(arr) {
+    localStorage.setItem(LS_GEN_USER_CSV_LOG, arr || [])
 }

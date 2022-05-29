@@ -18,11 +18,18 @@
         font-size: 12px;
         color: $red-light
     }
+    font-family: $font-subscript;
+
+    div.errors-general-text {
+        font-weight: bold;
+        text-align: center;
+        margin: 5px 0;
+        padding: 3px;
+    }
     p {
-        font-family: $font-subscript;
+        font-weight: 100;
     }
     h5 {
-        font-family: $font-subscript;
         font-weight: bold;
     }
 }

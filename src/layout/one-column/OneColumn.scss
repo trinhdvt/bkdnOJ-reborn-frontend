@@ -1,0 +1,18 @@
+@import 'global.scss';
+
+.main-component {
+  padding: unset;
+}
+
+.one-column-wrapper {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  .main-component {
+    background-color: $sub;
+    border: solid 2px $base;
+    // height: 100%;
+  }
+}

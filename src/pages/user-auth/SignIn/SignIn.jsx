@@ -11,6 +11,7 @@ import ErrorBox from 'components/ErrorBox/ErrorBox';
 import './SignIn.scss';
 
 import { __ls_set_access_token, __ls_set_refresh_token } from 'helpers/localStorageHelpers';
+import { setTitle } from 'helpers/setTitle';
 import { log } from 'helpers/logger';
 
 export default class SignIn extends React.Component {
@@ -23,6 +24,7 @@ export default class SignIn extends React.Component {
             errors: null,
             redirect: false,
         }
+        setTitle('Sign In')
     }
 
     usernameChangeHandler(newUsername) {

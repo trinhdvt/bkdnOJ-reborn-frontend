@@ -6,6 +6,9 @@ const getSubmissions = (params) => {
 const getSubmissionDetails = ({id}) => {
     return axiosClient.get(`/submission/${id}`);
 }
+const adminDeleteSubmission = ({id}) => {
+    return axiosClient.delete(`/submission/${id}`);
+}
 const getSubmissionResult = ({id}) => {
     return axiosClient.get(`/submission/${id}/testcase`);
 }
@@ -18,6 +21,8 @@ const submissionApi = {
     getSubmissionDetails,
     getSubmissionResult,
     getSubmissionResultCase,
+
+    adminDeleteSubmission,
 }
 
 export default submissionApi;

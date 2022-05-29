@@ -9,6 +9,7 @@ import ErrorBox from 'components/ErrorBox/ErrorBox';
 
 import './SignUp.scss';
 
+import { setTitle } from 'helpers/setTitle';
 import { log } from 'helpers/logger';
 
 export default class SignUp extends React.Component {
@@ -23,6 +24,7 @@ export default class SignUp extends React.Component {
             errors: null,
             redirect: false,
         }
+        setTitle('Sign Up');
     }
     updateSubmitted(bool) {
         this.setState({submitted: bool});

@@ -53,9 +53,9 @@ export default class Footer extends React.Component {
                                     <a href="https://codeforces.com/">Codeforces</a>
                                     <a href="https://atcoder.jp/">AtCoder</a>
                                     <a href="https://dmoj.ca/">DMOJ</a>
-                                    <a href="https://onlinejudge.org/index.php">UVa OJ</a>
+                                    <a href="https://onlinejudge.org/index.php">UVaOJ</a>
                                     <a href="https://oj.vnoi.info/">VNOJ</a>
-                                    <a href="https://onlinejudge.u-aizu.ac.jp/home">Aizu OJ</a>
+                                    <a href="https://onlinejudge.u-aizu.ac.jp/home">AizuOJ</a>
                                     <a href="https://lqdoj.edu.vn/">LQDOJ</a>
                                     <a href="http://ntucoder.net/">NtuCoder</a>
                                 </p>
