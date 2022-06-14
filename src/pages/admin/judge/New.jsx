@@ -11,7 +11,7 @@ import { ErrorBox } from 'components';
 
 import './Details.scss';
 
-const JUDGE_PROPS = ['name', 'auth_key', 'description', 'last_ip', 'ping', 'load', 'problems', 'runtimes', 'start_time']
+const JUDGE_PROPS = ['name', 'auth_key', 'description', 'is_blocked']
 
 class AdminJudgeNew extends React.Component {
   constructor(props) {
@@ -55,12 +55,9 @@ class AdminJudgeNew extends React.Component {
     let cleanedData = {}
     JUDGE_PROPS.forEach((key) => {
       const v = this.state.data[key];
-      if (v && 
-        ( ((v instanceof Array) || (v instanceof String) || (typeof v === 'string')) && v.length > 0)
-      ) cleanedData[key] = v;
+      cleanedData[key] = v;
     })
-    
-    console.log(cleanedData)
+
     judgeAPI.adminCreateJudge({data: cleanedData})
     .then((res) => {
       toast.success(`OK Created.`)
@@ -76,13 +73,13 @@ class AdminJudgeNew extends React.Component {
   }
 
   render() {
-    if (this.state.redirectUrl) 
+    if (this.state.redirectUrl)
       return ( <Navigate to={`${this.state.redirectUrl}`} /> )
-    
+
     const { data } = this.state;
 
     return (
-      <div className="admin judge-panel">
+      <div className="admin judge-panel wrapper-vanilla">
         <h4 className="judge-title">
           <div className="panel-header">
               <span className="title-text">{`Creating Judge`}</span>
@@ -102,7 +99,7 @@ class AdminJudgeNew extends React.Component {
             <Row>
               <Form.Label column="sm" lg={2} className="required"> Name </Form.Label>
               <Col> <Form.Control size="sm" type="text" placeholder="Judge Name" id="name"
-                      value={data.name || ''} onChange={(e)=>this.inputChangeHandler(e)} required 
+                      value={data.name || ''} onChange={(e)=>this.inputChangeHandler(e)} required
               /></Col>
               <Form.Label column="sm" lg={2}> Auth Key </Form.Label>
               <Col> <Form.Control size="sm" type="text" placeholder="Judge Authentication key" id="auth_key"
@@ -118,7 +115,8 @@ class AdminJudgeNew extends React.Component {
               <Form.Label column="sm" > Online </Form.Label>
               <Col > <Form.Control size="sm" type="checkbox" id="online"
                       checked={data.online || false}
-                      onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
+                      // onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
+                      readOnly disabled
               /></Col>
               <Form.Label column="sm" > Is Blocked? </Form.Label>
               <Col > <Form.Control size="sm" type="checkbox" id="is_blocked"
@@ -129,22 +127,30 @@ class AdminJudgeNew extends React.Component {
             <Row>
               <Form.Label column="sm" md={2}> Start Time </Form.Label>
               <Col> <Form.Control size="sm" type="datetime-local" id="start_time"
-                      value={this.getStartTime()} onChange={(e)=>this.setStartTime(e.target.value)}
+                      value={this.getStartTime()}
+                      // onChange={(e)=>this.setStartTime(e.target.value)}
+                      readOnly disabled
               /></Col>
               <Form.Label column="sm" md={2}> Last IP </Form.Label>
               <Col> <Form.Control size="sm" type="text" id="last_ip"
-                      value={data.last_ip || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                      value={data.last_ip || ''}
+                      // onChange={(e)=>this.inputChangeHandler(e)}
+                      readOnly disabled
               /></Col>
             </Row>
 
             <Row>
               <Form.Label column="sm" md={2}> Ping </Form.Label>
               <Col > <Form.Control size="sm" type="text" id="ping"
-                      value={data.ping || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                      value={data.ping || ''}
+                      // onChange={(e)=>this.inputChangeHandler(e)}
+                      readOnly disabled
               /></Col>
               <Form.Label column="sm" md={2}> Load </Form.Label>
               <Col> <Form.Control size="sm" type="text" id="load"
-                      value={data.load || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                      value={data.load || ''}
+                      // onChange={(e)=>this.inputChangeHandler(e)}
+                      readOnly disabled
               /></Col>
             </Row>
 
@@ -168,7 +174,7 @@ class AdminJudgeNew extends React.Component {
                 <sub>**Các thiết lập khác sẽ được thêm sau.</sub>
               </Col>
               <Col >
-                <Button variant="dark" size="sm" type="submit" className="mb-1">
+                <Button variant="dark" size="sm" type="submit" >
                   Save
                 </Button>
               </Col>

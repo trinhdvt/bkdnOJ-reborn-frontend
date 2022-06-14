@@ -6,8 +6,12 @@ import { Table } from 'react-bootstrap';
 
 import { SpinLoader, ErrorBox } from 'components';
 import submissionApi from 'api/submission';
+import contestApi from 'api/contest';
 import dateFormatter from 'helpers/dateFormatter';
 import { setTitle } from 'helpers/setTitle';
+
+// Contexts
+import ContestContext from 'context/ContestContext';
 
 import './SubmissionList.scss'
 import 'styles/ClassicPagination.scss';
@@ -52,7 +56,7 @@ class SubListItem extends React.Component {
         <td className="text-truncate">
           <Link to={`/submission/${id}`}>{id}</Link>
         </td>
-        <td className="text-truncate" style={{maxWidth: "200px"}}>
+        <td className="text-truncate" style={{maxWidth: "100px"}}>
           <Link to={`/problem/${problem.shortname}`}>{problem.title}</Link>
         </td>
         <td className="text-truncate" >
@@ -76,9 +80,13 @@ class SubListItem extends React.Component {
 }
 
 class SubmissionList extends React.Component {
+  static contextType = ContestContext;
+
   constructor(props) {
     super(props);
     this.state = {
+      contest: null,
+
       submissions: [],
       currPage: 0,
       pageCount: 1,
@@ -91,26 +99,52 @@ class SubmissionList extends React.Component {
   callApi(params) {
     this.setState({loaded: false, errors: null})
 
-    submissionApi.getSubmissions({page: params.page+1})
-      .then((res) => {
-        this.setState({
-          submissions: res.data.results,
-          count: res.data.count,
-          pageCount: res.data.total_pages,
-          currPage: params.page,
-          loaded: true,
+    if (this.state.contest) {
+      contestApi.getContestSubmissions({ key: this.state.contest.key, page: params.page+1
+      }).then((res) => {
+          this.setState({
+            submissions: res.data.results,
+            count: res.data.count,
+            pageCount: res.data.total_pages,
+            currPage: params.page,
+            loaded: true,
+          })
         })
-      })
-      .catch((err) => {
-        this.setState({
-          loaded: true,
-          errors: ["Cannot fetch submissions at the moment. Please retry again."],
+        .catch((err) => {
+          this.setState({
+            loaded: true,
+            errors: ["Cannot fetch submissions at the moment."],
+          })
         })
-      })
+    } else {
+      submissionApi.getSubmissions({page: params.page+1})
+        .then((res) => {
+          this.setState({
+            submissions: res.data.results,
+            count: res.data.count,
+            pageCount: res.data.total_pages,
+            currPage: params.page,
+            loaded: true,
+          })
+        })
+        .catch((err) => {
+          this.setState({
+            loaded: true,
+            errors: ["Cannot fetch submissions at the moment."],
+          })
+        })
+    }
   }
 
   componentDidMount() {
-    this.callApi({page: this.state.currPage});
+    const contest = this.context.contest;
+    if (contest) {
+      setTitle(`${contest.name} | Submissions`)
+      this.setState({ contest },
+        () => this.callApi({page: this.state.currPage})
+      )
+    } else this.callApi({page: this.state.currPage})
+
   }
 
   handlePageClick = (event) => {
@@ -118,10 +152,12 @@ class SubmissionList extends React.Component {
   }
 
   render() {
+    const {loaded, errors, count } = this.state;
+
     return (
-      <div className="submission-table">
-        <h4>Public Submission</h4>
-        <ErrorBox errors={this.state.errors} />
+      <div className="submission-table wrapper-vanilla">
+        <h4>Submissions</h4>
+        <ErrorBox errors={errors} />
         <Table responsive hover size="sm" striped bordered className="rounded">
           <thead>
             <tr>
@@ -136,12 +172,19 @@ class SubmissionList extends React.Component {
           </thead>
           <tbody>
             {
-              this.state.loaded === false
+              !loaded
                 ? <tr><td colSpan="7"><SpinLoader margin="10px" /></td></tr>
-                : this.state.submissions.map((sub, idx) => <SubListItem
-                    key={`sub-${sub.id}`}
-                    rowid={idx} {...sub}
-                  />)
+                :
+                (
+                  !errors && <> {
+                    this.state.count > 0
+                      ? this.state.submissions.map((sub, idx) => <SubListItem
+                          key={`sub-${sub.id}`}
+                          rowid={idx} {...sub}
+                        />)
+                      : <tr><td colSpan={7}><em>No Submissions Yet.</em></td></tr>
+                    }</>
+                )
             }
           </tbody>
         </Table>
@@ -165,6 +208,8 @@ class SubmissionList extends React.Component {
   }
 }
 
+
 export {
   SubmissionList,
+  SubListItem
 }

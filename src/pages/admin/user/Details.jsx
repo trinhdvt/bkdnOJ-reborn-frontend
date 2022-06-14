@@ -109,13 +109,13 @@ class AdminJudgeDetails extends React.Component {
     const {loaded, errors, data} = this.state;
 
     return (
-      <div className="admin user-panel">
+      <div className="admin user-panel wrapper-vanilla">
         <h4 className="user-title">
           { !loaded && <span><SpinLoader/> Loading...</span>}
           { loaded && !!errors && <span>Something went wrong.</span>}
           { loaded && !errors && <div className="panel-header">
               <span className="title-text">{`Viewing user. ${data.username}`}</span>
-              <span>
+              <span className="d-flex">
                 <Button className="btn-svg" size="sm" variant="danger"
                   onClick={()=>this.deleteObjectHandler()}>
                     <FaRegTrashAlt/><span className="d-none d-md-inline">Delete</span>
@@ -189,7 +189,7 @@ class AdminJudgeDetails extends React.Component {
                   <sub>**Các thiết lập khác sẽ được thêm sau.</sub>
                 </Col>
                 <Col >
-                  <Button variant="dark" size="sm" type="submit" className="mb-1">
+                  <Button variant="dark" size="sm" type="submit" className="">
                     Save
                   </Button>
                 </Col>

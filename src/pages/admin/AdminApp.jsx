@@ -34,7 +34,7 @@ class AdminApp extends React.Component {
     authAPI.whoAmI()
     .then((res) => {
       const user = res.data && res.data.user;
-      if (user.is_staff || user.is_superuser) 
+      if (user.is_staff || user.is_superuser)
         this.setState({authorized: true, loaded: true})
     })
     .catch((err) => {
@@ -56,7 +56,8 @@ class AdminApp extends React.Component {
             <Button variant="light" onClick={() => this.hideSidebar()}
               id="sidebar-toggle-btn"
             ><VscThreeBars /></Button>
-            <span>Hello</span>
+
+            <span></span>
           </div>
           <Container id="admin-panel-container">
             <Outlet/>

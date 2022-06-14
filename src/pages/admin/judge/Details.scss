@@ -12,7 +12,7 @@ div.admin.judge-panel {
   .panel-header {
     display: inline-flex;
     width: 100%;
-    
+
     span.title-text {
       flex-grow: 1;
     }
@@ -27,6 +27,10 @@ div.admin.judge-panel {
 
   .col {
     text-align: left;
+  }
+
+  input[type="checkbox"] {
+    min-width: 20px;
   }
 
   .accordion-item {

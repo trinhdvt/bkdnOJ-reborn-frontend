@@ -122,7 +122,7 @@ class JudgeStatuses extends React.Component {
 
     return (
       <>
-      <div className="judge-table">
+      <div className="judge-table wrapper-vanilla">
         <h4>Judge Status</h4>
         <ErrorBox errors={this.state.errors} />
         <Table responsive hover size="sm" striped bordered className="rounded">
@@ -162,15 +162,14 @@ class JudgeStatuses extends React.Component {
                 nextLabel={null}
                 /></span>
         }
-      </div>
-
-      <div className="judge-table text-left">
-        <h4>Available Runtime</h4>
-        <ul>
-          {
-            avaiRuntime.map((runtime, idx) => <li key={idx}>{runtime}</li>)
-          }
-        </ul>
+        <div className="judge-table text-left">
+          <h4>Available Runtime</h4>
+          <ul>
+            {
+              avaiRuntime.map((runtime, idx) => <li key={idx}>{runtime}</li>)
+            }
+          </ul>
+        </div>
       </div>
       </>
     )

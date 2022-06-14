@@ -21,7 +21,7 @@ class SubmitModalResult extends React.Component {
     }
   }
 
-  pollResult() { 
+  pollResult() {
     if (shouldStopPolling(this.state.data.status)) {
       clearInterval(this.timer)
       return;
@@ -52,9 +52,14 @@ class SubmitModalResult extends React.Component {
   }
 
   render() {
+    const {subErrors} = this.props;
+    if (subErrors)
+      return <div className="note">{subErrors}</div>
+
     const {subId, data} = this.state;
     if (subId === null || data.status === '...')
       return <div className="note loading_3dot">Submitting</div>
+
     if (data.status === 'QU')
       return <div className="note loading_3dot">Queuing</div>
     if (data.status === 'P')
@@ -101,29 +106,39 @@ export default class SubmitModal extends React.Component {
     super(props);
     this.state = {
       subId: null,
+      errors: null,
       redirect: false,
       submitting: false,
     }
   }
-  setSubId(id) {
-    this.setState({subId : id})
+  setErrors(err) { this.setState({ errors: err }) }
+  setSubId(id) { this.setState({subId : id}) }
+
+  onHide() {
+    this.setState({ subId: null, submitting: false })
+    this.props.onHide()
   }
 
   render() {
+    const { contest } = this.props;
+
     if (!!this.state.redirect && !!this.state.subId) {
-      return <Navigate to={`/submission/${this.state.subId}`} />
+      if (contest)
+        return <Navigate to={`/contest/${contest.key}/submission/${this.state.subId}`} />
+      else
+        return <Navigate to={`/submission/${this.state.subId}`} />
     }
 
     return (
-      <Modal show={this.props.show} 
-          onHide={() => this.props.onHide()}
+      <Modal show={this.props.show}
+          onHide={() => this.onHide()}
           className="submit-modal"
           backdrop="static"
           keyboard={false}
         >
         <Modal.Header >
           <Modal.Title>
-            {"Instant Submit "}
+            {`Submit ${contest ? `to ${contest.key}`:""}`}
             <BsFillLightningChargeFill size={20}/>
           </Modal.Title>
         </Modal.Header>
@@ -131,8 +146,10 @@ export default class SubmitModal extends React.Component {
         <Modal.Body>
           <SubmitForm
             prob={this.props.prob} lang={this.props.lang}
+            contest={this.props.contest}
             submitting={this.state.submitting}
             setSubId={(subId) => this.setSubId(subId)}
+            setSubErrors={(err) => this.setErrors(err)}
           />
         </Modal.Body>
 
@@ -141,30 +158,30 @@ export default class SubmitModal extends React.Component {
           {
             !this.state.submitting
             ? <>
-              <div style={{height: "100%", width: "auto", margin: "auto", 
+              <div style={{height: "100%", width: "auto", margin: "auto",
                 display: "flex", verticalAlign: "center"}}>
                 <BsExclamationCircle />
               </div>
-              <span className="warning">This editor only store your most recent code. 
+              <span className="warning">This editor only store your most recent code.
                 Using multiple editors can cause conflict.</span>
             </>
-            : <SubmitModalResult subId={this.state.subId}/>
+            : <SubmitModalResult subId={this.state.subId} subErrors={this.state.errors}/>
           }
           </div>
 
-          <Button variant="secondary" 
-            onClick={() => this.props.onHide()}>Close</Button>
-          
+          <Button variant="secondary"
+            onClick={() => this.onHide()}>Close</Button>
+
           {
             this.state.subId === null
             ? <Button variant="dark"
-                onClick={() => this.setState({submitting: true})}
+                onClick={() => this.setState({ submitting: true })}
                 disabled={this.state.submitting}
               >
                 {"Submit "}<FaPaperPlane size={12}/>
               </Button>
             : <Button variant="dark"
-                onClick={() => this.setState({redirect: true})}
+                onClick={() => this.setState({ redirect: true })}
               >
                 {"Details "}<FaExternalLinkAlt size={12}/>
               </Button>

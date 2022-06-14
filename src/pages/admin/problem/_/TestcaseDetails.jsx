@@ -11,8 +11,8 @@ class ButtonPanel extends React.Component {
     return (
       <Row className="button-panel">
         <Col >
-          <Button variant="dark" size="sm" type="submit" className="m-1">
-            Save
+          <Button variant="dark" size="sm" type="submit" disabled>
+            No Op
           </Button>
         </Col>
       </Row>
@@ -23,9 +23,9 @@ class ButtonPanel extends React.Component {
 class TestcaseItem extends React.Component {
   render() {
     const {
-      rowidx, 
+      rowidx,
       id, order, input_file, output_file, points, is_pretest,
-      onPretestToggle, 
+      onPretestToggle,
       isSelected, onSelectChkChange
     } = this.props;
 
@@ -75,7 +75,7 @@ export default class TestcaseDetails extends React.Component {
       })
     }
   }
-  
+
   pretestToggleHandler(id) {
     const testcases = this.state.data;
     let sel = testcases.find(tc => tc.id === id)
@@ -91,18 +91,23 @@ export default class TestcaseDetails extends React.Component {
     const {shortname} = this.state;
     problemAPI.adminGetProblemDetailsTest({shortname})
       .then((res) => {
-        this.setState({ 
+        this.setState({
           data: res.data,
           selectChk: Array(res.data.length).fill(false),
           loaded: true,
           errors: null,
         })
       }).catch((err) => {
-        this.setState({ 
+        this.setState({
           loaded: true,
           errors: ['Cannot fetch testcases for this problem. Has it been deleted?']
         })
       })
+  }
+
+  formSubmitHandler(e) {
+    e.preventDefault();
+    alert('Editing this resource is not implemented.');
   }
 
   render() {
@@ -110,7 +115,7 @@ export default class TestcaseDetails extends React.Component {
     const testcases = data;
 
     return (
-      <Form id="problem-testcase-form">
+      <Form id="problem-testcase-form" onSubmit={(e) => this.formSubmitHandler(e)}>
         <Accordion defaultActiveKey="0">
           {/* General Settings */}
           <Accordion.Item eventKey="0" className="testcases">

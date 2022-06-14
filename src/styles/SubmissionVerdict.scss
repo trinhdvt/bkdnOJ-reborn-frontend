@@ -5,23 +5,23 @@
   font-family: $font-codeforces;
 
   &.ac {
-    color: $accepted;
+    color: $accepted !important;
   }
 
   &.wa, &.tle, &.mle, &.ole {
-    color: $not-accepted;
+    color: $not-accepted !important;
   }
 
   &.ir, &.rte {
-    color: $runtime-error;
+    color: $runtime-error !important;
   }
 
   &.qu, &.g, &.p, &.sc {
-    color: $queued;
+    color: $queued !important;
   }
 
   &.ie, &.ce {
-    color: $system-error;
+    color: $system-error !important;
   }
 
   @media (min-width: 768px) {

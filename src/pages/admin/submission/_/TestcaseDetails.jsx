@@ -14,7 +14,7 @@ class ButtonPanel extends React.Component {
           <sub>**Chưa thể chỉnh sửa.</sub>
         </Col>
         <Col >
-          <Button variant="dark" size="sm" type="submit" className="mb-1" disabled>
+          <Button variant="dark" size="sm" type="submit" disabled>
             No Op
           </Button>
         </Col>

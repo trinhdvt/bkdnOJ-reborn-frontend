@@ -10,7 +10,7 @@
 
     border: solid 1px $red;
     background-color: $red-lighter;
-    
+
     text-align: left;
 
     * {
@@ -29,7 +29,10 @@
     p {
         font-weight: 100;
     }
-    h5 {
+    .error-sub-title {
         font-weight: bold;
+        font-family: $font-subscript;
+        color: $red-light;
+        background-color: unset;
     }
 }

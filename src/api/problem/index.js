@@ -2,14 +2,14 @@ import axiosClient from "api/axiosClient";
 import axiosFormClient from 'api/axiosFormClient';
 import {getConnectionUrl} from 'api/urls';
 
-const getProblems = (params) => {
+const getProblems = ({ params }) => {
     return axiosClient.get('/problem/', (params && { params: {...params} }));
 }
 const getProblemDetails = ({shortname}) => {
     return axiosClient.get(`/problem/${shortname}`);
 }
-const submitToProblem = ({name, data}) => {
-    return axiosClient.post(`/problem/${name}/submit/`, JSON.stringify(data));
+const submitToProblem = ({shortname, data}) => {
+    return axiosClient.post(`/problem/${shortname}/submit/`, JSON.stringify(data));
 }
 
 const adminOptionsProblemDetails = ({shortname}) => {
@@ -43,6 +43,7 @@ const adminGetProblemDetailsTest = ({shortname, params}) => {
 const problemAPI = {
     getProblems,
     getProblemDetails,
+
     submitToProblem,
     adminOptionsProblemDetails,
 

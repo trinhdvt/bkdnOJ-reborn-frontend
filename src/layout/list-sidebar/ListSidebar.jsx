@@ -15,11 +15,11 @@ class Offcanvas extends React.Component {
       <div id="offcanvas" className="offcanvas">
         {
           sideComponents.map( (comp, indx) => (
-            <div key={`side-component-${indx}`} 
+            <div key={`side-component-${indx}`}
               className="side-component rounded">
               {comp}
             </div>
-          ))  
+          ))
         }
 
         <div className="offcanvasCloseBtn-wrapper">
@@ -61,12 +61,12 @@ export default class ListSidebar extends React.Component {
       <div className="list-sidebar-wrapper">
         <Row>
           <div className="d-block d-md-none">
-            <OutsideAlerter 
-              children={ 
-                <Offcanvas 
+            <OutsideAlerter
+              children={
+                <Offcanvas
                   closeCanvas={() => this.close()}
                   sideComponents={sideComponents}
-                /> 
+                />
               }
               isDetecting={this.state.offcanvasShow}
               outsideClickHandler={() => this.close()}
@@ -74,8 +74,9 @@ export default class ListSidebar extends React.Component {
           </div>
 
           <Col md={8}>
-            <div className="offcanvas-menu main-component shadow rounded" id="offcanvas-menu">
+            <div className="offcanvas-menu" id="offcanvas-menu">
               { mainContent }
+
               <div className="offcanvasOpenBtn-wrapper">
                 <Button className="offcanvasOpenBtn btn-dark d-block d-md-none" onClick={() => this.toggle()}>
                   <BiArrowFromRight />
@@ -87,24 +88,25 @@ export default class ListSidebar extends React.Component {
           <Col md={4} className="side-bar center d-none d-md-flex">
             {
               sideComponents.map( (comp, indx) => (
-                <div key={`side-component-${indx}`} className="side-component rounded shadow">
-                  {comp}
+                <div key={`side-component-${indx}`} className="">
+                  <div className="side-component">
+                    {comp}
+                  </div>
                 </div>
-              ))  
+              ))
             }
-          </Col> 
+          </Col>
         </Row>
-{/* 
-        <Row className="d-none d-md-flex">
+        {/* <Row className="d-none d-md-flex">
           <Col md={4} className="center">
             {
               sideComponents.map( (comp, indx) => (
                 <div key={`side-component-${indx}`} className="side-component rounded shadow">
                   {comp}
                 </div>
-              ))  
+              ))
             }
-          </Col> 
+          </Col>
         </Row>  */}
       </div>
     )

@@ -8,6 +8,9 @@ import ErrorBox from './ErrorBox/ErrorBox';
 import FileUploader from './FileUploader/FileUploader';
 import CSRFToken from './CSRFToken/CSRFToken';
 
+import ContestSidebar from './ContestSidebar';
+import RecentSubmissionSidebar from './RecentSubmissionSidebar';
+
 export {
     Header,
     Navbar,
@@ -18,4 +21,7 @@ export {
     ErrorBox,
     FileUploader,
     CSRFToken,
+
+    ContestSidebar,
+    RecentSubmissionSidebar,
 };

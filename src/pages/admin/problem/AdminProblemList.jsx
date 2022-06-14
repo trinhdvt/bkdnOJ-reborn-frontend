@@ -147,7 +147,7 @@ class AdminProblemList extends React.Component {
     const {selectedZip, submitting} = this.state;
 
     return (
-      <>
+      <div className="admin admin-problems wrapper-vanilla">
       {/* Options for Admins: Create New,.... */}
       <div className="admin-options">
         <div className="border d-inline-flex p-1" >
@@ -259,7 +259,7 @@ class AdminProblemList extends React.Component {
                 /></span>
         }
       </div>
-      </>
+      </div>
     )
   }
 }

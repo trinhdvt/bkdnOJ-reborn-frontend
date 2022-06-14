@@ -11,20 +11,26 @@ import ScrollToTop from 'helpers/react-router/ScrollToTop';
 // Components
 import { ListSidebar, OneColumn } from 'layout';
 
-import { Content } from 'components';
+import {
+  Content, ContestSidebar,
+  RecentSubmissionSidebar,
+} from 'components';
+
 import PDFViewer from 'components/PDFViewer/PDFViewer';
 
 import { SignIn, SignUp, SignOut, UserProfile } from 'pages';
 import {
-  SubmissionList, SubmissionDetails, ProblemList, 
-  ProblemDetails, JudgeStatuses, Submit
+  SubmissionList, SubmissionDetails, ProblemList,
+  ProblemDetails, JudgeStatuses, Submit,
+  ContestList, ContestApp, ContestStanding,
 } from 'pages/user';
 
 import {
   AdminUserList, AdminUserDetails, AdminUserNew,
-  AdminProblemList, AdminProblemDetails, 
+  AdminProblemList, AdminProblemDetails,
   AdminSubmissionList, AdminSubmissionDetails,
   AdminJudgeList, AdminJudgeDetails, AdminJudgeNew,
+  AdminContestList, AdminContestDetails, AdminContestNew,
   AdminApp
 } from 'pages/admin';
 
@@ -39,30 +45,30 @@ const history = createBrowserHistory({ window });
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      user: (this.props.user && this.props.user.user),
-    }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.user !== this.props.user) {
-      this.setState({user: (this.props.user && this.props.user.user)})
+      this.setState({user: (this.props.user || null) })
     }
   }
 
   isAuthenticated() {
-    return (!!this.state.user)
+    return (!!this.props.user)
   }
+
   isAdmin() {
-    return this.isAuthenticated() && this.state.user.is_staff;
+    return this.isAuthenticated() && this.props.user.is_staff;
   }
 
   render() {
+    // TODO:  If you access the url directly, App won't have time to
+    //        load user => access directly /admin won't work
     return (
       <HistoryRouter history={history}>
         <Routes>
           {
-            this.isAdmin() && 
+            this.isAdmin() &&
             <>
               <Route path="/admin" element={<AdminApp />}>
                 <Route index path="" element={
@@ -102,6 +108,16 @@ class App extends React.Component {
                   <OneColumn mainContent={<AdminSubmissionDetails />} />
                 }/>
 
+                <Route path="contest" element={
+                  <OneColumn mainContent={<AdminContestList />} />
+                }/>
+                <Route exact path="contest/new" element={
+                  <OneColumn mainContent={<AdminContestNew />} />
+                }/>
+                <Route path="contest/:key" element={
+                  <OneColumn mainContent={<AdminContestDetails />} />
+                }/>
+
                 <Route path="judge" element={
                   <OneColumn mainContent={<AdminJudgeList />} />
                 }/>
@@ -128,26 +144,78 @@ class App extends React.Component {
             <Route path="/sign-out" element={<SignOut />} />
             <Route path="/profile" element={<UserProfile />} />
 
-            <Route path="/test/pdf" element={ <PDFViewer /> } />
+            {/* <Route path="/test/pdf" element={ <PDFViewer /> } /> */}
 
             <Route path="/problem" element={
-              <ListSidebar mainContent={<ProblemList />}/>
+              <OneColumn mainContent={<ProblemList />}
+              />
             } />
-            <Route path="/problem/:shortname" 
-              element={<ListSidebar mainContent={<ProblemDetails />} />}
+            <Route path="/problem/:shortname"
+              element={<OneColumn mainContent={<ProblemDetails />}
+                      />}
             />
-            <Route path="/problem/:shortname/submit" 
+            {/* <Route path="/problem/:shortname/submit"
               element={<ListSidebar mainContent={<Submit />} />}
-            />
+            /> */}
 
             <Route path="/submission" element={
-              <ListSidebar mainContent={<SubmissionList />}/>
+              <OneColumn mainContent={<SubmissionList />}
+              />
             } />
             <Route path="/submission/:id" element={
-              <ListSidebar mainContent={<SubmissionDetails />}/>
+              <OneColumn mainContent={<SubmissionDetails />}
+              />
             } />
+
+            {/* ---------------------- CONTEST --------------------------- */}
+            <Route path="/contest" element={
+              <OneColumn mainContent={<ContestList />}
+              />
+            } />
+
+            <Route path="/contest/:key" element={<ContestApp />}>
+              <Route path="problem" element={
+                <ListSidebar
+                  mainContent={
+                    <ProblemList />
+                  }
+                  sideComponents={[<RecentSubmissionSidebar />]}
+                />
+              }/>
+              <Route path="problem/:shortname" element={
+                <ListSidebar
+                  mainContent={
+                    <ProblemDetails />
+                  }
+                  sideComponents={[<RecentSubmissionSidebar />]}
+                />
+              }/>
+              <Route path="submission" element={
+                <ListSidebar
+                  mainContent={
+                    <SubmissionList />
+                  }
+                  sideComponents={[<RecentSubmissionSidebar />]}
+                />
+              }/>
+              <Route path="submission/:id" element={
+                <ListSidebar
+                  mainContent={
+                    <SubmissionDetails />
+                  }
+                  sideComponents={[<RecentSubmissionSidebar />]}
+                />
+              }/>
+              <Route path="standing" element={
+                <ContestStanding />
+              }/>
+              <Route path="" element={<Navigate to="problem" replace />} />
+              <Route path="*" element={<Navigate to="problem" replace />} />
+            </Route>
+
+
             <Route path="/judge-status" element={
-              <ListSidebar mainContent={<JudgeStatuses />}/>
+              <OneColumn mainContent={<JudgeStatuses />}/>
             } />
 
             <Route path="/404" exact element={
@@ -162,7 +230,7 @@ class App extends React.Component {
       </HistoryRouter>
     )
   }
-} 
+}
 const mapStateToProps = state => {
   return {
     user : state.user.user

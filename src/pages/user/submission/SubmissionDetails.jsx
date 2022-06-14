@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 import { Row, Col, Table } from 'react-bootstrap';
 import { FaWrench } from 'react-icons/fa';
+import { VscError } from 'react-icons/vsc';
 
 import submissionAPI from 'api/submission';
 import { SpinLoader } from 'components';
@@ -12,6 +13,7 @@ import { withParams } from 'helpers/react-router'
 import { parseTime, parseMem } from 'helpers/textFormatter';
 import { setTitle } from 'helpers/setTitle'
 
+import { getPollDelay } from 'helpers/polling';
 import { shouldStopPolling } from 'constants/statusFilter';
 
 import './SubmissionDetails.scss';
@@ -44,20 +46,20 @@ class SubmissionDetails extends React.Component {
   constructor(props) {
     super(props);
     const { id } = this.props.params;
-    this.state = { 
-      id: id, 
+    this.state = {
+      id: id,
       loaded: false, errors: null,
-      data: { 
+      data: {
         status: ".",
-      }, 
+      },
     };
-    this.user = (this.props.user.user);
+    this.user = (this.props.user) || null;
   }
 
   fetch() {
     submissionAPI.getSubmissionDetails({id : this.state.id})
       .then((res) => {
-        setTitle(`Submission# ${res.data.id}`)
+        setTitle(`Submission#${res.data.id}`)
         this.setState({ data: res.data, })
       })
       .catch((err) => {
@@ -68,8 +70,10 @@ class SubmissionDetails extends React.Component {
         this.setState({ loaded: true })
       })
   }
-  pollResult() { 
-    if (shouldStopPolling(this.state.data.status)) {
+
+  pollResult() {
+    if (shouldStopPolling(this.state.data.status) || !!this.state.errors) {
+      console.log('Clear?')
       clearInterval(this.timer)
       return;
     }
@@ -79,44 +83,56 @@ class SubmissionDetails extends React.Component {
   componentDidMount() {
     this.fetch();
     if (! shouldStopPolling(this.state.data.status))
-      this.timer = setInterval(() => this.pollResult(), 2000);
+      this.timer = setInterval(() => this.pollResult(), getPollDelay());
   }
 
   componentWillUnmount() {
     clearInterval(this.timer)
   }
 
-  render() { 
+  render() {
     if (this.state.redirectUrl) {
       return <Navigate to={`${this.state.redirectUrl}`} />
     }
 
-    const { data, loaded } = this.state;
+    const { data, loaded, errors, contest } = this.state;
+
+    const isLoggedIn = !!this.user;
+    const isInContest = !!contest;
+    const isSuperuser = isLoggedIn && this.user.is_superuser;
+
     let verdict = 'QU';
-    if (loaded)
+    if (loaded && !errors)
       verdict = (data.status === "D" ? data.result : data.status);
-    const polling = (loaded && !shouldStopPolling(data.status));
+    const polling = (loaded && !errors && !shouldStopPolling(data.status));
 
     return (
-      <div className="submission-info">
-        <h4 className="submission-title"> 
-          { 
-            !loaded ? 
-            <span><SpinLoader/> Loading...</span> : 
-            <span>
-              {`Submission# ${data.id}`}
-              {polling && <div className="loading_3dot"></div>}
-            </span>
-          }
+      <div className="submission-info wrapper-vanilla">
+        <h4 className="submission-title">
+            { !loaded && <span><SpinLoader/> Loading...</span> }
+            { loaded && !!errors && <span>Submission Not Available</span>}
+            { loaded && !errors &&
+              <span>
+                {`Submission#${data.id}`}
+                {polling && <div className="loading_3dot"></div>}
+              </span>
+            }
         </h4>
         <hr/>
         <div className={`submission-details ${loaded && "text-left"}`}>
-          { 
-            !this.state.loaded ? <span><SpinLoader/> Loading...</span> 
-            : <>
+          {
+            !loaded && <span><SpinLoader/> Loading...</span>
+          }{
+            loaded && errors && <>
+              <div className="flex-center-col" style={{ "height": "100px" }}>
+                <VscError size={30} color="red"/>
+              </div>
+            </>
+          }{
+            loaded && !errors && <>
               <div className="general info-subsection">
                 {
-                  (this.user !== null && this.user.is_staff) && 
+                  (!!this.user && this.user.is_staff) &&
                   <div>
                     <h5>Admin Panel</h5>
                     <Row>
@@ -138,14 +154,14 @@ class SubmissionDetails extends React.Component {
                     <span><strong>Problem:</strong>
                       <Link to={`/problem/${data.problem.shortname}`}>
                         { data.problem.title }
-                      </Link> 
+                      </Link>
                     </span>
                   </Col>
                   <Col >
                     <span><strong>Author:</strong>
                       <Link to={`/user/${data.user.owner.username}`}>
                         { data.user.owner.username }
-                      </Link> 
+                      </Link>
                     </span>
                   </Col>
                   <Col >
@@ -160,7 +176,7 @@ class SubmissionDetails extends React.Component {
               <div className="source info-subsection">
                 <h5>Source</h5>
                 <Row><Col>
-                  <CodeEditor 
+                  <CodeEditor
                     code={data.source}
                     onCodeChange={() => {}}
                     ace={data.language_ace}
@@ -175,7 +191,7 @@ class SubmissionDetails extends React.Component {
                   <tbody>
                   {
                     data.test_cases.map(
-                      (test_case) => <SubmissionTestCase 
+                      (test_case) => <SubmissionTestCase
                         key={test_case.id} data={test_case}
                       />
                     )

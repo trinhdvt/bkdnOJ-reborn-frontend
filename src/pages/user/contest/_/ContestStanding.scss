@@ -1,0 +1,86 @@
+@import 'global.scss';
+
+div#contest-standing {
+  table {
+    margin: unset;
+  }
+
+  th, td {
+    vertical-align: middle;
+  }
+
+  th.th-rank, td.td-rank {
+    width: 100px;
+  }
+
+  th.th-participant, td.td-participant {
+    min-width: fit-content;
+    max-width: 300px;
+  }
+
+  td.td-participant {
+    padding-left: 10px;
+    padding-right: 10px;
+    div.participant-container {
+      column-gap: 10px;
+      row-gap: 10px;
+    }
+
+    div.avatar-container {
+      width: 50px;
+      // height: 50px;
+    }
+
+    div.acc-username {
+      width: 100%;
+      font-weight: bold;
+      text-align: left;
+    }
+    div.acc-realname {
+      width: 100%;
+      font-size: 14px;
+      text-align: left;
+    }
+  }
+
+  th.th-score, td.td-score {
+    width: 140px;
+  }
+  th.th-p-best, td.td-p-best {
+    width: 70px;
+  }
+
+  div.rank-display {
+    column-gap: 5px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .points {
+    font-weight: bold;
+    font-size: 1rem;
+
+    &.one-fourth {
+      color: $not-accepted;
+    }
+    &.two-fourth {
+      color: $runtime-error;
+    }
+    &.three-fourth {
+      color: $dark-yellow;
+    }
+    &.four-fourth {
+      color: $accepted;
+    }
+    &.full-points {
+      color: $accepted;
+      // color: lightgreen;
+    }
+
+  }
+  .time {
+    width: 100%;
+    overflow: hidden;
+    font-size: 0.7rem;
+  }
+}

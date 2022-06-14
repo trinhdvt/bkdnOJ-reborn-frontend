@@ -1,8 +1,11 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import { Navigate } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+
+import { updateUser, clearUser } from 'redux/User/actions';
 
 import authClient from 'api/auth';
 import SpinLoader from 'components/SpinLoader/SpinLoader';
@@ -10,11 +13,14 @@ import ErrorBox from 'components/ErrorBox/ErrorBox';
 
 import './SignIn.scss';
 
-import { __ls_set_access_token, __ls_set_refresh_token } from 'helpers/localStorageHelpers';
+import {
+    __ls_set_access_token, __ls_set_refresh_token, __ls_set_auth_user,
+} from 'helpers/localStorageHelpers';
+
 import { setTitle } from 'helpers/setTitle';
 import { log } from 'helpers/logger';
 
-export default class SignIn extends React.Component {
+class SignIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -48,24 +54,22 @@ export default class SignIn extends React.Component {
         }
         this.updateSubmitted(true);
 
-        const data = this.state;
+        const data = {username: this.state.username, password: this.state.password};
         const parent = this;
         toast.promise(
-            authClient.signIn(data)
-            ,{
+            authClient.signIn(data), {
                 pending: {
                     render(){ return 'Signing in...' },
-                },
-                success: {
-                    render({data}){ 
+                }, success: {
+                    render({data}){
                         __ls_set_access_token(data.data.access)
                         __ls_set_refresh_token(data.data.refresh)
-                        parent.setState({ redirect: true });
-                        return 'Welcome back.'; 
+                        __ls_set_auth_user(data.data.user);
+                        parent.props.updateUser(data.data.user)
+                        return 'Welcome back.';
                     },
-                },
-                error: {
-                    render({data}){ 
+                }, error: {
+                    render({data}){
                         parent.updateErrors(data.response.data);
                         return 'Sign-in Failed!';
                     }
@@ -79,8 +83,8 @@ export default class SignIn extends React.Component {
         const LEFT_COL = 3;
         const RIGHT_COL = 12 - LEFT_COL;
 
-        if (redirect)
-            return <Navigate to='/profile' />
+        if (this.props.user)
+            return <Navigate to='/profile' replace />
 
         return (
             <Form className="sign-in-form shadow rounded" onSubmit={(e) => this.submitHandler(e)}>
@@ -119,3 +123,17 @@ export default class SignIn extends React.Component {
         )
     }
 }
+
+const mapStateToProps = state => {
+  return {
+    user: state.user.user,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    updateUser: (user) => dispatch(updateUser({ user })),
+    clearUser: () => dispatch(clearUser()),
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

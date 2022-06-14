@@ -1,0 +1,75 @@
+@import 'global.scss';
+
+div#recent-submission-sidebar {
+  overflow: hidden !important;
+  div.table-responsive {
+    overflow: hidden;
+  }
+
+  table {
+    td {
+      font-weight: 100;
+    }
+    td.prod {
+      font-size: 12px;
+    }
+    th, td {
+      width: auto;
+      font-size: 14px;
+      vertical-align: middle;
+      word-break: keep-all;
+
+      &.subid {
+        min-width: 30px;
+      }
+      &.prob {
+        max-width: 20px;
+      }
+      &.verdict {
+        max-width: 40px;
+      }
+      &.responsive-date {
+        div.date {
+          font-size: 10px;
+        }
+        div.time {
+          font-size: 12px;
+        }
+        min-width: 50px;
+      }
+    }
+    @media (min-width: 768px) {
+      th.prob, td.prod {
+        max-width: fit-content;
+      }
+    }
+
+    overflow: hidden !important;
+    margin: unset;
+  }
+
+  .verdict {
+    font-weight: bold;
+    font-family: $font-codeforces;
+
+    &.ac > span {
+      color: $accepted !important;
+    }
+
+    &.wa > span, &.tle > span, &.mle > span, &.ole > span {
+      color: $not-accepted !important;
+    }
+
+    &.ir > span, &.rte > span {
+      color: $runtime-error !important;
+    }
+
+    &.qu > span, &.g > span, &.p > span, &.sc > span {
+      color: $queued !important;
+    }
+
+    &.ie > span, &.ce > span {
+      color: $system-error !important;
+    }
+  }
+}

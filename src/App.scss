@@ -18,10 +18,16 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 h1, h2, h3, h4, h5 {
   color: $base;
+}
+
+a svg {
+  vertical-align: middle;
 }
 
 button.btn-svg {
@@ -40,13 +46,42 @@ label.required {
   }
 }
 
+div.flex-center {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-items: center;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+div.flex-center-col {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+div.wrapper-vanilla {
+  margin: unset;
+  padding: unset;
+  border: solid 2px $base;
+  background-color: $sub;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+  border-radius: 0.25rem !important;
+}
+
 ::-webkit-scrollbar {
   height: 12px;
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.6); 
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
   border-radius: 10px;
   // background: $base;
 }

@@ -65,7 +65,7 @@ class AdminSubmissionDetails extends React.Component {
     const {loaded, errors, data} = this.state;
 
     return (
-      <div className="admin submission-panel">
+      <div className="admin submission-panel wrapper-vanilla">
         <h4 className="submission-title">
           { !loaded && <span><SpinLoader/> Loading...</span>}
           { loaded && !!errors && <span>Something went wrong.</span>}

@@ -29,13 +29,13 @@ class AdminJudgeDetails extends React.Component {
   }
 
   render() {
-    if (this.state.redirectUrl) 
+    if (this.state.redirectUrl)
       return ( <Navigate to={`${this.state.redirectUrl}`} /> )
-    
+
     const {loaded, errors, data} = this.state;
 
     return (
-      <div className="admin user-panel">
+      <div className="admin user-panel wrapper-vanilla">
         <h4 className="user-title">
           <div className="panel-header">
             <span className="title-text">{`Creating User`}</span>

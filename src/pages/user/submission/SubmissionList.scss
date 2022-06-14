@@ -8,12 +8,12 @@
     }
   }
 
-  h4 {
+  h4, h5 {
     margin: unset;
     padding: 4px;
 
     font-size: medium;
-
+    font-weight: bold;
     font-family: $font-codeforces;
     background-color: $background-gray;
   }

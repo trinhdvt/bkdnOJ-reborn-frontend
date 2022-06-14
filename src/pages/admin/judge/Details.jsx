@@ -6,11 +6,13 @@ import { Form, Row, Col, Button } from 'react-bootstrap';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
 import judgeAPI from 'api/judge';
-import { SpinLoader } from 'components';
+import { SpinLoader, ErrorBox } from 'components';
 import { withParams } from 'helpers/react-router'
 import { setTitle } from 'helpers/setTitle';
 
 import './Details.scss';
+
+const JUDGE_PROPS = ['name', 'auth_key', 'description', 'is_blocked']
 
 class AdminJudgeDetails extends React.Component {
   constructor(props) {
@@ -23,8 +25,7 @@ class AdminJudgeDetails extends React.Component {
     };
   }
 
-  componentDidMount() {
-    setTitle(`Admin | Judge#${this.id}`)
+  refetch() {
     judgeAPI.getJudgeDetails({id: this.id})
       .then((res) => {
         this.setState({
@@ -40,6 +41,11 @@ class AdminJudgeDetails extends React.Component {
       })
   }
 
+  componentDidMount() {
+    setTitle(`Admin | Judge#${this.id}`)
+    this.refetch();
+  }
+
   getStartTime() {
     if (this.state.data && this.state.data.start_time) {
       let time = new Date(this.state.data.start_time)
@@ -47,11 +53,6 @@ class AdminJudgeDetails extends React.Component {
       return time.toISOString().slice(0, 16);
     }
     return null;
-  }
-  setStartTime(v) {
-    let time = new Date(v)
-    const data = this.state.data;
-    this.setState({ data : { ...data, start_time: time.toISOString() } });
   }
 
   inputChangeHandler(event, params={isCheckbox: null}) {
@@ -65,9 +66,34 @@ class AdminJudgeDetails extends React.Component {
     this.setState({ data : newData })
   }
 
+  formSubmitHandler(e) {
+    e.preventDefault();
+    const id = this.id;
+    let cleanedData = {}
+
+    JUDGE_PROPS.forEach((key) => {
+      const v = this.state.data[key];
+      cleanedData[key] = v;
+    })
+    console.log(cleanedData)
+
+    judgeAPI.adminEditJudge({id, data: cleanedData})
+    .then((res) => {
+      toast.success(`OK Edited.`)
+      this.refetch();
+    })
+    .catch((err) => {
+      toast.error(`Cannot edit. (${err})`)
+      const data = err.response.data;
+      let errors = {...data}
+      if (data.detail) errors.general = data.detail
+      this.setState({ errors })
+    })
+  }
+
   deleteObjectHandler() {
-    let conf = window.confirm("WARNING!! Block this judge for at least 1 minute before deleting!! "+
-      "Otherwise, running submissions might be deleted and affecting live participants. Do you still want to delete?");
+    let conf = window.confirm("Những bài đang chấm sẽ chuyển trạng thái thành IE và bị hủy chấm, "+
+      "vì vậy hãy block máy chấm tối thiểu 1 phút để tránh hiện tượng này. Bạn có muốn xóa?");
     if (conf) {
       judgeAPI.adminDeleteJudge({id: this.id})
         .then((res) => {
@@ -81,17 +107,16 @@ class AdminJudgeDetails extends React.Component {
   }
 
   render() {
-    if (this.state.redirectUrl) 
+    if (this.state.redirectUrl)
       return ( <Navigate to={`${this.state.redirectUrl}`} /> )
-    
+
     const {loaded, errors, data} = this.state;
 
     return (
-      <div className="admin judge-panel">
+      <div className="admin judge-panel wrapper-vanilla">
         <h4 className="judge-title">
           { !loaded && <span><SpinLoader/> Loading...</span>}
-          { loaded && !!errors && <span>Something went wrong.</span>}
-          { loaded && !errors && <div className="panel-header">
+          { loaded && <div className="panel-header">
               <span className="title-text">{`Viewing judge. ${data.name}`}</span>
               <span>
                 <Button className="btn-svg" size="sm" variant="danger"
@@ -105,8 +130,8 @@ class AdminJudgeDetails extends React.Component {
         <hr/>
         <div className="judge-details">
           { !loaded && <span><SpinLoader/> Loading...</span> }
-
-          { loaded && !errors && <>
+          { loaded && <>
+            <ErrorBox errors={this.state.errors} />
             <Form id="judge-general" onSubmit={(e) => this.formSubmitHandler(e)}>
               <Row>
                 <Form.Label column="sm" xs={2} > ID </Form.Label>
@@ -115,11 +140,11 @@ class AdminJudgeDetails extends React.Component {
                 /></Col>
               </Row>
               <Row>
-                <Form.Label column="sm" lg={2}> Name </Form.Label>
+                <Form.Label column="sm" lg={2} className="required"> Name </Form.Label>
                 <Col> <Form.Control size="sm" type="text" placeholder="Judge Name" id="name"
                         value={data.name || ''} onChange={(e)=>this.inputChangeHandler(e)}
                 /></Col>
-                <Form.Label column="sm" lg={2}> Auth Key </Form.Label>
+                <Form.Label column="sm" lg={2} className="required"> Auth Key </Form.Label>
                 <Col> <Form.Control size="sm" type="text" placeholder="Judge Authentication key" id="auth_key"
                         value={data.auth_key || ''} onChange={(e)=>this.inputChangeHandler(e)}
                 /></Col>
@@ -130,13 +155,19 @@ class AdminJudgeDetails extends React.Component {
               </Row>
 
               <Row>
-                <Form.Label column="sm" > Online </Form.Label>
-                <Col > <Form.Control size="sm" type="checkbox" id="online"
+                <Form.Label column="sm" sm={4}> Online status </Form.Label>
+                <Col sm={2}> <Form.Control size="sm" type="checkbox" id="online"
                         checked={data.online || false}
-                        onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
+                        // onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
+                        disabled
                 /></Col>
-                <Form.Label column="sm" > Is Blocked? </Form.Label>
-                <Col > <Form.Control size="sm" type="checkbox" id="is_blocked"
+                <Form.Label column="sm" sm={4}>
+                  <span className="d-inline" style={{whiteSpace: "nowrap"}}>
+                    Chặn máy chấm này
+                    <Link to="#" onClick={()=>alert('Máy chấm bị chặn sẽ không nhận submission nữa.')}>?</Link>
+                  </span>
+                </Form.Label>
+                <Col sm={2}> <Form.Control size="sm" type="checkbox" id="is_blocked"
                         checked={data.is_blocked || false}
                         onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
                 /></Col>
@@ -144,22 +175,30 @@ class AdminJudgeDetails extends React.Component {
               <Row>
                 <Form.Label column="sm" md={2}> Start Time </Form.Label>
                 <Col> <Form.Control size="sm" type="datetime-local" id="start_time"
-                        value={this.getStartTime()} onChange={(e)=>this.setStartTime(e.target.value)}
+                        value={this.getStartTime() || ''}
+                        // onChange={(e)=>this.setStartTime(e.target.value)}
+                        readOnly disabled
                 /></Col>
                 <Form.Label column="sm" md={2}> Last IP </Form.Label>
                 <Col> <Form.Control size="sm" type="text" id="last_ip"
-                        value={data.last_ip || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                        value={data.last_ip || ''}
+                        // onChange={(e)=>this.inputChangeHandler(e)}
+                        readOnly disabled
                 /></Col>
               </Row>
 
               <Row>
                 <Form.Label column="sm" md={2}> Ping </Form.Label>
                 <Col > <Form.Control size="sm" type="text" id="ping"
-                        value={data.ping || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                        value={data.ping || ''}
+                        // onChange={(e)=>this.inputChangeHandler(e)}
+                        readOnly disabled
                 /></Col>
                 <Form.Label column="sm" md={2}> Load </Form.Label>
                 <Col> <Form.Control size="sm" type="text" id="load"
-                        value={data.load || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                        value={data.load || ''}
+                        // onChange={(e)=>this.inputChangeHandler(e)}
+                        readOnly disabled
                 /></Col>
               </Row>
 
@@ -183,7 +222,7 @@ class AdminJudgeDetails extends React.Component {
                   <sub>**Các thiết lập khác sẽ được thêm sau.</sub>
                 </Col>
                 <Col >
-                  <Button variant="dark" size="sm" type="submit" className="mb-1">
+                  <Button variant="dark" size="sm" type="submit" >
                     Save
                   </Button>
                 </Col>

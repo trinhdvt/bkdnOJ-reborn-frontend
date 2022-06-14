@@ -1,12 +1,15 @@
 import React from 'react';
+import { toast } from 'react-toastify';
 import {Form} from 'react-bootstrap';
 
 import { CodeEditor } from 'components/CodeEditor';
+
+import contestAPI from 'api/contest';
 import problemApi from 'api/problem';
 
 import { DEFAULT_LANG_SHORTNAME } from 'constants/aceEditorMode';
 import {
-  __ls_get_code_editor, __ls_set_code_editor 
+  __ls_get_code_editor, __ls_set_code_editor
 } from 'helpers/localStorageHelpers';
 
 import 'helpers/importAllAceMode';
@@ -40,21 +43,41 @@ export default class SubmitForm extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.submitting !== this.props.submitting) {
+      // Only submit code when submitting changes from false->true
+      // Because submitting will also changes when the Modal closes
+      if (prevProps.submitting === true) return;
+
       const data = {
         language: this.state.selectedLang.id,
         source: this.state.code,
       }
       const prob = this.props.prob
-      problemApi.submitToProblem({name: prob, data})
+      const contest = this.props.contest
+
+      let endpoint, conf;
+
+      if (contest) {
+        endpoint = contestAPI.submitContestProblem
+        conf = { key: contest.key, shortname: prob }
+      } else {
+        endpoint = problemApi.submitToProblem
+        conf = { shortname: prob }
+      }
+
+      endpoint({...conf, data})
         .then((res) => {
-          // console.log(res)
-          // this.setState({ redirect: `/submission/${res.data.id}` })
           this.props.setSubId(res.data.id)
         })
         .catch((err) => {
-          console.log(err)
-          this.setState({error : err})
-          // alert('Cannot submit')
+          if (err.response && err.response.data && err.response.data.detail) {
+            toast.error(err.response.data.detail, {
+              toastId: "submit-failed",
+              // autoClose: false,
+            })
+            if (this.props.setSubErrors)
+              this.props.setSubErrors(err.response.data.detail)
+          }
+          this.setState({error : err.response.data})
         })
     }
   }
@@ -74,8 +97,8 @@ export default class SubmitForm extends React.Component {
 
   onLangChange(e) {
     const lang = this.state.id2LangMap[e.target.value]
-    const newLang = (lang || this.state.defaultLang) 
-    this.setState({ selectedLang: newLang, }, 
+    const newLang = (lang || this.state.defaultLang)
+    this.setState({ selectedLang: newLang, },
       () => this.onCodeEditorChange()
     );
   }
@@ -95,7 +118,7 @@ export default class SubmitForm extends React.Component {
             value={this.state.selectedLang.id}
           >
             {
-              this.state.lang.map((lng) => 
+              this.state.lang.map((lng) =>
                 (<option key={lng.id} value={lng.id}>{lng.name}</option>)
               )
             }
@@ -113,7 +136,7 @@ export default class SubmitForm extends React.Component {
             editorProps={{ $blockScrolling: true }}
             style={styles.ace}
           /> */}
-          <CodeEditor 
+          <CodeEditor
             onCodeChange={(val) => this.onCodeChange(val)}
             code={this.state.code}
             ace={this.state.selectedLang.ace}

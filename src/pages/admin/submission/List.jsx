@@ -164,7 +164,7 @@ class AdminSubmissionList extends React.Component {
     const { submitting } = this.state;
 
     return (
-      <>
+      <div className="admin admin-submissions wrapper-vanilla">
       {/* Options for Admins: Create New,.... */}
       <div className="admin-options">
         <sub>No options available yet</sub>
@@ -224,7 +224,7 @@ class AdminSubmissionList extends React.Component {
                 /></span>
         }
       </div>
-      </>
+      </div>
     )
   }
 }

@@ -1,9 +1,9 @@
 import { UPDATE, CLEAR } from './types';
 
-export const updateUser = (user) => {
+export const updateUser = ({ user }) => {
     return {
         type: UPDATE,
-        user
+        user,
     };
 };
 

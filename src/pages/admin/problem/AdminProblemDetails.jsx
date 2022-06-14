@@ -34,15 +34,16 @@ class AdminProblemDetails extends React.Component {
 
   async componentDidMount() {
     Promise.all([
-      problemAPI.adminOptionsProblemDetails({shortname: this.shortname}),
+      //problemAPI.adminOptionsProblemDetails({shortname: this.shortname}),
       problemAPI.getProblemDetails({shortname: this.shortname})
     ]).then((res) => {
-      const [optionsRes, generalRes] = res;
+      // const [optionsRes, generalRes] = res;
+      const [generalRes] = res;
       // console.log(optionsRes.data)
       // console.log(generalRes.data)
       this.setState({
         problemTitle: generalRes.data.title,
-        options: optionsRes.data,
+        // options: optionsRes.data,
         general: generalRes.data,
         loaded: true,
       })
@@ -78,7 +79,7 @@ class AdminProblemDetails extends React.Component {
     const {loaded, errors, general, options} = this.state;
 
     return (
-      <div className="admin problem-panel">
+      <div className="admin problem-panel wrapper-vanilla">
         <h4 className="problem-title">
           { !loaded && <span><SpinLoader/> Loading...</span>}
           { loaded && !!errors && <span>Something went wrong</span>}
