@@ -1,26 +1,38 @@
 import React from 'react';
+import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 import { Row, Col, Table } from 'react-bootstrap';
-import { FaWrench } from 'react-icons/fa';
+
+// Assets
+import { FaWrench, FaSyncAlt } from 'react-icons/fa';
 import { VscError } from 'react-icons/vsc';
 
+// Services
 import submissionAPI from 'api/submission';
-import { SpinLoader } from 'components';
+
+// Componenets
+import { SpinLoader, ErrorBox } from 'components';
 import { CodeEditor } from 'components/CodeEditor';
 
+// Helpers
 import { withParams } from 'helpers/react-router'
 import { parseTime, parseMem } from 'helpers/textFormatter';
 import { setTitle } from 'helpers/setTitle'
 
-import { getPollDelay } from 'helpers/polling';
 import { shouldStopPolling } from 'constants/statusFilter';
 
 import './SubmissionDetails.scss';
 
+const __SUBMISSION_DETAIL_POLL_DELAY = 3000;
+const __SUBMISSION_MAX_POLL_DURATION = 30000; // ms
+
 class SubmissionTestCase extends React.Component {
   render() {
     const data = this.props.data;
+    const problem = this.props.problem;
+    const maxTime = problem.time_limit;
+
     return (
       <tr className="test-case-result">
         <td>
@@ -28,11 +40,15 @@ class SubmissionTestCase extends React.Component {
         </td>
         <td>
           <span className={`verdict ${data.status.toLowerCase()}`}>
-            <span>{data.status}</span>
+            <span className={`verdict-wrapper ${data.status.toLowerCase()}`}>
+              <span className="text">{data.status}</span>
+            </span>
           </span>
         </td>
         <td>
-          <span className="time">{parseTime(data.time)}</span>
+          <span className="time">{
+            data.status === 'tle' ? `>${parseTime(maxTime)}` : parseTime(data.time)
+          }</span>
         </td>
         <td>
           <span className="time">{parseMem(data.memory)}</span>
@@ -63,17 +79,37 @@ class SubmissionDetails extends React.Component {
         this.setState({ data: res.data, })
       })
       .catch((err) => {
-        this.setState({ errors: err, })
+        this.setState({ errors: err.response.data || "Cannot Fetch this Submission.", })
         console.log('Error when Polling', err)
       })
       .finally(() => {
         this.setState({ loaded: true })
       })
   }
+  rejudge() {
+    submissionAPI.adminRejudgeSubmission({id: this.state.id})
+      .then((res) => {
+        toast.success('OK Rejudging.');
+        this.setState({ loaded: false, errors: null,
+          data: {
+            status: ".",
+          },
+        }, () => {
+            this.fetch();
+            if (! shouldStopPolling(this.state.data.status)){
+              clearInterval(this.timer)
+              this.timer = setInterval(() => this.pollResult(), __SUBMISSION_DETAIL_POLL_DELAY);
+              setTimeout(() => clearInterval(this.timer), __SUBMISSION_MAX_POLL_DURATION);
+            }
+          })
+      })
+      .catch((err) => {
+        toast.error(`Cannot rejudge. (${err.response.status})`)
+      })
+  }
 
   pollResult() {
     if (shouldStopPolling(this.state.data.status) || !!this.state.errors) {
-      console.log('Clear?')
       clearInterval(this.timer)
       return;
     }
@@ -82,8 +118,11 @@ class SubmissionDetails extends React.Component {
 
   componentDidMount() {
     this.fetch();
-    if (! shouldStopPolling(this.state.data.status))
-      this.timer = setInterval(() => this.pollResult(), getPollDelay());
+    if (! shouldStopPolling(this.state.data.status)){
+      clearInterval(this.timer)
+      this.timer = setInterval(() => this.pollResult(), __SUBMISSION_DETAIL_POLL_DELAY);
+      setTimeout(() => clearInterval(this.timer), __SUBMISSION_MAX_POLL_DURATION);
+    }
   }
 
   componentWillUnmount() {
@@ -102,8 +141,11 @@ class SubmissionDetails extends React.Component {
     const isSuperuser = isLoggedIn && this.user.is_superuser;
 
     let verdict = 'QU';
-    if (loaded && !errors)
+    let maxPoints = 0;
+    if (loaded && !errors){
       verdict = (data.status === "D" ? data.result : data.status);
+      maxPoints = data.problem.points;
+    }
     const polling = (loaded && !errors && !shouldStopPolling(data.status));
 
     return (
@@ -125,30 +167,57 @@ class SubmissionDetails extends React.Component {
           }{
             loaded && errors && <>
               <div className="flex-center-col" style={{ "height": "100px" }}>
+                {/* <ErrorBox errors={errors} /> */}
                 <VscError size={30} color="red"/>
               </div>
             </>
           }{
             loaded && !errors && <>
-              <div className="general info-subsection">
-                {
-                  (!!this.user && this.user.is_staff) &&
-                  <div>
+              {
+                (!!this.user && this.user.is_staff) && <>
+                  <div className="admin-panel info-subsection">
                     <h5>Admin Panel</h5>
-                    <Row>
-                    <Col >
-                      <Link to="#" className="btn" style={{color: "red"}}
-                        onClick={() => this.setState({redirectUrl: `/admin/submission/${this.state.id}`})}>
-                        Admin <FaWrench size={12}/>
-                      </Link>
-                    </Col>
+                    <Row className="">
+                      <Col >
+                        <Link to="#" className="btn" style={{color: "red"}}
+                          onClick={() => this.setState({redirectUrl: `/admin/submission/${this.state.id}`})}>
+                          Admin <FaWrench size={12}/>
+                        </Link>
+                        <Link to="#" className="btn" style={{color: "red"}}
+                          onClick={() => this.rejudge()}>
+                          Rejudge <FaSyncAlt size={12}/>
+                        </Link>
+                      </Col>
+                    </Row>
+                    <Row className="">
+                      <Col> <span><strong>Rejudge Date: </strong>
+                        { data.rejudged_date ? (new Date(data.rejudged_date)).toLocaleString() : "n/a" }
+                      </span></Col>
+                      <Col> <span><strong>Judged On: </strong>
+                        { data.judged_on ? data.judged_on.name : "n/a" }
+                      </span></Col>
                     </Row>
                   </div>
+                </>
+              }
+              <div className="general info-subsection">
+                <h5 className="subsection">General</h5>
+                {
+                  data.contest_object && <Col >
+                    <span><strong>{`This submission was made in contest `}</strong>
+                      <Link to={`/contest/${data.contest_object}`}>
+                        { data.contest_object }
+                      </Link>
+                    </span>
+                  </Col>
                 }
-                <h5>General</h5>
                 <Row>
                   <Col >
-                    <span><strong>Language:</strong>{ data.language }</span>
+                    <span><strong>Author:</strong>
+                      <Link to={`/user/${data.user.user.username}`}>
+                        { data.user.user.username }
+                      </Link>
+                    </span>
                   </Col>
                   <Col >
                     <span><strong>Problem:</strong>
@@ -157,30 +226,50 @@ class SubmissionDetails extends React.Component {
                       </Link>
                     </span>
                   </Col>
-                  <Col >
-                    <span><strong>Author:</strong>
-                      <Link to={`/user/${data.user.owner.username}`}>
-                        { data.user.owner.username }
-                      </Link>
-                    </span>
-                  </Col>
+                </Row>
+                <Row>
                   <Col >
                     <span><strong>Result:</strong>
                       <span className={`verdict ${verdict.toLowerCase()}`}>
-                        <span>{verdict}</span>
+                        <span className={`verdict-wrapper ${verdict.toLowerCase()}`}>
+                          <span className={`text`}>{verdict}</span>
+                        </span>
                       </span>
                     </span>
                   </Col>
+                  <Col >
+                    <span><strong>Points:</strong>
+                    {
+                      typeof(data.points) === 'number'
+                      ? <span className={`verdict ${verdict.toLowerCase()} points`}>
+                          {`(${data.points}/${maxPoints})`}</span>
+                      : <span className="points">Not evaluated</span>
+                    }
+                    </span>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col >
+                    <span><strong>Total Time:</strong>{ parseTime(data.time) }</span>
+                  </Col>
+                  <Col >
+                    <span><strong>Memory:</strong>{ parseMem(data.memory) }</span>
+                  </Col>
                 </Row>
               </div>
+
               <div className="source info-subsection">
                 <h5>Source</h5>
+                <Row>
+                  <Col >
+                    <span><strong>Language: </strong>{ data.language }</span>
+                  </Col>
+                </Row>
                 <Row><Col>
                   <CodeEditor
-                    code={data.source}
-                    onCodeChange={() => {}}
-                    ace={data.language_ace}
-                    readOnly={true}
+                    code={data.source} onCodeChange={() => {}}
+                    ace={data.language_ace} readOnly={true}
                   />
                 </Col></Row>
               </div>
@@ -193,6 +282,7 @@ class SubmissionDetails extends React.Component {
                     data.test_cases.map(
                       (test_case) => <SubmissionTestCase
                         key={test_case.id} data={test_case}
+                        problem={data.problem}
                       />
                     )
                   }

@@ -2,7 +2,7 @@
 
 div#contest-app {
     position: relative;
-    width: 100%;
+    width: 95vw;
 
     div#contest-banner {
         hr.divisor {
@@ -36,7 +36,7 @@ div#contest-app {
     div#contest-app-nav {
         width: 100%;
         column-gap: 10px;
-        margin-left: 15px;
+        padding: 0 15px;
 
         border: unset;
         background-color: unset;

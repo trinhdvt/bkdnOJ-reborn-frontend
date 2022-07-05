@@ -2,6 +2,7 @@
 
 .submit-modal {
   .modal-dialog {
+    height: 80vh;
 
     .modal-content {
       border: solid 2px $base;
@@ -29,9 +30,11 @@
 
           span.warning {
             font-size: 10px;
+            flex: 1;
           }
           span {
             font-size: 14px;
+            flex: 1;
           }
 
           text-align: left;

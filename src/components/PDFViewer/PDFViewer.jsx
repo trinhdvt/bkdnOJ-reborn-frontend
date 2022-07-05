@@ -23,7 +23,7 @@ function PDFViewer({pdf}) {
       {
         pdf ?
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.13.216/build/pdf.worker.min.js">
-          <Viewer fileUrl={pdfUrl} defaultScale={SpecialZoomLevel.PageFit}
+          <Viewer fileUrl={pdfUrl} defaultScale={SpecialZoomLevel.PageWidth}
             withCredentials={true} httpHeaders={httpHeaders}
             plugins={[defaultLayoutPluginInstance]}/>
         </Worker>

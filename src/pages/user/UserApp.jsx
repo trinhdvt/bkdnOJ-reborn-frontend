@@ -15,7 +15,7 @@ export default class UserApp extends React.Component {
         <SubHeader />
 
         <div className="content-wrapper">
-          <ScrollToTop />
+          {/* <ScrollToTop /> */}
           <Container className="content">
             <Outlet/>
           </Container>

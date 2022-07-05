@@ -1,0 +1,77 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import AsyncSelect from 'react-select/async';
+
+import orgAPI from 'api/organization';
+
+const OrgSelectLabel = (props) => {
+  const {slug, short_name, name, logo_url, is_unlisted} = props;
+
+  let boundColor = 'bg-dark', boundText = 'org';
+  if (is_unlisted) {
+    boundColor = 'bg-secondary'; boundText = ('private');
+  }
+
+  return (
+    <div className="org-choice text-left d-flex flex-column" style={{
+      fontSize: "14px",
+      focus: {
+        opacity: "50%",
+      }
+    }}>
+      <span>
+        <span className={`rounded text-light pl-1 pr-1 mr-1 ${boundColor}`}>{boundText}</span>
+        {slug}
+      </span>
+      <span style={{fontSize: "10px"}} className="text-truncate">{`${short_name}`}</span>
+    </div>
+  );
+}
+
+export default class UserSingleSelect extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  async loadOptions(val) {
+    return orgAPI.getOrgs({params: {search: val}})
+    .then((res) => {
+      let data = res.data.results.map((org) => ({
+        value: org.slug,
+        label: <OrgSelectLabel {...org}/>,
+        data: org,
+      }));
+      return data;
+    })
+  }
+
+  render() {
+    const org = this.props.value;
+
+    return(
+      <>
+        <AsyncSelect
+          cacheOptions
+          // defaultOptions
+          placeholder="Tìm slug/name/short_name..."
+          noOptionsMessage={()=>(
+            "Hệ thống chỉ trả về 20 Orgs khớp tìm kiếm nhất. "+
+            "Hãy thử đổi nội dung tìm nếu không tìm thấy Org mong muốn.")}
+
+          loadOptions={(val) => this.loadOptions(val)}
+          onChange={(sel) => this.props.onChange({...sel.data})}
+
+          value = {
+            org ? { value: org.slug, label: <OrgSelectLabel {...org}/>, data: org } : null
+          }
+
+          styles = {{
+            container: () => ({
+              width: "100%",
+            })
+          }}
+        />
+      </>
+    )
+  }
+}

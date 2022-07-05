@@ -7,7 +7,7 @@ import { Button, Tabs, Tab } from 'react-bootstrap';
 import { FaRegTrashAlt, FaGlobe } from 'react-icons/fa';
 
 import submissionAPI from 'api/submission';
-import { SpinLoader } from 'components';
+import { SpinLoader, ErrorBox } from 'components';
 import { withParams } from 'helpers/react-router'
 import { setTitle } from 'helpers/setTitle';
 
@@ -27,7 +27,7 @@ class AdminSubmissionDetails extends React.Component {
   }
 
   componentDidMount() {
-    setTitle(`Admin | Submission#${this.id}`)
+    setTitle(`Admin | Submission. ${this.id}`)
     submissionAPI.getSubmissionDetails({id: this.id})
     .then((res) => {
       this.setState({
@@ -37,7 +37,7 @@ class AdminSubmissionDetails extends React.Component {
     }).catch((err) => {
       this.setState({
         loaded: true,
-        errors: err,
+        errors: {errors: err.response.data || "Cannot load submission."},
       })
     })
   }
@@ -67,29 +67,31 @@ class AdminSubmissionDetails extends React.Component {
     return (
       <div className="admin submission-panel wrapper-vanilla">
         <h4 className="submission-title">
-          { !loaded && <span><SpinLoader/> Loading...</span>}
-          { loaded && !!errors && <span>Something went wrong.</span>}
-          { loaded && !errors && <div className="panel-header">
-              <span className="title-text">{`Editting submission#${this.id}`}</span>
-              <span>
-                <Button className="btn-svg" size="sm" variant="dark"
-                  onClick={()=>this.setState({ redirectUrl: `/submission/${this.id}` })}>
-                  <FaGlobe/><span className="d-none d-md-inline">View on Site</span>
-                </Button>
-              </span>
-              <span>
-                <Button className="btn-svg" size="sm" variant="danger"
-                  onClick={()=>this.deleteObjectHandler()}>
-                  <FaRegTrashAlt/><span className="d-none d-md-inline">Delete</span>
-                </Button>
-              </span>
-            </div>
-          }
+          <div className="panel-header">
+            <span className="title-text">{`Submission ${this.id} |`}
+              { !loaded && <span><SpinLoader/> Loading...</span>}
+            </span>
+            { loaded && !errors && <>
+                <span>
+                  <Button className="btn-svg" size="sm" variant="dark"
+                    onClick={()=>this.setState({ redirectUrl: `/submission/${this.id}` })}>
+                    <FaGlobe/><span className="d-none d-md-inline">View on Site</span>
+                  </Button>
+                </span>
+                <span>
+                  <Button className="btn-svg" size="sm" variant="danger"
+                    onClick={()=>this.deleteObjectHandler()}>
+                    <FaRegTrashAlt/><span className="d-none d-md-inline">Delete</span>
+                  </Button>
+                </span>
+              </>
+            }
+          </div>
         </h4>
         <hr/>
         <div className="submission-details">
           { !loaded && <span><SpinLoader/> Loading...</span> }
-
+          <ErrorBox errors={this.state.errors} />
           { loaded && !errors && <>
             <Tabs defaultActiveKey="general" id="sub-tabs" className="pl-2">
               <Tab eventKey="general" title="General">

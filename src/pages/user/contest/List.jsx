@@ -19,7 +19,7 @@ class ContestListItem extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      time_label: null,
+      time_label: 'Loading..',
     }
   }
 
@@ -136,18 +136,19 @@ class ContestListItem extends React.Component {
         <td className="text-truncate" style={{maxWidth: "100px"}}>
           <Link to={`/contest/${ckey}`}>{ckey}</Link>
         </td>
-        <td className="text-truncate" style={{maxWidth: "300px"}}>
+        <td className="text-truncate" style={{minWidth: "200px", maxWidth: "300px"}}>
           <Link to={`/contest/${ckey}`}>{cname}</Link>
-        </td>
-        <td className="contest-start">
-          {this.parseStartTime()}
           {
             type !== 'past' && <>
-              <span className="d-inline-flex align-items-center">
+              <br/>
+              <span className="d-inline-flex align-items-center contest-status-lbl">
                 {this.state.time_label}
               </span>
             </>
           }
+        </td>
+        <td className="contest-start" style={{minWidth: "150px"}}>
+          {this.parseStartTime()}
         </td>
         <td>{this.parseDuration()}</td>
         <td className="participate-options">{
@@ -183,7 +184,7 @@ class ContestListItem extends React.Component {
                       <Link to="#" onClick={() => this.registerContest(ckey)}>{`Register >>`}</Link>
                     </span>
                     : <span className="d-inline-flex align-items-center">
-                      <code>Register is not Allowed.</code>
+                      <span style={{color: "red"}}>Register is not Allowed.</span>
                     </span>
                   }</>
                 }
@@ -203,27 +204,30 @@ class ContestListItem extends React.Component {
             {
               /* Future: Not started yet */
               type === 'future' && <>
-                { user && (
+                { user && !is_registered && <>{
                     spectate_allow ? <span className="d-inline-flex align-items-center">
-                      <Link to={`/contest/${ckey}`}>{`Spectate >>`}</Link>
+                      <Link to="#" onClick={() => this.registerContest(ckey, true)}>{`Register (out of competition) >>`}</Link>
                     </span> :
-                    ( register_allow ? (
-                        is_registered ?
-                        <span className="d-inline-flex align-items-center">
-                          <Link to="#">{`Registered`}</Link>
-                        </span>
-                        : <span className="d-inline-flex align-items-center">
-                          <Link to="#" onClick={() => this.registerContest(ckey)}>{`Register >>`}</Link>
-                        </span>
-                      ) : <span className="d-inline-flex align-items-center">
-                        <code>Register is not Allowed.</code>
-                      </span>
-                    )
-                  )
+                    register_allow ?
+                    <span className="d-inline-flex align-items-center">
+                      <Link to="#" onClick={() => this.registerContest(ckey)}>{`Register >>`}</Link>
+                    </span>
+                    : <span className="d-inline-flex align-items-center">
+                      <span style={{color: "red"}}>Register is not Allowed.</span>
+                    </span>
+                  }</>
+                }
+                { user && is_registered && spectate_allow &&
+                  <Link to={`/contest/${ckey}`}>
+                    {`Spectate >>`}
+                  </Link>
                 }
                 { !user && <span className="d-inline-flex align-items-center">
                     <Link to={`/sign-in`}>{`Log in to Participate >>`}</Link>
                 </span> }
+                <span className="d-inline-flex align-items-center">
+                  <Link to={`/contest/${ckey}/standing`}>{`Current Standing >>`}</Link>
+                </span>
               </>
             }
 
@@ -264,7 +268,7 @@ class NPContestList extends React.Component {
       .catch((err) => {
         this.setState({
           loaded: true,
-          errors: ["Cannot fetch contests. Please retry again."],
+          errors: {errors: err.response.data} || ["Cannot fetch contests. Please retry again."],
         })
       })
   }
@@ -274,6 +278,7 @@ class NPContestList extends React.Component {
   }
 
   render() {
+    const {contests} = this.state;
     return (
       <div className="npast-contest">
           <h4>Ongoing/Upcoming Contests</h4>
@@ -289,35 +294,42 @@ class NPContestList extends React.Component {
             </tr>
           </thead>
           <tbody>
-              { this.state.loaded === false && <tr><td colSpan="6"><SpinLoader margin="10px" /></td></tr> }
-              { this.state.loaded === true && !this.state.errors &&
-                  <>
-                      {
-                          this.state.contests.active.map((cont, idx) =>
-                              <ContestListItem key={`cont-${cont.key}`} rowid={idx} data={cont}
-                              user={this.props.user} profile={this.props.profile}
-                              refetch={() => this.callApi()}
-                              type="active" />
-                          )
-                      }
-                      {
-                          this.state.contests.present.map((cont, idx) =>
-                              <ContestListItem key={`cont-${cont.key}`} rowid={idx} data={cont}
-                              user={this.props.user} profile={this.props.profile}
-                              refetch={() => this.callApi()}
-                              type="present"/>
-                          )
-                      }
-                      {
-                          this.state.contests.future.map((cont, idx) =>
-                              <ContestListItem key={`cont-${cont.key}`} rowid={idx} data={cont}
-                              user={this.props.user} profile={this.props.profile}
-                              refetch={() => this.callApi()}
-                              type="future"/>
-                          )
-                      }
+            { this.state.loaded === false && <tr><td colSpan="6"><SpinLoader margin="10px" /></td></tr> }
+            { this.state.loaded === true && !this.state.errors &&
+              <>
+                {
+                  this.state.contests.active.map((cont, idx) =>
+                    <ContestListItem key={`cont-${cont.key}`} rowid={idx} data={cont}
+                    user={this.props.user} profile={this.props.profile}
+                    refetch={() => this.callApi()}
+                    type="active" />
+                  )
+                }
+                {
+                  this.state.contests.present.map((cont, idx) =>
+                    <ContestListItem key={`cont-${cont.key}`} rowid={idx} data={cont}
+                    user={this.props.user} profile={this.props.profile}
+                    refetch={() => this.callApi()}
+                    type="present"/>
+                  )
+                }
+                {
+                  this.state.contests.future.map((cont, idx) =>
+                    <ContestListItem key={`cont-${cont.key}`} rowid={idx} data={cont}
+                    user={this.props.user} profile={this.props.profile}
+                    refetch={() => this.callApi()}
+                    type="future"/>
+                  )
+                }
+                {
+                  (contests.active.length + contests.present.length + contests.future.length) === 0 && <>
+                    <tr><td colSpan="99">
+                      <em>No contest planned yet.</em>
+                    </td></tr>
                   </>
-              }
+                }
+              </>
+            }
           </tbody>
           </Table>
       </div>
@@ -356,7 +368,7 @@ class ContestList extends React.Component {
       .catch((err) => {
         this.setState({
           loaded: true,
-          errors: ["Cannot fetch contests. Please retry again."],
+          errors: {errors: err.response.data} || ["Cannot fetch contests. Please retry again."],
         })
       })
   }
@@ -370,15 +382,17 @@ class ContestList extends React.Component {
   }
 
   render() {
+    const {pastContests, errors, loaded, count} = this.state;
     return (
+      <>
       <div className="contest-table wrapper-vanilla">
         <NPContestList {...this.props} />
-
-        <hr className="m-2" />
-
+      </div>
+      <hr className="m-2" />
+      <div className="contest-table wrapper-vanilla">
         <div className="past-contest">
           <h4>Past Contests</h4>
-          <ErrorBox errors={this.state.errors} />
+          <ErrorBox errors={errors} />
           <Table responsive hover size="sm" striped bordered className="rounded">
           <thead>
             <tr>
@@ -390,13 +404,17 @@ class ContestList extends React.Component {
             </tr>
           </thead>
           <tbody>
-            { this.state.loaded === false && <tr><td colSpan="6"><SpinLoader margin="10px" /></td></tr> }
-            { this.state.loaded === true &&
+            { loaded === false && <tr><td colSpan="6"><SpinLoader margin="10px" /></td></tr> }
+            { loaded === true &&
               <>
                 {
-                  this.state.pastContests.map((cont, idx) =>
+                  pastContests.map((cont, idx) =>
                     <ContestListItem key={`cont-${cont.key}`} rowid={idx} data={cont} user={this.props.user} type="past" />
                   )
+                } {
+                  count === 0 && <tr><td colSpan="99"><em>
+                      No contest yet.
+                    </em></td></tr>
                 }
               </>
             }
@@ -419,6 +437,7 @@ class ContestList extends React.Component {
           }
         </div>
       </div>
+      </>
     )
   }
 }

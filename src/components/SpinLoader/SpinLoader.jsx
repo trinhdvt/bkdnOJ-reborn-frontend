@@ -16,7 +16,7 @@ export default class SpinLoader extends React.Component {
         const { size, margin, className } = this.state;
         return (
             <img src={loader} style={{ width: size, height: size, margin }} className={className}
-                alt="Spinning loading gif"
+                alt="..."
             />
         )
     }

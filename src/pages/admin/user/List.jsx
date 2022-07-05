@@ -14,6 +14,7 @@ import { setTitle } from 'helpers/setTitle';
 
 import './List.scss'
 import 'styles/ClassicPagination.scss';
+import { qmClarify } from 'helpers/components';
 
 class UserItem extends React.Component {
   render() {
@@ -41,9 +42,9 @@ class UserItem extends React.Component {
         <td className="text-truncate" style={{maxWidth: "100px"}}>
           {new Date(date_joined).toLocaleString()}
         </td>
-        <td className="text-truncate" style={{maxWidth: "100px"}}>
+        {/* <td className="text-truncate" style={{maxWidth: "100px"}}>
           {last_login ? new Date(last_login).toLocaleString() : "N/A"}
-        </td>
+        </td> */}
 
         <td>
             <input type="checkbox" value={selectChk}
@@ -86,7 +87,7 @@ class AdminUserList extends React.Component {
   callApi(params) {
     this.setState({loaded: false, errors: null})
 
-    userAPI.getUsers({page: params.page+1})
+    userAPI.getUsers({params: {page: params.page+1}})
       .then((res) => {
         this.setState({
           objects: res.data.results,
@@ -116,10 +117,15 @@ class AdminUserList extends React.Component {
 
   handleDeleteSelect(e) {
     e.preventDefault();
+    this.setState({ errors: null })
 
     let ids = [];
+    let usernames = []
     this.state.selectChk.forEach((v, i) => {
-      if (v) ids.push(this.state.objects[i].id)
+      if (v) {
+        ids.push(this.state.objects[i].id)
+        usernames.push(this.state.objects[i].username)
+      }
     })
 
     if (ids.length === 0) {
@@ -128,7 +134,7 @@ class AdminUserList extends React.Component {
     }
 
     // TODO: Write a bulk delete API for submissions
-    const conf = window.confirm('Xóa các User' + JSON.stringify(ids) + '?');
+    const conf = window.confirm('Xóa các User ' + JSON.stringify(usernames) + '?');
     if (conf) {
       let reqs = []
       ids.forEach((id) => {
@@ -141,13 +147,13 @@ class AdminUserList extends React.Component {
         let msg = 'Không thể xóa các User này.';
         if (err.response) {
           if (err.response.status === 405)
-            msg += ' Phương thức chưa được implemented.';
+            msg += ' Phương thức chưa được hỗ trợ.';
           if (err.response.status === 404)
-            msg = 'Không tìm thấy một trong số User được chọn. Có lẽ chúng đã bị xóa?'
+            msg = 'Không tìm thấy một trong số User được chọn. Có lẽ họ đã bị xóa?'
           if ([403, 401].includes(err.response.status))
-            msg += ' Không có quyền cho thao tác này.';
+            msg += ' Bạn không có quyền cho thao tác này.';
         }
-        this.setState({ errors: [msg] })
+        this.setState({ errors: {errors: msg} })
       })
     }
   }
@@ -159,9 +165,9 @@ class AdminUserList extends React.Component {
     const { submitting } = this.state;
 
     return (
-      <div className="admin admin-users wrapper-vanilla">
+      <div className="admin admin-users">
       {/* Options for Admins: Create New,.... */}
-      <div className="admin-options">
+      <div className="admin-options m-0 wrapper-vanilla">
         <div className="border d-inline-flex p-1" >
         <Button size="sm"
           variant="dark" className="btn-svg" disabled={ submitting }
@@ -185,7 +191,7 @@ class AdminUserList extends React.Component {
       </div>
 
       {/* Problem List */}
-      <div className="admin-table judge-table">
+      <div className="admin-table user-table wrapper-vanilla">
         <h4>User List</h4>
         <ErrorBox errors={this.state.errors} />
         <Table responsive hover size="sm" striped bordered className="rounded">
@@ -194,11 +200,17 @@ class AdminUserList extends React.Component {
               <th >ID</th>
               <th >Username</th>
               <th >Email</th>
-              <th >Active?</th>
-              <th >Staff?</th>
-              <th >Superuser?</th>
+              <th >
+                Active{qmClarify("Tài khoản không Active sẽ không được phép đăng nhập.")}
+              </th>
+              <th >
+                Staff{qmClarify("Tài khoản là Staff sẽ truy cập được vào trang Admin.")}
+              </th>
+              <th >
+                Superuser{qmClarify("Tài khoản là Superuser sẽ có toàn quyền trên hệ thống.")}
+              </th>
               <th >Joined</th>
-              <th >Last seen</th>
+              {/* <th >Last seen</th> */}
               <th style={{width: "8%"}}>
                 <Link to="#" onClick={(e) => this.handleDeleteSelect(e)}>Delete</Link>
               </th>
@@ -207,7 +219,7 @@ class AdminUserList extends React.Component {
           <tbody>
             {
               this.state.loaded === false
-                ? <tr><td colSpan="9"><SpinLoader margin="10px" /></td></tr>
+                ? <tr><td colSpan="99"><SpinLoader margin="10px" /></td></tr>
                 : this.state.objects.map((obj, idx) => <UserItem
                     key={`user-${obj.username}`}
                     rowidx={idx} {...obj}

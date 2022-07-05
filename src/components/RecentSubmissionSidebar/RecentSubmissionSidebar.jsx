@@ -1,5 +1,9 @@
 import React from 'react';
+
+// Redux
 import { connect } from 'react-redux';
+import { stopPolling } from 'redux/RecentSubmission/actions';
+
 import { Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -8,9 +12,14 @@ import contestAPI from 'api/contest';
 import { ErrorBox, SpinLoader } from 'components';
 import ContestContext from 'context/ContestContext';
 
+// Helpers
 import { getHourMinuteSecond, getYearMonthDate } from 'helpers/dateFormatter';
+import { shouldStopPolling } from 'constants/statusFilter';
 
 import './RecentSubmissionSidebar.scss';
+
+const __RECENT_SUBMISSION_POLL_DELAY = 3000; // ms
+const __RECENT_SUBMISSION_MAX_POLL_DURATION = 30 * 1000; // ms
 
 class RSubItem extends React.Component {
   parseTime(time) {
@@ -27,23 +36,40 @@ class RSubItem extends React.Component {
   }
 
   render() {
-    const {id, problem, user, status, result, time, memory, date} = this.props;
+    const {id, ckey, problem, language, points, user, status, result, time, memory, date} = this.props;
     const verdict = (status === "D" ? result : status);
+
+    const max_points = problem.points;
 
     return (
       <tr>
-        <td className="subid">
-          <Link to={`submission/${id}`}>{id}</Link>
-        </td>
-        <td className="text-truncate prob">
-          <Link to={`problem/${problem.shortname}`}>{problem.shortname}</Link>
-        </td>
+        <td className="info">
+          <div className="info-wrapper">
+            <div className="flex-center-col">
+              <div className="prob-wrapper">
+                <Link id="sub-id" to={`/contest/${ckey}/submission/${id}`}>#{id}</Link>
+                |
+                <Link className="prob text-truncate-rv"
+                  to={`/contest/${ckey}/problem/${problem.shortname}`}>{problem.shortname}</Link>
+              </div>
 
-        {
-          <td className={`verdict ${verdict.toLowerCase()}`} >
-            <span>{verdict}</span>
-          </td>
-        }
+              <div className="other-wrapper">
+                <span className="lang-wrapper">
+                  {language}
+                </span>
+                |
+                <span className={`text-wrapper verdict ${verdict.toLowerCase()}`}>
+                  {verdict}
+                </span>
+
+                {typeof(points) === 'number'
+                  ? <>|<span className={`points verdict ${verdict.toLowerCase()} text-truncate`}>{`${points} pts`}</span></>
+                  : "n/a"
+                }
+              </div>
+            </div>
+          </div>
+        </td>
 
         <td className="flex-center responsive-date">
           <div className="date">{getYearMonthDate(date)}</div>
@@ -66,16 +92,24 @@ class RecentSubmissionSidebar extends React.Component {
 
       contest: null,
       user: null,
+
+      isPollingOn: true,
+      isPolling: false,
     }
   }
 
-  refetch() {
-    this.setState({ loaded: false, count: null, errors: null })
+  refetch(poll=false) {
+    if(poll)
+      this.setState({ isPolling: true, errors: null })
+    else
+      this.setState({ loaded: false, count: null, errors: null })
+
     const { user } = this.state;
     contestAPI.getContestSubmissions({ key: this.state.contest.key,
                                         params: {user: user.username} })
       .then((res) => {
         this.setState({
+          isPolling: false,
           loaded: true,
           subs: res.data.results, // first page only
           count: res.data.count,
@@ -84,10 +118,19 @@ class RecentSubmissionSidebar extends React.Component {
       })
       .catch((err) => {
         this.setState({
+          isPolling: false,
           loaded: true,
           errors: err,
         })
       })
+  }
+
+  pollResult() {
+    if (shouldStopPolling(this.state.subs[0].status) || !!this.state.errors) {
+      clearInterval(this.timer)
+      return;
+    }
+    this.refetch(true);
   }
 
   componentDidMount() {
@@ -103,14 +146,31 @@ class RecentSubmissionSidebar extends React.Component {
     const { user } = this.props;
     const { contest } = this.context;
     if (!user || !contest) return; // skip if no user or no contest
+
+    // Refetch if: state.contest was updated, state.user was updated
     if (prevState.contest !== contest || prevState.user !== user) {
-      this.setState({ user, contest }, () => this.refetch());
+      this.setState({ user, contest }, () => {
+        this.refetch()
+      });
     }
+
+    // Polling status changes
+    if (prevProps.polling !== this.props.polling) {
+      clearInterval(this.timer);
+      if (this.props.polling) {
+        this.refetch(true)
+        this.timer = setInterval(()=>this.pollResult(), __RECENT_SUBMISSION_POLL_DELAY);
+        setTimeout(() => this.props.stopPolling(), __RECENT_SUBMISSION_MAX_POLL_DURATION);
+      }
+    }
+
+  }
+  componentWillUnmount(){
+    clearInterval(this.timer)
   }
 
   render() {
-    const { subs, loaded, errors, user, contest } = this.state;
-    // console.log('Rerender')
+    const { subs, loaded, errors, user, contest, isPolling } = this.state;
     if (errors)
       return <></>
 
@@ -125,10 +185,8 @@ class RecentSubmissionSidebar extends React.Component {
           <Table responsive hover size="sm" striped bordered className="rounded">
             <thead>
               <tr>
-                <th className="subid">#</th>
-                <th className="text-truncate prob">Problem</th>
-                <th className="text-truncate verdict">Status</th>
-                <th className="text-truncate responsive-date">Date</th>
+                <th className="subid">Info</th>
+                <th className="responsive-date">When</th>
               </tr>
             </thead>
             <tbody>
@@ -141,11 +199,14 @@ class RecentSubmissionSidebar extends React.Component {
                 </> }
                 { this.state.count > 0 &&
                   subs.map((sub, idx) => <RSubItem
-                    key={`recent-sub-${sub.id}`} rowid={idx} {...sub} />) }
+                    key={`recent-sub-${sub.id}`} rowid={idx} ckey={this.state.contest && this.state.contest.key} {...sub} />) }
                 </>
               }
             </tbody>
           </Table>
+          { !!user && !!contest && !!loaded && this.state.count > subs.length &&
+            <span style={{fontSize: "12px"}}><em>..and {this.state.count - subs.length} more.</em></span>
+          }
         </>}
       </div>
     )
@@ -157,6 +218,12 @@ const mapStateToProps = state => {
   return {
     user: state.user.user,
     profile: state.profile.profile,
+    polling: state.recentSubmission.polling,
   }
 }
-export default connect(mapStateToProps, null)(wrapped);
+const mapDispatchToProps = dispatch => {
+  return {
+    stopPolling: () => dispatch(stopPolling()),
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(wrapped);

@@ -1,0 +1,76 @@
+@import 'global.scss';
+
+.org-table {
+  a {
+    color: $blue-dark;
+    &:hover {
+      color: $base;
+    }
+  }
+
+  h4 {
+    margin: unset;
+    padding: 4px;
+
+    font-size: medium;
+
+    font-family: $font-codeforces;
+    background-color: $background-gray;
+  }
+  table {
+    margin: unset;
+  }
+  th, td {
+    font-size: 14px;
+    font-family: $font-codeforces;
+    vertical-align: middle;
+  }
+
+  td.org-i {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    div.org-img-wrapper {
+      max-height: 50px;
+      width: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      img {
+        display: block;
+        max-height:50px;
+        // max-width:230px;
+        width: auto;
+        height: auto;
+      }
+    }
+    span.org-slug {
+      font-weight: bold;
+    }
+  }
+
+
+  .icons {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    align-content: center;
+  }
+
+  .org-table-footer {
+    margin: 10px;
+
+    hr {
+      margin: unset;
+    }
+    height: 16px;
+    text-align: right;
+
+  }
+}

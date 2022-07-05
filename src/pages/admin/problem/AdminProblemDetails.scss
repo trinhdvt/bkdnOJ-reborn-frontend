@@ -12,7 +12,7 @@ div.admin.problem-panel {
   .panel-header {
     display: inline-flex;
     width: 100%;
-    
+
     span.title-text {
       flex-grow: 1;
     }
@@ -25,35 +25,4 @@ div.admin.problem-panel {
     text-align: left;
   }
 
-  .accordion-item {
-    border: solid 1px $background-gray;
-    margin: 2px 0;
-
-    h2 {
-      color: $base !important;
-      font-size: 14px;
-    }
-    button {
-      width: 100%;
-      text-align: left;
-      border: unset;
-      background-color: $background-gray;
-    }
-  }
-
-  .accordion-button {
-    color: $base;
-    &::before {
-      content: "•";
-      padding-right: 1rem;
-    }
-    &::after {
-      content: '+';
-      float: right;
-    }
-  }
-  .accordion-button:not(.collapsed)::after {
-    content: 'x';
-    float: right;
-  }
 }

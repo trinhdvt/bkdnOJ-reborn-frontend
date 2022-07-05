@@ -22,7 +22,8 @@ class JudgeStatus extends React.Component {
 
   componentDidMount() {
     this.updateUptime();
-    this.timer = setInterval(() => this.updateUptime(), 3000)
+    if (this.props && this.props.online)
+      this.timer = setInterval(() => this.updateUptime(), 3000)
   }
   componentWillUnmount() {
     clearInterval(this.timer)
@@ -30,6 +31,9 @@ class JudgeStatus extends React.Component {
 
   updateUptime() {
     if (!this.state.startTime) return "N/A";
+    if (!this.props.online || this.props.is_blocked) return "N/A";
+    if (!(new Date(this.state.startTime)).getTime()) return "N/A";
+
     let diffMs = (new Date()) - (new Date(this.state.startTime));
     let diffS = Math.floor(diffMs / 1000)
     let diffM = Math.floor(diffS / 60);
@@ -42,14 +46,15 @@ class JudgeStatus extends React.Component {
       (diffH > 0 ? `${diffH}h, ` : "") +
       (diffM > 0 ? `${diffM}m, ` : "") +
       (diffS > 0 ? `${diffS}s, ` : "");
-    if (msg.length > 2) {
-      this.setState({upTime: msg.substring(0, msg.length - 2)})
-    }
+    if (msg.length < 3) return "N/A";
+
+    return this.setState({upTime: msg.substring(0, msg.length - 2)})
   }
 
   render() {
-    const {id, name, is_blocked, online, ping, load, /*description*/} = this.props;
+    const {id, name, is_blocked, online, ping, load} = this.props;
     return (
+      <>
       <tr>
         <td className="text-truncate" style={{maxWidth: "100px"}}>
           {id}
@@ -63,9 +68,10 @@ class JudgeStatus extends React.Component {
           </div>
         </td>
         <td style={{minWidth: "100px"}}>{this.state.upTime}</td>
-        <td>{load}</td>
-        <td>{`${ping ? ping.toFixed(2) : "N/A"}`}</td>
+        <td>{!isNaN(load) ? (+load).toFixed(2) : 'N/A'}</td>
+        <td>{!isNaN(ping) ? `${((+load)*1000).toFixed(2)} ms` : 'N/A'}</td>
       </tr>
+      </>
     )
   }
 }
@@ -80,7 +86,7 @@ class JudgeStatuses extends React.Component {
       loaded: false,
       errors: null,
     }
-    setTitle('Judge Status')
+    setTitle('Judges')
   }
 
   callApi(params) {
@@ -99,7 +105,7 @@ class JudgeStatuses extends React.Component {
       .catch((err) => {
         this.setState({
           loaded: true,
-          errors: ["Cannot fetch judge statuses. Please retry again."],
+          errors: {errors: err.response.data} || ["Cannot fetch judges at the moment. Please retry again."],
         })
       })
   }
@@ -164,7 +170,7 @@ class JudgeStatuses extends React.Component {
         }
         <div className="judge-table text-left">
           <h4>Available Runtime</h4>
-          <ul>
+          <ul className="m-1">
             {
               avaiRuntime.map((runtime, idx) => <li key={idx}>{runtime}</li>)
             }

@@ -4,10 +4,14 @@ const getSubmissions = (params) => {
     return axiosClient.get('/submission/', (params && { params: {...params} }));
 }
 const getSubmissionDetails = ({id}) => {
-    return axiosClient.get(`/submission/${id}`);
+    return axiosClient.get(`/submission/${id}/`);
+}
+
+const adminRejudgeSubmission = ({id}) => {
+    return axiosClient.post(`/submission/${id}/rejudge/`);
 }
 const adminDeleteSubmission = ({id}) => {
-    return axiosClient.delete(`/submission/${id}`);
+    return axiosClient.delete(`/submission/${id}/`);
 }
 const getSubmissionResult = ({id}) => {
     return axiosClient.get(`/submission/${id}/testcase`);
@@ -22,6 +26,7 @@ const submissionApi = {
     getSubmissionResult,
     getSubmissionResultCase,
 
+    adminRejudgeSubmission,
     adminDeleteSubmission,
 }
 

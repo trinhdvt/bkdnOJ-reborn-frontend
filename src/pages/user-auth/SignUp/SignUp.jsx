@@ -30,7 +30,7 @@ export default class SignUp extends React.Component {
         this.setState({submitted: bool});
     }
     updateErrors(newErrors) {
-        this.setState({ errors: newErrors })
+        this.setState({ errors: {errors: newErrors} })
     }
 
     submitHandler(e) {
@@ -50,13 +50,13 @@ export default class SignUp extends React.Component {
                     render(){ return 'Signing up...' },
                 },
                 success: {
-                    render({data}){ 
+                    render({data}){
                         parent.setState({ redirect: true });
                         return 'Account Signed Up.';
                     },
                 },
                 error: {
-                    render({data}){ 
+                    render({data}){
                         parent.updateErrors(data.response.data);
                         return 'Sign Up Failed.';
                     }

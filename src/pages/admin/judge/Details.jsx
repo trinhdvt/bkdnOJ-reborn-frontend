@@ -11,6 +11,7 @@ import { withParams } from 'helpers/react-router'
 import { setTitle } from 'helpers/setTitle';
 
 import './Details.scss';
+import { qmClarify } from 'helpers/components';
 
 const JUDGE_PROPS = ['name', 'auth_key', 'description', 'is_blocked']
 
@@ -36,7 +37,7 @@ class AdminJudgeDetails extends React.Component {
       }).catch((err) => {
         this.setState({
           loaded: true,
-          errors: err,
+          errors: {errors: err.response.data},
         })
       })
   }
@@ -75,8 +76,8 @@ class AdminJudgeDetails extends React.Component {
       const v = this.state.data[key];
       cleanedData[key] = v;
     })
-    console.log(cleanedData)
 
+    this.setState({ errors: null })
     judgeAPI.adminEditJudge({id, data: cleanedData})
     .then((res) => {
       toast.success(`OK Edited.`)
@@ -86,12 +87,13 @@ class AdminJudgeDetails extends React.Component {
       toast.error(`Cannot edit. (${err})`)
       const data = err.response.data;
       let errors = {...data}
-      if (data.detail) errors.general = data.detail
-      this.setState({ errors })
+      this.setState({ errors: { errors } })
     })
   }
 
   deleteObjectHandler() {
+    this.setState({ errors: null })
+
     let conf = window.confirm("Những bài đang chấm sẽ chuyển trạng thái thành IE và bị hủy chấm, "+
       "vì vậy hãy block máy chấm tối thiểu 1 phút để tránh hiện tượng này. Bạn có muốn xóa?");
     if (conf) {
@@ -102,6 +104,9 @@ class AdminJudgeDetails extends React.Component {
         })
         .catch((err) => {
           toast.error(`Cannot delete. (${err})`);
+          const data = err.response.data;
+          let errors = {...data}
+          this.setState({ errors: { errors } })
         })
     }
   }
@@ -117,13 +122,15 @@ class AdminJudgeDetails extends React.Component {
         <h4 className="judge-title">
           { !loaded && <span><SpinLoader/> Loading...</span>}
           { loaded && <div className="panel-header">
-              <span className="title-text">{`Viewing judge. ${data.name}`}</span>
-              <span>
-                <Button className="btn-svg" size="sm" variant="danger"
-                  onClick={()=>this.deleteObjectHandler()}>
-                    <FaRegTrashAlt/><span className="d-none d-md-inline">Delete</span>
-                </Button>
-              </span>
+              <span className="title-text">{`Judge | ${data ? data.name : this.id }`}</span>
+              {
+                !errors && <span>
+                  <Button className="btn-svg" size="sm" variant="danger"
+                    onClick={()=>this.deleteObjectHandler()}>
+                      <FaRegTrashAlt/><span className="d-none d-md-inline">Delete</span>
+                  </Button>
+                </span>
+              }
             </div>
           }
         </h4>
@@ -131,103 +138,103 @@ class AdminJudgeDetails extends React.Component {
         <div className="judge-details">
           { !loaded && <span><SpinLoader/> Loading...</span> }
           { loaded && <>
-            <ErrorBox errors={this.state.errors} />
-            <Form id="judge-general" onSubmit={(e) => this.formSubmitHandler(e)}>
-              <Row>
-                <Form.Label column="sm" xs={2} > ID </Form.Label>
-                <Col> <Form.Control size="sm" type="text" placeholder="Judge id" id="id"
-                        value={data.id || ''} disabled readOnly
-                /></Col>
-              </Row>
-              <Row>
-                <Form.Label column="sm" lg={2} className="required"> Name </Form.Label>
-                <Col> <Form.Control size="sm" type="text" placeholder="Judge Name" id="name"
-                        value={data.name || ''} onChange={(e)=>this.inputChangeHandler(e)}
-                /></Col>
-                <Form.Label column="sm" lg={2} className="required"> Auth Key </Form.Label>
-                <Col> <Form.Control size="sm" type="text" placeholder="Judge Authentication key" id="auth_key"
-                        value={data.auth_key || ''} onChange={(e)=>this.inputChangeHandler(e)}
-                /></Col>
-                <Form.Label column="sm" xl={12}> Description </Form.Label>
-                <Col xs={12}> <Form.Control size="sm" type="textarea" placeholder="Description" id="description"
-                        value={data.description || ''} onChange={(e)=>this.inputChangeHandler(e)}
-                /></Col>
-              </Row>
+            <ErrorBox errors={errors} />
+            { !errors && <>
+              <Form id="judge-general" onSubmit={(e) => this.formSubmitHandler(e)}>
+                <Row>
+                  <Form.Label column="sm" xs={2} > ID </Form.Label>
+                  <Col> <Form.Control size="sm" type="text" placeholder="Judge id" id="id"
+                          value={data.id || ''} disabled readOnly
+                  /></Col>
+                </Row>
+                <Row>
+                  <Form.Label column="sm" lg={2} className="required"> Name </Form.Label>
+                  <Col> <Form.Control size="sm" type="text" placeholder="Judge Name" id="name"
+                          value={data.name || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                  /></Col>
+                  <Form.Label column="sm" lg={2} className="required"> Auth Key </Form.Label>
+                  <Col> <Form.Control size="sm" type="text" placeholder="Judge Authentication key" id="auth_key"
+                          value={data.auth_key || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                  /></Col>
+                  <Form.Label column="sm" xl={12}> Description </Form.Label>
+                  <Col xs={12}> <Form.Control size="sm" type="textarea" placeholder="Description" id="description"
+                          value={data.description || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                  /></Col>
+                </Row>
 
-              <Row>
-                <Form.Label column="sm" sm={4}> Online status </Form.Label>
-                <Col sm={2}> <Form.Control size="sm" type="checkbox" id="online"
-                        checked={data.online || false}
-                        // onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
-                        disabled
-                /></Col>
-                <Form.Label column="sm" sm={4}>
-                  <span className="d-inline" style={{whiteSpace: "nowrap"}}>
-                    Chặn máy chấm này
-                    <Link to="#" onClick={()=>alert('Máy chấm bị chặn sẽ không nhận submission nữa.')}>?</Link>
-                  </span>
-                </Form.Label>
-                <Col sm={2}> <Form.Control size="sm" type="checkbox" id="is_blocked"
-                        checked={data.is_blocked || false}
-                        onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
-                /></Col>
-              </Row>
-              <Row>
-                <Form.Label column="sm" md={2}> Start Time </Form.Label>
-                <Col> <Form.Control size="sm" type="datetime-local" id="start_time"
-                        value={this.getStartTime() || ''}
-                        // onChange={(e)=>this.setStartTime(e.target.value)}
-                        readOnly disabled
-                /></Col>
-                <Form.Label column="sm" md={2}> Last IP </Form.Label>
-                <Col> <Form.Control size="sm" type="text" id="last_ip"
-                        value={data.last_ip || ''}
-                        // onChange={(e)=>this.inputChangeHandler(e)}
-                        readOnly disabled
-                /></Col>
-              </Row>
+                <Row>
+                  <Form.Label column="sm" sm={4}> Online status </Form.Label>
+                  <Col sm={2}> <Form.Control size="sm" type="checkbox" id="online"
+                          checked={data.online || false}
+                          // onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
+                          disabled
+                  /></Col>
+                  <Form.Label column="sm" sm={4}>
+                    <span className="d-inline" style={{whiteSpace: "nowrap"}}>
+                      Chặn máy chấm này{qmClarify('Máy chấm bị chặn sẽ không nhận submission nữa.')}
+                    </span>
+                  </Form.Label>
+                  <Col sm={2}> <Form.Control size="sm" type="checkbox" id="is_blocked"
+                          checked={data.is_blocked || false}
+                          onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
+                  /></Col>
+                </Row>
+                <Row>
+                  <Form.Label column="sm" md={2}> Start Time </Form.Label>
+                  <Col> <Form.Control size="sm" type="datetime-local" id="start_time"
+                          value={this.getStartTime() || ''}
+                          // onChange={(e)=>this.setStartTime(e.target.value)}
+                          readOnly disabled
+                  /></Col>
+                  <Form.Label column="sm" md={2}> Last IP </Form.Label>
+                  <Col> <Form.Control size="sm" type="text" id="last_ip"
+                          value={data.last_ip || ''}
+                          // onChange={(e)=>this.inputChangeHandler(e)}
+                          readOnly disabled
+                  /></Col>
+                </Row>
 
-              <Row>
-                <Form.Label column="sm" md={2}> Ping </Form.Label>
-                <Col > <Form.Control size="sm" type="text" id="ping"
-                        value={data.ping || ''}
-                        // onChange={(e)=>this.inputChangeHandler(e)}
-                        readOnly disabled
-                /></Col>
-                <Form.Label column="sm" md={2}> Load </Form.Label>
-                <Col> <Form.Control size="sm" type="text" id="load"
-                        value={data.load || ''}
-                        // onChange={(e)=>this.inputChangeHandler(e)}
-                        readOnly disabled
-                /></Col>
-              </Row>
+                <Row>
+                  <Form.Label column="sm" md={2}> Ping </Form.Label>
+                  <Col > <Form.Control size="sm" type="text" id="ping"
+                          value={data.ping || ''}
+                          // onChange={(e)=>this.inputChangeHandler(e)}
+                          readOnly disabled
+                  /></Col>
+                  <Form.Label column="sm" md={2}> Load </Form.Label>
+                  <Col> <Form.Control size="sm" type="text" id="load"
+                          value={data.load || ''}
+                          // onChange={(e)=>this.inputChangeHandler(e)}
+                          readOnly disabled
+                  /></Col>
+                </Row>
 
-              <Row>
-                <Form.Label column="sm" > Problems </Form.Label>
-                <Col xl={12}> <Form.Control size="sm" type="text" id="problems"
-                        value={JSON.stringify(data.problems || '')} readOnly disabled
-                /></Col>
-              </Row>
-              <Row>
-                <Form.Label column="sm" > Runtimes </Form.Label>
-                <Col xl={12}> <Form.Control size="sm" type="text" id="runtimes"
-                        value={JSON.stringify(data.runtimes || '')} readOnly disabled
-                /></Col>
-              </Row>
+                <Row>
+                  <Form.Label column="sm" > Problems </Form.Label>
+                  <Col xl={12}> <Form.Control size="sm" type="text" id="problems"
+                          value={JSON.stringify(data.problems || '')} readOnly disabled
+                  /></Col>
+                </Row>
+                <Row>
+                  <Form.Label column="sm" > Runtimes </Form.Label>
+                  <Col xl={12}> <Form.Control size="sm" type="text" id="runtimes"
+                          value={JSON.stringify(data.runtimes || '')} readOnly disabled
+                  /></Col>
+                </Row>
 
-              <hr className="m-2" />
+                <hr className="m-2" />
 
-              <Row>
-                <Col lg={10}>
-                  <sub>**Các thiết lập khác sẽ được thêm sau.</sub>
-                </Col>
-                <Col >
-                  <Button variant="dark" size="sm" type="submit" >
-                    Save
-                  </Button>
-                </Col>
-              </Row>
-            </Form>
+                <Row>
+                  <Col lg={10}>
+                  </Col>
+                  <Col >
+                    <Button variant="dark" size="sm" type="submit" className="w-100">
+                      Save
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+            </>}
           </>
           }
         </div>

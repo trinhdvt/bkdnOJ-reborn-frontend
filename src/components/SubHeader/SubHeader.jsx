@@ -1,4 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
+import {GrGlobe} from 'react-icons/gr';
+import {FaUniversity, FaGlobe} from 'react-icons/fa';
+
 import './SubHeader.scss';
 import { Container } from 'react-bootstrap';
 
@@ -10,7 +15,7 @@ class SubHeader extends React.Component {
         }
     }
     componentDidMount() {
-        this.timer = setInterval(() => { 
+        this.timer = setInterval(() => {
             this.setState({
                 curTime : new Date().toLocaleString()
             })
@@ -21,17 +26,22 @@ class SubHeader extends React.Component {
     }
 
     render() {
+        const {selectedOrg} = this.props;
+
         return (
             <div className='subheader expand-sm'>
                 <Container>
                     <div className='float-left'>
-                        <span className='left-padder d-none d-md-inline'>
-                            {'▶▶'}
+                        {/* <span className='left-padder d-none d-md-inline'>
+                            {'Viewing As >>'}
                         </span>
-                        {/* <span>This Is</span>
-                        <span>Float Left</span>
-                        <span>Components</span> */}
+                        {selectedOrg.slug
+                            ? <div className="org-display org-uni"><FaUniversity size={14}/></div>
+                            : <div className="org-display org-none"><FaGlobe size={14}/></div>
+                        }
+                        <span>{selectedOrg.slug || "Global"}</span> */}
                     </div>
+
                     <div className='float-right'>
                         <span>{this.state.curTime}</span>
                     </div>
@@ -41,4 +51,12 @@ class SubHeader extends React.Component {
     }
 }
 
-export default SubHeader;
+const mapStateToProps = state => {
+  return {
+    selectedOrg: state.myOrg.selectedOrg,
+  }
+}
+
+let wrapped = SubHeader;
+wrapped = connect(mapStateToProps, null)(wrapped);
+export default wrapped;

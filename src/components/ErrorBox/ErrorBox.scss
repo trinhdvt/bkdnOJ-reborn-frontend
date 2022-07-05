@@ -21,6 +21,7 @@
     font-family: $font-subscript;
 
     div.errors-general-text {
+        font-size: 14px;
         font-weight: bold;
         text-align: center;
         margin: 5px 0;
@@ -30,6 +31,7 @@
         font-weight: 100;
     }
     .error-sub-title {
+        font-size: 14px;
         font-weight: bold;
         font-family: $font-subscript;
         color: $red-light;

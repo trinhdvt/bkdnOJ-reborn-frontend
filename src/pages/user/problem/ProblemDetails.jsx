@@ -2,15 +2,18 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 import { Row, Col } from 'react-bootstrap';
+import MDEditor from '@uiw/react-md-editor';
 
-import { FaPaperPlane, FaSignInAlt, FaWrench } from 'react-icons/fa';
+import { FaPaperPlane, FaSignInAlt, FaWrench,
+  FaAlignJustify, FaRegFilePdf
+} from 'react-icons/fa';
 import { VscError } from 'react-icons/vsc';
 
 import PDFViewer from 'components/PDFViewer/PDFViewer';
 
 import contestAPI from 'api/contest';
 import problemAPI from 'api/problem';
-import { SpinLoader } from 'components';
+import { SpinLoader, ErrorBox, RichTextEditor } from 'components';
 import { withParams } from 'helpers/react-router'
 import { setTitle } from 'helpers/setTitle';
 
@@ -29,9 +32,12 @@ class ProblemDetails extends React.Component {
     const { shortname } = this.props.params;
     this.shortname = shortname;
     this.state = {
-      data: undefined, loaded: false, errors: null, shortname: shortname,
+      data: null, loaded: false, errors: null, shortname: shortname,
       redirectUrl: null,
       submitFormShow: false,
+
+      probStatementType: 'text',
+      probStatementTypeDisabled: false,
     };
     this.user = (this.props.user);
   }
@@ -39,22 +45,46 @@ class ProblemDetails extends React.Component {
   handleSubmitFormOpen() { this.setState({ submitFormShow: true })}
   handleSubmitFormClose() { this.setState({ submitFormShow: false })}
 
-  onDocumentLoadSuccess({ numPages }) {
-    this.setState({ numPages })
+  onDocumentLoadSuccess({ numPages }) { this.setState({ numPages }) }
+  toggleProbStatementType() {
+    if (this.state.probStatementTypeDisabled) return;
+
+    const {probStatementType} = this.state;
+    let next = 'text';
+    if (probStatementType === 'text') next = 'pdf';
+    else
+    if (probStatementType === 'pdf') next = 'text';
+
+    // TODO: Hacky solution to prevent user from spaming PDF request
+    this.setState({
+      probStatementType: next, probStatementTypeDisabled: true
+    });
+    setTimeout(() => this.setState({probStatementTypeDisabled: false}), 2000);
+  }
+  updateContType(data) {
+    let contType = 'pdf', contTypeSwitchDisabled=false;
+    if (data.content !== "") contType = 'text';
+    if (data.content === "" || !data.pdf) contTypeSwitchDisabled=true;
+    this.setState({
+      probStatementType: contType,
+      probStatementTypeDisabled: contTypeSwitchDisabled,
+    })
   }
 
   callApi(params) {
     this.setState({loaded: false, errors: null})
 
     let endpoint, data, callback = (v) => {};
+    let prms = null;
     if (this.state.contest) {
       endpoint = contestAPI.getContestProblem
       data = { key: this.state.contest.key, shortname: this.shortname }
+      // prms = { contest: this.state.contest.key }
       callback = (res) => {
         this.setState({
           data: { ...res.data.problem_data, ...res.data } ,
           loaded: true,
-        })
+        }, () => this.updateContType(this.state.data))
         setTitle(`${this.state.contest.name} | Problem. ${res.data.title}`)
       }
     } else {
@@ -64,19 +94,19 @@ class ProblemDetails extends React.Component {
         this.setState({
           data: res.data,
           loaded: true,
-        })
+        }, () => this.updateContType(this.state.data))
         setTitle(`Problem. ${res.data.title}`)
       }
     }
 
-    endpoint({...data})
+    endpoint({...data, params: prms})
       .then((res) => {
         callback(res)
       })
       .catch((err) => {
         this.setState({
           loaded: true,
-          errors: err,
+          errors: err.response.data || "Cannot Fetch this Problem.",
         })
       })
   }
@@ -106,7 +136,11 @@ class ProblemDetails extends React.Component {
     const isLoggedIn = !!this.user;
     const isInContest = !!contest;
     const isAllowedToSubmitToContest = isInContest && (contest.is_registered || contest.spectate_allow);
+    const isStaff = isLoggedIn && this.user.is_staff;
     const isSuperuser = isLoggedIn && this.user.is_superuser;
+
+    const pdfAvailable = !!(data && data.pdf);
+    const pdfExtraQuery = (contest ? `?contest=${contest.key}` : "");
 
     return (
       <div className="problem-info wrapper-vanilla">
@@ -120,7 +154,8 @@ class ProblemDetails extends React.Component {
           { !loaded && <span><SpinLoader/> Loading...</span> }
           { loaded && errors && <>
             <div className="flex-center-col" style={{ "height": "100px" }}>
-              <VscError size={30} color="red"/>
+              <ErrorBox errors={errors} />
+              {/* <VscError size={30} color="red"/> */}
             </div>
           </> }
           { loaded && !errors && <>
@@ -148,7 +183,17 @@ class ProblemDetails extends React.Component {
                   </ul>
                 </Col>
                 <Col sm={3} className="options">
-                  { // Not Log-in
+                  {
+                    <Link to="#" className="btn"
+                      style={this.state.probStatementTypeDisabled ? {color: "gray"} : {}}
+                      onClick={() => this.toggleProbStatementType()}>
+                      {
+                        this.state.probStatementType === 'pdf' && <>To Text<FaAlignJustify size={12}/></>
+                      }{
+                        this.state.probStatementType === 'text' && <>To PDF<FaRegFilePdf size={12}/></>
+                      }
+                    </Link>
+                  }{ // Not Log-in
                     !isLoggedIn && (
                     <Link to="#" className="btn"
                       onClick={() => this.setState({redirectUrl: '/sign-in'})}>
@@ -167,7 +212,7 @@ class ProblemDetails extends React.Component {
                       Submit <FaPaperPlane size={12}/>
                     </Link>)
                   }{
-                    isSuperuser && (
+                    isStaff && (
                       <Link to="#" className="btn" style={{color: "red"}}
                         onClick={() => this.setState({redirectUrl: `/admin/problem/${data.shortname}`})}>
                         Admin <FaWrench size={12}/>
@@ -185,14 +230,34 @@ class ProblemDetails extends React.Component {
                   {/* <Link to="/submit" className="btn">Test</Link> */}
                 </Col>
               </Row>
-              <div className="problem-pdf shadow">
-                {/* <object data={`${this.state.data.pdf}`} type="application/pdf">
-                  <iframe title="problem-pdf-iframe"
-                    src={`https://docs.google.com/viewer?url=${this.state.data.pdf}&embedded=true`}>
-                  </iframe>
-                </object> */}
-                <PDFViewer pdf={data.pdf} />
-              </div>
+
+              <hr className="ml-3 mr-3 mt-1 mb-1"></hr>
+
+              <Row className="problem-statement"><Col>
+                {
+                  // TODO: cached this after first load so it doesn't hit the server everytime the user toggle doc type.
+                  this.state.probStatementType === 'pdf' &&
+                  <div className="problem-pdf shadow">
+                    {/* <object data={`${data.pdf}`} type="application/pdf">
+                      <iframe title="problem-pdf-iframe"
+                        src={`https://docs.google.com/viewer?url=${this.state.data.pdf}&embedded=true`}>
+                      </iframe>
+                    </object> */}
+                    <PDFViewer pdf={`${data.pdf}${pdfExtraQuery}`} />
+                  </div>
+                }{
+                  this.state.probStatementType === 'text' &&
+                  (
+                    data.content.trim() === ""
+                    ? <em style={{minHeight: "200px", width: "100%", display: "flex", alignItems: "center"}}>
+                        Text is not available.</em>
+                    : <div className="problem-text ml-3 mr-3">
+                      <RichTextEditor value={data.content || ""} onChange={()=>{}}
+                        enableEdit={false}
+                      />
+                    </div>)
+                }
+              </Col></Row>
             </>
           }
         </div>
@@ -204,7 +269,7 @@ class ProblemDetails extends React.Component {
 let wrappedPD = ProblemDetails;
 wrappedPD = withParams(wrappedPD);
 const mapStateToProps = state => {
-    return { user : state.user.user }
+  return { user : state.user.user }
 }
 wrappedPD = connect(mapStateToProps, null)(wrappedPD);
 export default wrappedPD;

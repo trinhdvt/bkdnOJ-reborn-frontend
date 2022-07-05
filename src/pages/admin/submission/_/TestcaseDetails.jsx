@@ -14,9 +14,9 @@ class ButtonPanel extends React.Component {
           <sub>**Chưa thể chỉnh sửa.</sub>
         </Col>
         <Col >
-          <Button variant="dark" size="sm" type="submit" disabled>
+          {/* <Button variant="dark" size="sm" type="submit" disabled>
             No Op
-          </Button>
+          </Button> */}
         </Col>
       </Row>
     )
@@ -26,7 +26,7 @@ class ButtonPanel extends React.Component {
 class TestcaseItem extends React.Component {
   render() {
     const {
-      rowidx, 
+      rowidx,
       id, status, time, memory, points, total
     } = this.props;
     const case_no = this.props.case;
@@ -88,7 +88,7 @@ export default class TestcaseDetails extends React.Component {
               <Row>
                 <Form.Label column="sm" lg={3}> Error </Form.Label>
                 <Col>
-                  <Form.Control type="text" size="sm"
+                  <Form.Control as="textarea" size="sm"
                     id="error" defaultValue={data.error} disabled readOnly />
                 </Col>
               </Row>

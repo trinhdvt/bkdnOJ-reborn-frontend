@@ -1,17 +1,13 @@
 @import 'global.scss';
 
 div#recent-submission-sidebar {
-  overflow: hidden !important;
   div.table-responsive {
-    overflow: hidden;
   }
 
   table {
+    overflow-y: scroll;
     td {
       font-weight: 100;
-    }
-    td.prod {
-      font-size: 12px;
     }
     th, td {
       width: auto;
@@ -19,57 +15,107 @@ div#recent-submission-sidebar {
       vertical-align: middle;
       word-break: keep-all;
 
-      &.subid {
-        min-width: 30px;
-      }
-      &.prob {
-        max-width: 20px;
-      }
-      &.verdict {
-        max-width: 40px;
-      }
       &.responsive-date {
         div.date {
           font-size: 10px;
+          word-break: keep-all;
         }
         div.time {
           font-size: 12px;
+          word-break: keep-all;
         }
-        min-width: 50px;
-      }
-    }
-    @media (min-width: 768px) {
-      th.prob, td.prod {
-        max-width: fit-content;
+        width: fit-content;
       }
     }
 
     overflow: hidden !important;
-    margin: unset;
+
+    margin: 0; padding: 0;
   }
 
-  .verdict {
-    font-weight: bold;
-    font-family: $font-codeforces;
+  td.info {
+    padding: 0 0.3rem;
+    width: fit-content;
 
-    &.ac > span {
-      color: $accepted !important;
+    .prob-wrapper {
+      width: 100%;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+
+      .prob {
+        font-weight: bold;
+        font-size: 14px;
+        max-width: fit-content;
+      }
+
+      a#sub-id {
+        color: black;
+        font-size: 14px;
+        font-weight: bold;
+        max-width: max-content;
+      }
     }
 
-    &.wa > span, &.tle > span, &.mle > span, &.ole > span {
-      color: $not-accepted !important;
-    }
+    .other-wrapper {
+      width: 100%;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: space-evenly;
 
-    &.ir > span, &.rte > span {
-      color: $runtime-error !important;
-    }
+      font-size: 12px;
 
-    &.qu > span, &.g > span, &.p > span, &.sc > span {
-      color: $queued !important;
-    }
+      div.sub-wrapper {
+        display: inline-flex;
+        flex-direction: row;
 
-    &.ie > span, &.ce > span {
-      color: $system-error !important;
+        column-gap: 5px;
+        max-width: max-content;
+        padding: 5px;
+      }
+
+      div.lang-wrapper {
+        font-size: 10px;
+      }
+
+      div.text-wrapper {
+        width: fit-content;
+      }
+
+      div.points-wrapper {
+        max-width: 50px;
+        min-width: 20px;
+      }
+
+      @import 'styles/SubmissionVerdict.scss';
     }
   }
+
+  td.result {
+    margin: 0; padding: 0;
+  }
+  // .verdict {
+  //   font-weight: 300;
+  //   font-family: $font-codeforces;
+
+  //   &.ac > span {
+  //     color: $accepted !important;
+  //   }
+
+  //   &.wa > span, &.tle > span, &.mle > span, &.ole > span {
+  //     color: $not-accepted !important;
+  //   }
+
+  //   &.ir > span, &.rte > span {
+  //     color: $runtime-error !important;
+  //   }
+
+  //   &.qu > span, &.g > span, &.p > span, &.sc > span {
+  //     color: $queued !important;
+  //   }
+
+  //   &.ie > span, &.ce > span {
+  //     color: $system-error !important;
+  //   }
+  // }
 }

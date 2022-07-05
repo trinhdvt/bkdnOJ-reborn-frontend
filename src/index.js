@@ -9,6 +9,11 @@ import store, {persistor} from 'redux/store.js'
 // Toastify
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import toastConfig from 'configs/toast';
+
+// MathJax
+// import { MathJaxContext } from "better-react-mathjax";
+// import mathjaxConfig from 'configs/mathjax';
 
 import App from 'App';
 
@@ -22,16 +27,6 @@ root.render(
         <App />
       </PersistGate>
     </Provider>
-  <ToastContainer
-    position="bottom-right"
-    autoClose={5000}
-    hideProgressBar={false}
-    newestOnTop={false}
-    closeOnClick
-    rtl={false}
-    pauseOnFocusLoss
-    draggable
-    pauseOnHover
-  />
+  <ToastContainer {...toastConfig} />
   </React.StrictMode>
 );

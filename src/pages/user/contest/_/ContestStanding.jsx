@@ -2,14 +2,16 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 
-import { SpinLoader, ErrorBox } from 'components';
+import { SpinLoader, ErrorBox, UserCard } from 'components';
 import submissionApi from 'api/submission';
 import contestAPI from 'api/contest';
 
 // Helpers
 import { setTitle } from 'helpers/setTitle';
+import { getPollDelay } from 'helpers/polling';
+import { getLocalDateWithTimezone } from 'helpers/dateFormatter';
 
 // Assets
 import top1 from 'assets/common/atcoder_top1.png';
@@ -17,51 +19,88 @@ import top10 from 'assets/common/atcoder_top10.png';
 import top30 from 'assets/common/atcoder_top30.png';
 import top100 from 'assets/common/atcoder_top100.png';
 
+import {GiMeltingIceCube, GiIceCube} from 'react-icons/gi';
+import { FaUniversity } from 'react-icons/fa';
+import {AiOutlineEye} from 'react-icons/ai';
+
 // Contexts
 import ContestContext from 'context/ContestContext';
 
 // Styles
 import './ContestStanding.scss';
+import 'styles/Ratings.scss';
+
+const __STANDING_POLL_DELAY = 5000;
+
+const getClassNameFromPoint = (point, maxPoint) => {
+  let ptsClsName = '';
+  if (maxPoint > 0) {
+    const percent = Math.round(point / maxPoint * 100);
+
+    if (percent <= 25) ptsClsName="one-fourth";
+    else if (percent <= 50) ptsClsName="two-fourth";
+    else if (percent <= 75) ptsClsName="three-fourth";
+    else if (percent < 100) ptsClsName="fourth-fourth";
+    else ptsClsName="full-points";
+  }
+  return ptsClsName
+}
 
 class StandingItem extends React.Component {
   render() {
-    const {rowIdx, user, score, cumtime, is_disqualified, virtual, format_data} = this.props;
-    const { mapping } = this.props;
+    const {rowIdx, user,
+      score, cumtime, tiebreaker,
+      frozen_score, frozen_cumtime, frozen_tiebreaker,
+      is_disqualified, virtual, format_data
+    } = this.props;
+    const { probMapping, orgMapping, isFrozen } = this.props;
 
-    let best = Array( Object.keys(mapping).length ).fill(<></>);
+    let best = Array( Object.keys(probMapping).length ).fill(<></>);
     let data = JSON.parse(format_data);
     if (data && data.constructor === Object)
       Object.keys(data).forEach((k) => {
-        const v = data[k]; // => {'time': ..., 'points': ...}
+        const prob_data = data[k]; // => {'time': ..., 'points': ...}
 
         // this might not exists because admin of contest decide to delete them, but the contest data is still there
-        if (!mapping[k]) return;
-        const i = mapping[k].pos;
+        if (!probMapping[k]) return;
 
-        const pts = mapping[k].points;
-        let ptsClsName = '';
-        if (pts > 0) {
-          const percent = Math.round(v.points / pts * 100);
-          if (percent <= 25) ptsClsName="one-fourth";
-          else if (percent <= 50) ptsClsName="two-fourth";
-          else if (percent <= 75) ptsClsName="three-fourth";
-          else if (percent < 100) ptsClsName="fourth-fourth";
-          else ptsClsName="full-points";
-        }
+        const i = probMapping[k].pos;
+        const problemMaxPoints = probMapping[k].points;
+
+        const { points, sub_time, tries, tries_after_frozen } = prob_data;
+
+        const ptsClsName = getClassNameFromPoint(points, problemMaxPoints);
 
         best[i] = (
-          <div className="flex-center-col">
-            <div className={`p-best-points points ${ptsClsName}`}>{
-              `${v.points}`
-            }</div>
+          <div className={`flex-center-col points-container ` + ((tries_after_frozen > 0) ? "frozen" : ptsClsName)}>
+            <div className={`p-best-points points ${ptsClsName}`}>
+              {`${points}`}
+              {
+                (!!tries || !!tries_after_frozen ) &&
+                <span className="extra">(
+                  <span className="tries">{tries}</span>
+                  {(tries_after_frozen > 0) &&
+                    <span className="frozen_tries">
+                      +{tries_after_frozen}
+                    </span>
+                  }
+                )</span>
+              }
+            </div>
+
             <div className="p-best-time text-truncate time">{
-              Math.floor(parseFloat(v.time))
+              sub_time
             }</div>
           </div>
         )
       })
 
-    const realname = `${user.first_name} ${user.last_name}`;
+    let showScore, showCumtime, showTiebreaker;
+    if (isFrozen) {
+      showScore = frozen_score; showCumtime = frozen_cumtime;
+    } else {
+      showScore = score; showCumtime = cumtime;
+    }
 
     return (
       <tr>
@@ -71,39 +110,30 @@ class StandingItem extends React.Component {
               {rowIdx+1}
             </div>
             {
-              (rowIdx === 0) ? <img src={top1} alt="Atcoder Top 1 Icon"/> : ''
+              (rowIdx === 0) ? <img src={top1} alt="Top 1 Icon"/> : ''
             }
             {
-              (0 < rowIdx && rowIdx < 10) ? <img src={top10} alt="Atcoder Top 10 Icon"/> : ''
+              (0 < rowIdx && rowIdx < 10) ? <img src={top10} alt="Top 10 Icon"/> : ''
             }
             {
-              (10 <= rowIdx && rowIdx < 30) ? <img src={top30} alt="Atcoder Top 30 Icon"/> : ''
+              (10 <= rowIdx && rowIdx < 30) ? <img src={top30} alt="Top 30 Icon"/> : ''
             }
             {
-              (30 <= rowIdx && rowIdx < 100) ? <img src={top100} alt="Atcoder Top 100 Icon"/> : ''
+              (30 <= rowIdx && rowIdx < 100) ? <img src={top100} alt="Top 100 Icon"/> : ''
             }
           </div>
         </td>
         <td className="td-participant">
-          <div className="flex-center participant-container">
-            <div className="avatar-container">
-              <img className='img-fluid' src="https://www.gravatar.com/avatar/HASH"></img>
-              {/* <img className='img-fluid' src={user.avatar} alt="User Avatar"></img> */}
-            </div>
-            <div className="flex-center-col">
-              <div className="text-left acc-username">{user.username}</div>
-              {realname.length > 0 && realname !== ' ' && <div className="text-left acc-realname">{realname}</div>}
-            </div>
-          </div>
+          <UserCard displayMode={this.props.displayMode} user={user} organization={orgMapping[user.organization]}/>
         </td>
 
         <td className="td-total">
           <div className="flex-center-col">
             <div className="p-best-points points">{
-              score
+              showScore
             }</div>
             <div className="p-best-time text-truncate time">{
-              cumtime
+              showCumtime
             }</div>
           </div>
         </td>
@@ -123,28 +153,58 @@ class ContestStanding extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id2idx: {},
+      probId2idx: {},
+      orgMapping: {},
+
       problems: null,
       standing: [],
 
-      loaded: false,
-      errors: null,
+      isFrozen: true, canBreakIce: false, iceBroken: false,
 
-      contest: null,
-      user: null,
+      displayMode: 'user',
+
+      loaded: false, errors: null,
+
+      contest: null, user: null,
+
+      isPollingOn: true, isPolling: false,
     }
   }
 
-  refetch() {
-    this.setState({ loaded: false, errors: null })
-    contestAPI.getContestStanding({key : this.state.contest.key})
+  meltingIce() {
+    this.setState({ iceBroken: true, },
+      () => this.refetch());
+  }
+  freezingIce() {
+    this.setState({ iceBroken: false, },
+      () => this.refetch())
+  }
+
+  refetch(polling=false) {
+    if (polling) this.setState({ isPolling: true });
+    else this.setState({ loaded: false, errors: null })
+
+    const params = (this.state.iceBroken ? {view_full: 1} : {view_full: 0});
+
+    contestAPI.getContestStanding({key : this.state.contest.key, params})
     .then((res) => {
       this.setState({
         loaded: true,
+        isPolling: false,
+
         standing: res.data.results,
         problems: res.data.problems,
+        organizations: res.data.organizations,
+
+        frozenEnabled: res.data.is_frozen_enabled,
+        frozenTime: res.data.frozen_time,
+        isFrozen: res.data.is_frozen,
+        canBreakIce: (res.data.can_break_ice || false),
+
+        scoreboardCache: res.data.scoreboard_cache_duration,
       })
 
+      // Contest - Problems mapping
       let mapping = {}; // mapping here is a list of problems in the contest -> their id
       let uniq=0;
       res.data.problems.forEach( (prob) => {
@@ -155,14 +215,23 @@ class ContestStanding extends React.Component {
         }
         uniq++;
       })
-      this.setState({ id2idx : mapping })
+      this.setState({ probId2idx : mapping })
+
+      // Contest - Organization mapping
+      mapping = {}; // mapping here is a list of problems in the contest -> their id
+      res.data.organizations.forEach( (org) => {
+        mapping[org.slug] = org;
+      })
+      this.setState({ orgMapping : mapping })
     })
     .catch((err) => {
+      clearInterval(this.timer)
       this.setState({
+        isPollingOn: false,
         loaded: true,
-        errors: err,
+        errors: err.response.data,
       })
-      toast.error(`Standing not available. (${err.response.status})`, {
+      toast.error(`Standing not available at the moment. Disconnected. (${err.response.status})`, {
         toastId: "contest-standing-na",
       })
     })
@@ -178,20 +247,78 @@ class ContestStanding extends React.Component {
     const { user } = this.props;
     const { contest } = this.context;
     if (!contest) return; // skip if no contest
+
     if (prevState.contest !== contest || prevState.user !== user) {
       this.setState({ user, contest }, () => {
         setTitle(`${contest.name} | Standing`)
         this.refetch()
       });
     }
+
+    let pollDelay = (this.state.scoreboardCache*1000 || __STANDING_POLL_DELAY);
+    pollDelay = Math.max(pollDelay, __STANDING_POLL_DELAY);
+    clearInterval(this.timer);
+    this.timer = setInterval(() => this.refetch(true), pollDelay);
+  }
+  componentWillUnmount(){
+    clearInterval(this.timer);
   }
 
   render() {
-    const { loaded, errors, problems, standing } = this.state;
+    const { loaded, errors,
+      problems, standing, frozenEnabled, frozenTime, isFrozen,
+      canBreakIce, displayMode,
+      scoreboardCache,
+      iceBroken, isPollingOn, isPolling
+    } = this.state;
 
     return (
       <div className="wrapper-vanilla p-2" id="contest-standing">
-        <h4>Standing</h4>
+        <div className="standing-lbl">
+          <h4 className="standing-head">
+            Standing {isPolling && <SpinLoader size={18} margin="0 2px"/>}
+          </h4>
+          <div className="flex-center-col standing-notice">
+          {
+            (scoreboardCache>0) && <span className="frozen-time">
+              Scoreboard is cached for every {scoreboardCache} second(s), it will take a while for your submissions to appear here.
+            </span>
+          }{frozenEnabled && (
+            (new Date() < new Date(frozenTime)
+              ? <span className="frozen-time">
+                Will be Frozen after {getLocalDateWithTimezone(frozenTime)}.
+              </span>
+              : <span className="frozen-time">
+                Frozen since {getLocalDateWithTimezone(frozenTime)}.
+              </span>)
+          )}
+          </div>
+
+          <div className="standing-options">
+            {canBreakIce &&
+              ( !iceBroken ?
+                <Button  variant="light" className="btn-svg"
+                  onClick={() => this.meltingIce()}>
+                    <AiOutlineEye size={20}/> Peek
+                </Button> :
+                <Button variant="dark" className="btn-svg"
+                  onClick={() => this.freezingIce()}>
+                    <GiIceCube size={20}/> Freeze!
+                </Button>
+              )
+            }
+            {
+              displayMode==='user'? <Button variant="light" className="btn-svg"
+                                    onClick={() => this.setState({displayMode: "org"})}>
+                  <FaUniversity size={20}/> Show
+              </Button> : <Button variant="dark" className="btn-svg"
+                          onClick={() => this.setState({displayMode: "user"})}>
+                <FaUniversity size={20}/> Hide
+              </Button>
+            }
+          </div>
+        </div>
+
         { !loaded && <SpinLoader margin="40px"/> }
         { loaded && <>
           <ErrorBox errors={this.state.errors} />
@@ -211,7 +338,11 @@ class ContestStanding extends React.Component {
               {
                 standing.map((part, idx) => <StandingItem
                   key={`ct-st-row-${idx}`}
-                  mapping={this.state.id2idx} rowIdx={idx} {...part} />)
+                  orgMapping={this.state.orgMapping}
+                  probMapping={this.state.probId2idx}
+                  rowIdx={idx}
+                  isFrozen={isFrozen} displayMode={displayMode}
+                  {...part} />)
               }
             </tbody>
           </Table>

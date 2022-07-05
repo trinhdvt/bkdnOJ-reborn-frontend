@@ -1,4 +1,4 @@
-import { SubmissionList } from './SubmissionList';
+import SubmissionList from './SubmissionList';
 import SubmissionDetails from './SubmissionDetails';
 
 export {

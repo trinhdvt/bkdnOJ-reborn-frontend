@@ -5,11 +5,22 @@ import {getConnectionUrl} from 'api/urls';
 const getProblems = ({ params }) => {
     return axiosClient.get('/problem/', (params && { params: {...params} }));
 }
+const createProblem = ({ params, data }) => {
+    return axiosClient.post(`/problem/`, data)
+}
+
 const getProblemDetails = ({shortname}) => {
     return axiosClient.get(`/problem/${shortname}`);
 }
 const submitToProblem = ({shortname, data}) => {
     return axiosClient.post(`/problem/${shortname}/submit/`, JSON.stringify(data));
+}
+
+const infoRejudgeProblem = ({shortname, params}) => {
+    return axiosClient.get(`/problem/${shortname}/rejudge/`, params && { params: {...params} });
+}
+const rejudgeProblem = ({shortname, data}) => {
+    return axiosClient.post(`/problem/${shortname}/rejudge/`, JSON.stringify(data));
 }
 
 const adminOptionsProblemDetails = ({shortname}) => {
@@ -42,9 +53,15 @@ const adminGetProblemDetailsTest = ({shortname, params}) => {
 
 const problemAPI = {
     getProblems,
+    createProblem,
+
     getProblemDetails,
 
     submitToProblem,
+
+    infoRejudgeProblem,
+    rejudgeProblem,
+
     adminOptionsProblemDetails,
 
     adminPostProblemFromZip,

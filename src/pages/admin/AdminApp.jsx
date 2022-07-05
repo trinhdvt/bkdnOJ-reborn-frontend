@@ -59,9 +59,9 @@ class AdminApp extends React.Component {
 
             <span></span>
           </div>
-          <Container id="admin-panel-container">
+          <div id="admin-panel-container">
             <Outlet/>
-          </Container>
+          </div>
         </div>
       </div>
     )

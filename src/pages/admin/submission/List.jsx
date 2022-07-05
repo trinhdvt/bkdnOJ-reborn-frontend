@@ -16,7 +16,7 @@ import 'styles/ClassicPagination.scss';
 
 class SubmissionListItem extends React.Component {
   render() {
-    const { id, date, time, memory, status, result, user, 
+    const { id, date, time, memory, status, result, user,
       contest_object, problem } = this.props;
     const {rowidx, selectChk, onSelectChkChange} = this.props;
 
@@ -37,8 +37,8 @@ class SubmissionListItem extends React.Component {
         <td className="text-truncate" style={{maxWidth: "100px"}}>
           {
             !!contest_object
-            ? <Link to={`/admin/contest/${contest_object.id}`}>
-                {contest_object.id}
+            ? <Link to={`/admin/contest/${contest_object}`}>
+                {contest_object}
               </Link>
             : "None"
           }
@@ -108,7 +108,7 @@ class AdminSubmissionList extends React.Component {
       .catch((err) => {
         this.setState({
           loaded: true,
-          errors: ["Cannot fetch submissions. Please retry again."],
+          errors: {errors: err.response.data || ["Cannot fetch submissions. Please retry again."]},
         })
       })
   }
@@ -155,7 +155,7 @@ class AdminSubmissionList extends React.Component {
           if ([403, 401].includes(err.response.status))
             msg = 'Không có quyền cho thao tác này.';
         }
-        this.setState({ errors: [msg] })
+        this.setState({ errors: {errors: msg} })
       })
     }
   }

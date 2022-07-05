@@ -77,16 +77,18 @@ class ProblemList extends React.Component {
   callApi(params) {
     this.setState({loaded: false, errors: null})
 
-    let endpoint, data;
+    let endpoint, data, prms;
     if (this.state.contest) {
       endpoint = contestApi.getContestProblems
       data = { key: this.state.contest.key }
+      prms = {page: params.page+1, contest: this.state.contest.key}
     } else {
       endpoint = problemApi.getProblems
       data = {}
+      prms = {page: params.page+1,}
     }
 
-    endpoint({...data, params: {page: params.page+1,} })
+    endpoint({...data, params: prms })
       .then((res) => {
         this.setState({
           problems: res.data.results,
@@ -97,9 +99,10 @@ class ProblemList extends React.Component {
         })
       })
       .catch((err) => {
+        console.log(err.response.data);
         this.setState({
           loaded: true,
-          errors: ["Cannot fetch problems at the moment."],
+          errors: err.response.data || "Cannot fetch problems at the moment.",
         })
       })
   }
@@ -156,7 +159,7 @@ class ProblemList extends React.Component {
 
                   { this.state.count === 0 && <>
                     <tr><td colSpan="6">
-                      <em>No Problems Available Yet.</em>
+                      <em>No problem is available yet.</em>
                     </td></tr>
                   </> }
                 </>
@@ -171,7 +174,7 @@ class ProblemList extends React.Component {
                   onPageChange={this.handlePageClick}
                   forcePage={this.state.currPage}
                   pageLabelBuilder={(page) => `[${page}]`}
-                  pageRangeDisplayed={3}
+                  pageRangeDisplayed={5}
                   pageCount={this.state.pageCount}
                   renderOnZeroPageCount={null}
                   previousLabel={null}

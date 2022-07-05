@@ -12,14 +12,19 @@ import { ErrorBox } from 'components';
 import './Details.scss';
 
 const JUDGE_PROPS = ['name', 'auth_key', 'description', 'is_blocked']
+const DEFAULT_JUDGE = {
+  'name': '',
+  'auth_key': '',
+  'description': '',
+  'is_blocked': false,
+};
 
 class AdminJudgeNew extends React.Component {
   constructor(props) {
     super(props);
-    let data = {}
-    JUDGE_PROPS.forEach((key) => data[key] = '')
-
-    this.state = { data };
+    this.state = {
+      data: {...DEFAULT_JUDGE}
+    };
   }
 
   componentDidMount() {
@@ -64,11 +69,9 @@ class AdminJudgeNew extends React.Component {
       this.setState({ redirectUrl: `/admin/judge/${res.data.id}` })
     })
     .catch((err) => {
-      toast.error(`Cannot create. (${err})`)
+      toast.error(`Create failed. (${err.response.status})`)
       const data = err.response.data;
-      let errors = {...data}
-      if (data.detail) errors.general = data.detail
-      this.setState({ errors })
+      this.setState({ errors: {errors: data} })
     })
   }
 
@@ -82,7 +85,7 @@ class AdminJudgeNew extends React.Component {
       <div className="admin judge-panel wrapper-vanilla">
         <h4 className="judge-title">
           <div className="panel-header">
-              <span className="title-text">{`Creating Judge`}</span>
+              <span className="title-text">+ Creating Judge</span>
               <span></span>
             </div>
         </h4>
@@ -101,9 +104,9 @@ class AdminJudgeNew extends React.Component {
               <Col> <Form.Control size="sm" type="text" placeholder="Judge Name" id="name"
                       value={data.name || ''} onChange={(e)=>this.inputChangeHandler(e)} required
               /></Col>
-              <Form.Label column="sm" lg={2}> Auth Key </Form.Label>
+              <Form.Label column="sm" lg={2} className="required"> Auth Key </Form.Label>
               <Col> <Form.Control size="sm" type="text" placeholder="Judge Authentication key" id="auth_key"
-                      value={data.auth_key || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                      value={data.auth_key || ''} onChange={(e)=>this.inputChangeHandler(e)} required
               /></Col>
               <Form.Label column="sm" xl={12}> Description </Form.Label>
               <Col xs={12}> <Form.Control size="sm" type="textarea" placeholder="Judge Description" id="description"
@@ -112,14 +115,14 @@ class AdminJudgeNew extends React.Component {
             </Row>
 
             <Row>
-              <Form.Label column="sm" > Online </Form.Label>
-              <Col > <Form.Control size="sm" type="checkbox" id="online"
+              <Form.Label column="sm" xs={3}> Online </Form.Label>
+              <Col xs={3}> <Form.Control size="sm" type="checkbox" id="online"
                       checked={data.online || false}
                       // onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
                       readOnly disabled
               /></Col>
-              <Form.Label column="sm" > Is Blocked? </Form.Label>
-              <Col > <Form.Control size="sm" type="checkbox" id="is_blocked"
+              <Form.Label column="sm" xs={4}> Chặn máy chấm này? </Form.Label>
+              <Col xs={2}> <Form.Control size="sm" type="checkbox" id="is_blocked"
                       checked={data.is_blocked || false}
                       onChange={(e)=>this.inputChangeHandler(e, {isCheckbox: true})}
               /></Col>

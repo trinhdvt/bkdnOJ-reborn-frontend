@@ -16,8 +16,8 @@ export default class CodeEditor extends React.Component {
 
   getAceMode() {
     return (
-      !!modesByName[this.props.ace] 
-      ? this.props.ace 
+      !!modesByName[this.props.ace]
+      ? this.props.ace
       : FALLBACK_ACE_MODE)
   }
 
@@ -46,7 +46,7 @@ CodeEditor.propTypes = {
 const styles = {
   ace: {
     width: "100%",
-    maxHeight: "300px",
+    // maxHeight: "300px",
     overflow: "auto",
   }
 }

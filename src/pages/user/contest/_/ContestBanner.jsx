@@ -13,6 +13,29 @@ export default class ContestBanner extends React.Component {
       contest: {},
     }
   }
+
+  isParticipant(){
+    const {contest} = this.state;
+    if (contest)
+      if (contest.is_registered && !contest.spectate_allow)
+        return true;
+    return false;
+  }
+  isSpectator() {
+    const {contest} = this.state;
+    if (contest)
+      if (contest.is_registered && contest.spectate_allow)
+        return true;
+    return false;
+  }
+  isViewer() {
+    const {contest} = this.state;
+    if (contest)
+      if (contest.is_registered && contest.spectate_allow)
+        return true;
+    return false;
+  }
+
   updateTimeLeftLabel() {
     const contest = this.state.contest;
     let start_time = new Date(contest.start_time);
@@ -48,7 +71,6 @@ export default class ContestBanner extends React.Component {
     this.setState({ time_label: `${lbl} ${hhmmss}` })
   }
 
-
   componentDidMount() { this.componentDidUpdate() }
   componentDidUpdate(prevProps, prevState) {
     if (this.props.contest !== this.state.contest ) {
@@ -67,15 +89,12 @@ export default class ContestBanner extends React.Component {
   render() {
     const { contest } = this.state;
     let headerComp = <>Loading</>
-    if (contest) {
-      if (contest.is_registered && !contest.spectate_allow)
-        headerComp = <>You are Participating</>
-      else
-      if (contest.is_registered && contest.spectate_allow)
-        headerComp = <>You are Spectating</>
-      else
-        headerComp = <>You are Viewing</>
-    }
+    if (this.isParticipant())
+      headerComp = <>You are Participating</>
+    else if (this.isSpectator())
+      headerComp = <>You are Spectating</>
+    else
+      headerComp = <>You are Viewing</>
 
     return (
       <div className="wrapper-vanilla" id="contest-banner">

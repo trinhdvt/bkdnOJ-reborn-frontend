@@ -49,7 +49,7 @@ class ContestNav extends React.Component {
     return (
       <>
       <div className={`wrapper-vanilla ${this.props.show===false ? 'd-none' : ''}`}>
-        <div className="d-inline-flex text-left" id="contest-app-nav">
+        <div className="d-flex text-left" style={{flexWrap: "wrap"}} id="contest-app-nav">
           <Link id={`contest-nav-back`} onClick={()=>this.props.navigate(-1)}
             to='#'>{`<< Back`}</Link>
           <Link to='#'>{` | `}</Link>

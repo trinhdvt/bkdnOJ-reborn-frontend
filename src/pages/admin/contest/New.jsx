@@ -67,7 +67,6 @@ class AdminContestNew extends React.Component {
       toast.error(`Cannot create. (${err.response.status})`)
       const data = err.response.data;
       let errors = {...data}
-      if (data.detail) errors.general = data.detail
       this.setState({ errors })
     })
   }
@@ -106,12 +105,12 @@ class AdminContestNew extends React.Component {
             <Row>
               <Form.Label column="sm" md={2} className="required"> Start Time </Form.Label>
               <Col md={4}> <Form.Control size="sm" type="datetime-local" id="start_time"
-                      value={this.getTime('start_time') || ''}
+                      value={this.getTime('start_time') || ''} required
                       onChange={(e)=>this.setTime(e.target.id, e.target.value)}
               /></Col>
               <Form.Label column="sm" md={2} className="required"> End Time </Form.Label>
               <Col md={4}> <Form.Control size="sm" type="datetime-local" id="end_time"
-                      value={this.getTime('end_time') || ''}
+                      value={this.getTime('end_time') || ''} required
                       onChange={(e)=>this.setTime(e.target.id, e.target.value)}
               /></Col>
               <Col xl={12}>
@@ -123,7 +122,7 @@ class AdminContestNew extends React.Component {
 
             <Row>
               <Form.Label column="sm" md={3}> Time Limit </Form.Label>
-              <Col md={9}> <Form.Control size="sm" id="time_limit"
+              <Col md={9}> <Form.Control size="sm" id="time_limit" type="number"
                       value={data.time_limit || ''} onChange={(e)=>this.inputChangeHandler(e)}
               />
               </Col>

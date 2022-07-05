@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 import { Button, Tabs, Tab } from 'react-bootstrap';
 
-import { FaRegTrashAlt, FaGlobe } from 'react-icons/fa';
+import { FaRegTrashAlt, FaGlobe, FaSyncAlt } from 'react-icons/fa';
 
 import problemAPI from 'api/problem';
-import { SpinLoader } from 'components';
+import { SpinLoader, ErrorBox } from 'components';
 import { withParams } from 'helpers/react-router'
 import { setTitle } from 'helpers/setTitle';
 
@@ -16,6 +16,71 @@ import TestDataDetails from './_/TestDataDetails';
 import TestcaseDetails from './_/TestcaseDetails';
 
 import './AdminProblemDetails.scss';
+
+class RejudgeButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      judgeInfo: null,
+      fetchingInfo: false,
+      confirmRejudge: false,
+    }
+  }
+
+  fetchRejudgeInfo() {
+    const data = { shortname: this.props.shortname };
+    this.setState({fetchingInfo: true}, () => {
+      problemAPI.infoRejudgeProblem(data)
+      .then((res) => {
+        this.setState({ judgeInfo : res.data.msg }, () => {
+          let conf = window.confirm(res.data.msg + ' Proceed?');
+          this.setState({ confirmRejudge: conf })
+        })
+      })
+      .catch((err) => {
+        let msg = `Cannot get rejudge info. ${err.response.status}`;
+        if (err.response.data.detail)
+          msg =  err.response.data.detail;
+        toast.error(msg)
+      })
+      .finally(() => this.setState({fetchingInfo: false}))
+    })
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.confirmRejudge === false && this.state.confirmRejudge === true) {
+      const data = { shortname: this.props.shortname };
+      problemAPI.rejudgeProblem(data)
+        .then((res) => toast.success(`OK Rejudging ${this.props.shortname}.`))
+        .catch((err) => toast.error('Cannot rejudge at the moment.'))
+    }
+  }
+
+  clickHandler(e) {
+    e.preventDefault();
+    if (this.state.confirmRejudge) {
+      alert('Please refresh if you want to re-rejudge this problem.');
+      return;
+    }
+    this.fetchRejudgeInfo();
+  }
+
+  render() {
+    const { fetchingInfo, confirmRejudge } = this.state;
+    const {prob} = this.props;
+
+    return(
+      <Button className="btn-svg" size="sm"
+        variant={!confirmRejudge ? "success" : "light"}
+        onClick={(e)=>this.clickHandler(e)}>
+          <FaSyncAlt/>
+          <span className="d-none d-md-inline">
+            {fetchingInfo ? <SpinLoader margin="0"/> : <>Rejudge</>}
+          </span>
+      </Button>
+    )
+  }
+}
 
 
 class AdminProblemDetails extends React.Component {
@@ -29,10 +94,17 @@ class AdminProblemDetails extends React.Component {
       problemTitle: undefined,
       general: undefined,
       testData: undefined,
+
+      formErrors: null,
     };
   }
+  refetch(newshortname=null) {
+    let childKey = this.state.childKey;
+    if (newshortname) {
+      this.shortname=newshortname;
+      childKey = Math.random();
+    }
 
-  async componentDidMount() {
     Promise.all([
       //problemAPI.adminOptionsProblemDetails({shortname: this.shortname}),
       problemAPI.getProblemDetails({shortname: this.shortname})
@@ -42,18 +114,24 @@ class AdminProblemDetails extends React.Component {
       // console.log(optionsRes.data)
       // console.log(generalRes.data)
       this.setState({
+        shortname: generalRes.data.shortname,
         problemTitle: generalRes.data.title,
         // options: optionsRes.data,
         general: generalRes.data,
         loaded: true,
+        childKey,
       })
-      setTitle(`Admin | Problem. ${generalRes.data.title}`)
+      setTitle(`Admin | Problem. ${generalRes.data.shortname}`)
     }).catch((err) => {
       this.setState({
         loaded: true,
-        errors: err,
+        errors: err.response.data,
       })
     })
+  }
+
+  componentDidMount() {
+    this.refetch();
   }
 
   deleteObjectHandler() {
@@ -77,6 +155,7 @@ class AdminProblemDetails extends React.Component {
       )
     }
     const {loaded, errors, general, options} = this.state;
+    const { formErrors } = this.state;
 
     return (
       <div className="admin problem-panel wrapper-vanilla">
@@ -85,7 +164,10 @@ class AdminProblemDetails extends React.Component {
           { loaded && !!errors && <span>Something went wrong</span>}
           { loaded && !errors && (
             <div className="panel-header">
-              <span className="title-text">{`Editing problem. ${this.state.problemTitle}`}</span>
+              <span className="title-text">{`Problem | ${this.state.problemTitle}`}</span>
+              <span>
+                <RejudgeButton shortname={general.shortname} setErrors={(e)=>this.setState({errors: e})}/>
+              </span>
               <span>
                 <Button className="btn-svg" size="sm" variant="dark"
                   onClick={()=>this.setState({ redirectUrl: `/problem/${this.shortname}` })}>
@@ -106,17 +188,30 @@ class AdminProblemDetails extends React.Component {
           { !loaded && <span><SpinLoader/> Loading...</span> }
 
           { loaded && !errors && <>
+          <ErrorBox errors={formErrors} />
           <Tabs defaultActiveKey="general" id="prob-tabs" className="pl-2">
             <Tab eventKey="general" title="General">
-              <GeneralDetails shortname={this.shortname} data={general} options={options}
+              <GeneralDetails
+                shortname={this.shortname} data={general}
                 setProblemTitle={((title) => this.setState({problemTitle : title}))}
+                setErrors={(e)=>this.setState({formErrors: e})}
+
+                refetch={(newshort)=>this.refetch(newshort)}
               />
             </Tab>
             <Tab eventKey="data" title="Test Data">
-              <TestDataDetails shortname={this.shortname} />
+              <TestDataDetails
+                key={`prb-dt-data${this.state.childKey}`} shortname={this.shortname}
+                setErrors={(e)=>this.setState({formErrors: e})}
+                forceRerender={() => this.setState({childKey: Math.random()})}
+              />
             </Tab>
             <Tab eventKey="test" title="Test Cases">
-              <TestcaseDetails shortname={this.shortname} />
+              <TestcaseDetails
+                key={`prb-dt-case${this.state.childKey}`} shortname={this.shortname}
+                setErrors={(e)=>this.setState({formErrors: e})}
+                forceRerender={() => this.setState({childKey: Math.random()})}
+              />
             </Tab>
           </Tabs>
           </>

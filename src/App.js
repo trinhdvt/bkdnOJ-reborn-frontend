@@ -23,6 +23,7 @@ import {
   SubmissionList, SubmissionDetails, ProblemList,
   ProblemDetails, JudgeStatuses, Submit,
   ContestList, ContestApp, ContestStanding,
+  OrgList, OrgDetail,
 } from 'pages/user';
 
 import {
@@ -31,8 +32,10 @@ import {
   AdminSubmissionList, AdminSubmissionDetails,
   AdminJudgeList, AdminJudgeDetails, AdminJudgeNew,
   AdminContestList, AdminContestDetails, AdminContestNew,
+  AdminOrgList, AdminOrgDetails,
   AdminApp
 } from 'pages/admin';
+
 
 import UserApp from 'pages/user/UserApp';
 import { setTitle } from 'helpers/setTitle';
@@ -78,17 +81,24 @@ class App extends React.Component {
                   </div>
                 }/>
 
-                <Route path="user" element={
+                <Route path="users" element={
                   <OneColumn mainContent={<AdminUserList />} />
+                }/>
+                <Route path="users/new" element={
+                  <OneColumn mainContent={<AdminUserNew />} />
                 }/>
                 <Route path="user/:id" element={
                   <OneColumn mainContent={<AdminUserDetails />} />
                 }/>
-                <Route path="user/new" element={
-                  <OneColumn mainContent={<AdminUserNew />} />
+
+                <Route path="orgs" element={
+                  <OneColumn mainContent={<AdminOrgList />} />
+                }/>
+                <Route path="org/:slug" element={
+                  <OneColumn mainContent={<AdminOrgDetails />} />
                 }/>
 
-                <Route path="problem" element={
+                <Route path="problems" element={
                   <OneColumn mainContent={<AdminProblemList />} />
                 }/>
                 <Route path="problem/new" element={
@@ -98,7 +108,7 @@ class App extends React.Component {
                   <OneColumn mainContent={<AdminProblemDetails />} />
                 }/>
 
-                <Route path="submission" element={
+                <Route path="submissions" element={
                   <OneColumn mainContent={<AdminSubmissionList />} />
                 }/>
                 <Route path="submission/new" element={
@@ -108,17 +118,17 @@ class App extends React.Component {
                   <OneColumn mainContent={<AdminSubmissionDetails />} />
                 }/>
 
-                <Route path="contest" element={
+                <Route path="contests" element={
                   <OneColumn mainContent={<AdminContestList />} />
                 }/>
-                <Route exact path="contest/new" element={
+                <Route exact path="contests/new" element={
                   <OneColumn mainContent={<AdminContestNew />} />
                 }/>
                 <Route path="contest/:key" element={
                   <OneColumn mainContent={<AdminContestDetails />} />
                 }/>
 
-                <Route path="judge" element={
+                <Route path="judges" element={
                   <OneColumn mainContent={<AdminJudgeList />} />
                 }/>
                 <Route path="judge/new" element={
@@ -140,13 +150,18 @@ class App extends React.Component {
           <Route path="" element={<UserApp />}>
             <Route index path="/" element={<Content />} />
             <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/sign-out" element={<SignOut />} />
             <Route path="/profile" element={<UserProfile />} />
+            {
+              this.isAuthenticated() ? <>
+                <Route path="/sign-out" element={<SignOut />} />
+              </> : <>
+                <Route path="/sign-up" element={<SignUp />} />
+              </>
+            }
 
             {/* <Route path="/test/pdf" element={ <PDFViewer /> } /> */}
 
-            <Route path="/problem" element={
+            <Route path="/problems" element={
               <OneColumn mainContent={<ProblemList />}
               />
             } />
@@ -158,7 +173,7 @@ class App extends React.Component {
               element={<ListSidebar mainContent={<Submit />} />}
             /> */}
 
-            <Route path="/submission" element={
+            <Route path="/submissions" element={
               <OneColumn mainContent={<SubmissionList />}
               />
             } />
@@ -167,8 +182,17 @@ class App extends React.Component {
               />
             } />
 
+            <Route path="/orgs" element={
+              <OneColumn mainContent={<OrgList />}
+              />
+            } />
+            <Route path="/org/:slug" element={
+              <OneColumn mainContent={<OrgDetail/>}
+              />
+            } />
+
             {/* ---------------------- CONTEST --------------------------- */}
-            <Route path="/contest" element={
+            <Route path="/contests" element={
               <OneColumn mainContent={<ContestList />}
               />
             } />
@@ -214,7 +238,7 @@ class App extends React.Component {
             </Route>
 
 
-            <Route path="/judge-status" element={
+            <Route path="/status" element={
               <OneColumn mainContent={<JudgeStatuses />}/>
             } />
 

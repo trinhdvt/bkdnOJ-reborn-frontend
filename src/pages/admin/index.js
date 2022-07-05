@@ -6,12 +6,15 @@ import { AdminSubmissionDetails, AdminSubmissionList } from './submission';
 import { AdminJudgeDetails, AdminJudgeList, AdminJudgeNew } from './judge';
 import { AdminContestList, AdminContestDetails, AdminContestNew } from './contest';
 
+import { AdminOrgList, AdminOrgDetails } from './org';
+
 export {
     AdminApp,
     AdminProblemDetails, AdminProblemList,
     AdminSubmissionDetails, AdminSubmissionList,
     AdminJudgeDetails, AdminJudgeList, AdminJudgeNew,
     AdminUserList, AdminUserDetails, AdminUserNew,
+    AdminContestList, AdminContestDetails, AdminContestNew,
 
-    AdminContestList, AdminContestDetails, AdminContestNew
+    AdminOrgList, AdminOrgDetails,
 }

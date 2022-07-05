@@ -2,23 +2,31 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 
-import { Nav, NavDropdown } from 'react-bootstrap';
+import { Nav, NavDropdown, Modal, Button } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 
+// Components
+import SwitchOrgModal from 'components/SwitchOrgModal';
+
+// Assets
 import { AiOutlineForm, AiOutlineLogin, AiOutlineLogout, AiOutlineProfile } from 'react-icons/ai';
 import { GrUserAdmin } from 'react-icons/gr';
+import { FaGlobe } from 'react-icons/fa';
 
+// Services
 import authClient from 'api/auth';
 import profileClient from 'api/profile';
 
-import { getAdminPageUrl } from 'api/urls';
+// Redux
 import { updateUser, clearUser } from 'redux/User/actions'
 import { updateProfile, clearProfile } from 'redux/Profile/actions'
 import { updateContest, clearContest } from 'redux/Contest/actions'
+import { clearMyOrg } from 'redux/MyOrg/actions';
 
 import { __ls_get_auth_user, __ls_remove_credentials,
         __ls_set_auth_user, } from 'helpers/localStorageHelpers';
 
+// Helpers
 import { log } from 'helpers/logger';
 
 
@@ -38,6 +46,7 @@ const mapDispatchToProps = dispatch => {
 
     updateProfile: (profile) => dispatch(updateProfile({ profile })),
     clearProfile: () => dispatch(clearProfile()),
+    clearMyOrg: () => dispatch(clearMyOrg()),
 
     updateContest: (contest) => dispatch(updateContest({ contest })),
     clearContest: () => dispatch( clearContest() ),
@@ -46,10 +55,20 @@ const mapDispatchToProps = dispatch => {
 /* Redux ------------- */
 
 class AuthorizedMenu extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            switchOrgModalShow: false,
+        }
+    }
+    setSwitchOrgModalShow(mode) {
+        this.setState({ switchOrgModalShow: mode });
+    }
+
     componentDidMount() {
         profileClient.fetchProfile().then((res) => {
-            __ls_set_auth_user(res.data.owner);
-            this.props.updateUser({...res.data.owner, avatar: res.data.avatar});
+            __ls_set_auth_user(res.data.user);
+            this.props.updateUser({...res.data.user, avatar: res.data.avatar});
             this.props.updateProfile({...res.data});
             this.props.updateContest(res.data.current_contest);
         }).catch((err) => {
@@ -61,6 +80,7 @@ class AuthorizedMenu extends React.Component {
         authClient.signOut()
         .then((res) => {
             this.props.clearUser();
+            this.props.clearProfile();
             toast.success("See you later!");
         })
         .catch((err) => {
@@ -110,6 +130,11 @@ class AuthorizedMenu extends React.Component {
                         Sign Out
                     </NavDropdown.Item>
                 </NavDropdown>
+
+                {/* <button id="switch-org-btn" onClick={()=>this.setSwitchOrgModalShow(true)} >
+                    <FaGlobe/>
+                </button>
+                <SwitchOrgModal show={this.state.switchOrgModalShow} setShow={(b)=>this.setSwitchOrgModalShow(b)}/> */}
             </>
         )
     }
@@ -155,4 +180,5 @@ class UserAuthSection extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserAuthSection);
+let wrapped = UserAuthSection;
+export default connect(mapStateToProps, mapDispatchToProps)(wrapped);

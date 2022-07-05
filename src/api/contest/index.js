@@ -19,12 +19,16 @@ const joinContest = ({ key }) => {
 const leaveContest = ({ key }) => {
     return axiosClient.post(`/contest/${key}/leave/`);
 }
-const getContestStanding = ({ key }) => {
-    return axiosClient.get(`/contest/${key}/standing/`);
+const getContestStanding = ({ key, params }) => {
+    return axiosClient.get(`/contest/${key}/standing/`, (params && { params: {...params} }));
 }
 const getContestParticipations = ({ key, params }) => {
     return axiosClient.get(`/contest/${key}/participations/`, (params && { params: {...params} }));
 }
+const addContestParticipations = ({ key, data }) => {
+    return axiosClient.post(`/contest/${key}/participations/add/`, data);
+}
+
 const getContestSubmissions = ({ key, params }) => {
     return axiosClient.get(`/contest/${key}/submission/`, (params && { params: {...params} }));
 }
@@ -32,6 +36,7 @@ const getContestSubmissions = ({ key, params }) => {
 const getContestProblems = ({ key, params }) => {
     return axiosClient.get(`/contest/${key}/problem/`, (params && { params: {...params} }));
 }
+
 const updateContestProblems = ({ key, data }) => {
     return axiosClient.post(`/contest/${key}/problem/`, data); // actually patching
 }
@@ -40,14 +45,30 @@ const updateContestProblems = ({ key, data }) => {
 const getContestProblem = ({ key, shortname, params }) => {
     return axiosClient.get(`/contest/${key}/problem/${shortname}/`, (params && { params: {...params} }));
 }
+
 const submitContestProblem = ({ key, shortname, data }) => {
     return axiosClient.post(`/contest/${key}/problem/${shortname}/submit/`, JSON.stringify(data) );
 }
+
+const infoRejudgeContestProblem = ({ key, shortname, params}) => {
+    return axiosClient.get(`/contest/${key}/problem/${shortname}/rejudge/`, (params && { params: {...params} }));
+}
+const rejudgeContestProblem = ({ key, shortname, data }) => {
+    return axiosClient.post(`/contest/${key}/problem/${shortname}/rejudge/`, JSON.stringify(data));
+}
+
 const getContestProblemSubmissions = ({ key, shortname, params }) => {
     return axiosClient.get(`/contest/${key}/problem/${shortname}/submission/`, (params && { params: {...params} }));
 }
 const getContestProblemSubmission = ({ key, shortname, id }) => {
     return axiosClient.get(`/contest/${key}/problem/${shortname}/submission/${id}/`);
+}
+
+const infoRateContest = ({key}) => {
+    return axiosClient.get(`/contest/${key}/rate/`, );
+}
+const rateContest = ({key, data}) => {
+    return axiosClient.post(`/contest/${key}/rate/`, data);
 }
 
 const createContest = ({data}) => {
@@ -69,11 +90,18 @@ const contestAPI = {
 
     getContestStanding,
     getContestSubmissions,
-    getContestParticipations,
+
+    getContestParticipations, addContestParticipations,
 
     // ContestProblem
     getContestProblems, getContestProblem, submitContestProblem,
     updateContestProblems,
+
+    // Rejudge
+    infoRejudgeContestProblem, rejudgeContestProblem,
+
+    // Rating
+    infoRateContest, rateContest,
 
     getContestProblemSubmissions, getContestProblemSubmission,
 

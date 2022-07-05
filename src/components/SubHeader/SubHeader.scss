@@ -4,33 +4,60 @@
     // Top Border Line
     // border-top: solid 1px $background-gray-dark;
     background-color: $background-gray;
+    font-family: $font-base;
+    // font-weight: bold;
 
-    height: 20px;
-    line-height: 18px;
+    width: 100%;
+
+    height: 24px;
+    line-height: 24px;
 
     text-align: left;
-    font-size: xx-small;
+    font-size: 14px;
+    color: $background-gray-darker;
 
     .float-left {
+        display: inline-flex;
         .left-padder {
-            padding-left: 50px;
-            padding-right: 50px;
-            font-size: 9px !important;
+            width: 115px;
             text-align: center;
+            font-weight: bold;
+            // padding-left: 50px;
+            // padding-right: 50px;
+            // font-size: 9px !important;
+            // vertical-align: middle;
         }
-        span {
+        span,div {
             margin-right: 10px;
         }
     }
+
     .float-right {
-        span {
+        span,div {
             margin: 0 5px;
             &:last-child {
                 margin-right: 0;
             }
+            vertical-align: middle;
         }
     }
 
+    // Subcomponenets css
+    .org-display {
+        display: flex;
+        width: min-content;
+        align-items: center;
+        padding-bottom: 1px;
+        height: 24px;
+        // &.org-uni {
+        //     // color: $red-light;
+        //     color: $base;
+        // }
+        // &.org-none {
+        //     color: $base;
+        // }
+    }
+
     // Bottom Border Line
-    border-bottom: dashed 1px $background-gray-dark;
+    border-bottom: solid 1px $background-gray-dark;
 }

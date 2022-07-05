@@ -32,6 +32,9 @@ div.problem-info {
       align-items: flex-end;
 
       .btn {
+        display: flex;
+        align-items: center;
+
         margin-top: 2px;
         margin-bottom: 2px;
         padding: 0 4px;
@@ -47,11 +50,33 @@ div.problem-info {
     }
   }
 
-  div.problem-pdf {
-    width: 95%;
-    text-align: center;
-    margin: auto;
-    border: solid 2px $background-gray;
-    margin-top: 5px;
+  div.problem-statement {
+    min-height: 200px;
+    div.problem-pdf {
+      width: 95%;
+      text-align: center;
+      margin: auto;
+      border: solid 2px $background-gray;
+      margin-top: 5px;
+    }
+    div.problem-text {
+      padding: 3px 5px;
+      .wmde-markdown.wmde-markdown-color,
+      .w-md-editor-show-preview {
+        margin: unset;
+        padding: unset;
+        text-align: left;
+        border: solid 1px $background-gray;
+        border-radius: 3;
+        box-shadow: unset;
+        background-color: unset;
+      }
+      .wmde-markdown.wmde-markdown-color.w-md-editor-preview {
+        padding: 5px 10px;
+      }
+      .w-md-editor-content {
+        border: unset;
+      }
+    }
   }
 }

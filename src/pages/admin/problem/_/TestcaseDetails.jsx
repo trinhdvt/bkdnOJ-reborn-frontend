@@ -3,22 +3,9 @@ import { toast } from 'react-toastify';
 import { Link, Navigate } from 'react-router-dom';
 import { Form, Accordion, Button, Table, Row, Col } from 'react-bootstrap';
 import { ErrorBox, SpinLoader } from 'components'
+import {VscRefresh} from 'react-icons/vsc';
 
 import problemAPI from 'api/problem';
-
-class ButtonPanel extends React.Component {
-  render() {
-    return (
-      <Row className="button-panel">
-        <Col >
-          <Button variant="dark" size="sm" type="submit" disabled>
-            No Op
-          </Button>
-        </Col>
-      </Row>
-    )
-  }
-}
 
 class TestcaseItem extends React.Component {
   render() {
@@ -55,12 +42,12 @@ export default class TestcaseDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      shortname: this.props.shortname,
       data: [],
       loaded: false,
       errors: null,
 
       selectChk: [],
+      submitting: false,
     }
   }
 
@@ -87,26 +74,45 @@ export default class TestcaseDetails extends React.Component {
     })
   }
 
+  refetch() {
+    if (this.state.submitting) return;
+    if (this.props.setErrors) {
+      this.props.setErrors(null)
+    }
+    this.setState({
+      submitting: true,
+      errors: null,
+    }, () => {
+      const {shortname} = this.props;
+      problemAPI.adminGetProblemDetailsTest({shortname})
+        .then((res) => {
+          this.setState({
+            data: res.data,
+            selectChk: Array(res.data.length).fill(false),
+            loaded: true,
+            // errors: null,
+            submitting: false,
+          })
+        }).catch((err) => {
+          this.setState({
+            loaded: true,
+            submitting: false,
+            // errors: ['Cannot fetch testcases for this problem. Has it been deleted?']
+          })
+          if (this.props.setErrors) {
+            this.props.setErrors({errors: err.response.data})
+          }
+        })
+    })
+  }
+
   componentDidMount() {
-    const {shortname} = this.state;
-    problemAPI.adminGetProblemDetailsTest({shortname})
-      .then((res) => {
-        this.setState({
-          data: res.data,
-          selectChk: Array(res.data.length).fill(false),
-          loaded: true,
-          errors: null,
-        })
-      }).catch((err) => {
-        this.setState({
-          loaded: true,
-          errors: ['Cannot fetch testcases for this problem. Has it been deleted?']
-        })
-      })
+    this.refetch();
   }
 
   formSubmitHandler(e) {
     e.preventDefault();
+    this.props.forceRerender();
     alert('Editing this resource is not implemented.');
   }
 
@@ -116,13 +122,23 @@ export default class TestcaseDetails extends React.Component {
 
     return (
       <Form id="problem-testcase-form" onSubmit={(e) => this.formSubmitHandler(e)}>
+        <Row className="options m-1 border">
+          <Col>
+            {this.state.submitting && <span className="loading_3dot">Đang xử lý yêu cầu</span> }
+          </Col>
+          <Button variant="dark" size="sm" className="btn-svg"
+            onClick={()=>this.refetch()}>
+            <VscRefresh/> Refresh
+          </Button>
+        </Row>
+
         <Accordion defaultActiveKey="0">
           {/* General Settings */}
           <Accordion.Item eventKey="0" className="testcases">
             <Accordion.Header>Testcases</Accordion.Header>
             <Accordion.Body>
               <ErrorBox errors={this.state.errors} />
-              <sub>Những testcase này được tự động tạo ra từ file nén Archive trong tab Test Data.</sub>
+              <sub className="ml-2">Những testcase này được tự động tạo ra từ file nén Archive trong tab Test Data.</sub>
               <Table responsive hover size="sm" striped bordered className="rounded text-center">
                 <thead>
                   <tr>
@@ -154,7 +170,14 @@ export default class TestcaseDetails extends React.Component {
           </Accordion.Item>
         </Accordion>
 
-        <ButtonPanel />
+        <Row >
+          <Col >
+            <Button variant="dark" size="sm" type="submit" onClick={(e)=>this.formSubmitHandler(e)}>
+              No Op
+            </Button>
+            { this.state.submitting && <SpinLoader size={20} margin="auto 0 auto 15px" /> }
+          </Col>
+        </Row>
       </Form>
     )
   }

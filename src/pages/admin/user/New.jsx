@@ -25,7 +25,7 @@ class AdminJudgeDetails extends React.Component {
   setRedirect(url) { this.setState({ redirectUrl: url })}
 
   componentDidMount() {
-    setTitle(`Admin | New User`)
+    setTitle(`Admin | Users`)
   }
 
   render() {
@@ -38,7 +38,7 @@ class AdminJudgeDetails extends React.Component {
       <div className="admin user-panel wrapper-vanilla">
         <h4 className="user-title">
           <div className="panel-header">
-            <span className="title-text">{`Creating User`}</span>
+            <span className="title-text">+ Creating User</span>
             <span>
             </span>
           </div>

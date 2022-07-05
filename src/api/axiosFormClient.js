@@ -70,9 +70,10 @@ axiosFormClient.interceptors.response.use(
                 if (res.data) {
                     if (res.data.code === "token_not_valid") {
                         __ls_remove_credentials();
+                        localStorage.removeItem('persist:root')
+                        window.location.href = "/sign-in"
                     }
                 }
-                window.location.href = "/sign-in"
                 break;
             default:
                 break;

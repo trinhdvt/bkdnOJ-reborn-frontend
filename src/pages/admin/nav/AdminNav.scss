@@ -74,7 +74,7 @@ ul.admin-nav {
       display: flex;
       align-items: center;
       column-gap: 10px;
-      
+
       .icon {
         font-size: 1.3rem;
       }
@@ -119,8 +119,10 @@ ul.admin-nav {
     }
   }
 
-  width: 10.5rem !important;
   @media (max-width: 768px) {
-    width: 6rem !important;
+    min-width: 6rem !important;
+  }
+  @media (min-width: 769px) {
+    min-width: 160px !important;
   }
 }

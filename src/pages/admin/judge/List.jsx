@@ -140,7 +140,7 @@ class AdminJudgeList extends React.Component {
           if ([403, 401].includes(err.response.status))
             msg += ' Không có quyền cho thao tác này.';
         }
-        this.setState({ errors: [msg] })
+        this.setState({ errors: {errors: msg} })
       })
     }
   }

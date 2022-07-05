@@ -3,6 +3,7 @@
 div#contest-standing {
   table {
     margin: unset;
+    table-layout: fixed;
   }
 
   th, td {
@@ -14,46 +15,38 @@ div#contest-standing {
   }
 
   th.th-participant, td.td-participant {
-    min-width: fit-content;
-    max-width: 300px;
+    width: 200px;
   }
 
   td.td-participant {
     padding-left: 10px;
     padding-right: 10px;
-    div.participant-container {
-      column-gap: 10px;
-      row-gap: 10px;
-    }
-
-    div.avatar-container {
-      width: 50px;
-      // height: 50px;
-    }
-
-    div.acc-username {
-      width: 100%;
-      font-weight: bold;
-      text-align: left;
-    }
-    div.acc-realname {
-      width: 100%;
-      font-size: 14px;
-      text-align: left;
-    }
+    width: 200px;
   }
 
   th.th-score, td.td-score {
-    width: 140px;
+    width: 100px !important;
+    overflow: hidden;
   }
   th.th-p-best, td.td-p-best {
-    width: 70px;
+    height: 50px;
+
+    padding: 0; margin: 0;
+    width: 70px !important;
+    overflow: hidden;
   }
 
   div.rank-display {
     column-gap: 5px;
     font-size: 20px;
     font-weight: bold;
+  }
+
+  .points-container.frozen {
+    background-color: $blue-light-transparent;
+  }
+  .points-container.full-points {
+    background-color: $green-light-transparent;
   }
 
   .points {
@@ -77,10 +70,37 @@ div#contest-standing {
       // color: lightgreen;
     }
 
+    span.extra {
+      margin-left: 2px;
+      font-size: 12px;
+      color: black;
+      span.tries {
+      }
+      span.frozen_tries {
+        color: $blue-dark;
+      }
+    }
   }
   .time {
     width: 100%;
     overflow: hidden;
     font-size: 0.7rem;
+  }
+
+  .standing-lbl {
+    .standing-head {
+      font-family: $font-codeforces;
+      margin: 0;
+    }
+    span.frozen-time {
+      font-family: $font-codeforces;
+      font-size: 12px;
+    }
+    margin-bottom: 5px;
+
+    .standing-options {
+      display: flex;
+      column-gap: 5px;
+    }
   }
 }

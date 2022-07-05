@@ -1,4 +1,8 @@
 import React from 'react';
+
+import { connect } from 'react-redux';
+import { startPolling } from 'redux/RecentSubmission/actions';
+
 import { toast } from 'react-toastify';
 import {Form} from 'react-bootstrap';
 
@@ -15,8 +19,9 @@ import {
 import 'helpers/importAllAceMode';
 import './SubmitForm.scss';
 
+const SOURCE_CODE_LIMIT = 5 * 1024 * 1024; //5MB -> 5*1024*1024 bytes (chars)
 
-export default class SubmitForm extends React.Component {
+class SubmitForm extends React.Component {
   constructor(props) {
     super(props);
     let id2LangMap = {};
@@ -46,6 +51,18 @@ export default class SubmitForm extends React.Component {
       // Only submit code when submitting changes from false->true
       // Because submitting will also changes when the Modal closes
       if (prevProps.submitting === true) return;
+      const source = this.state.code;
+
+      if (source.trim().length === 0) {
+        if (this.props.setSubErrors)
+          this.props.setSubErrors('Cannot submit with an empty source code.')
+          return;
+      }
+      if (source.trim().length > SOURCE_CODE_LIMIT) {
+        if (this.props.setSubErrors)
+          this.props.setSubErrors('Source code >5MB, try minify it then submit again.')
+          return;
+      }
 
       const data = {
         language: this.state.selectedLang.id,
@@ -67,6 +84,9 @@ export default class SubmitForm extends React.Component {
       endpoint({...conf, data})
         .then((res) => {
           this.props.setSubId(res.data.id)
+          // Send submission -> signal polling
+          if (this.props.startPolling)
+            this.props.startPolling()
         })
         .catch((err) => {
           if (err.response && err.response.data && err.response.data.detail) {
@@ -147,3 +167,11 @@ export default class SubmitForm extends React.Component {
     )
   }
 };
+
+let wrapped = SubmitForm;
+const mapDispatchToProps = dispatch => {
+  return {
+    startPolling: () => dispatch(startPolling()),
+  }
+}
+export default connect(null, mapDispatchToProps)(wrapped);

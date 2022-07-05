@@ -3,6 +3,11 @@ import { log } from 'helpers/logger';
 
 import './ErrorBox.scss';
 
+/*
+ * Receives props `errors` that is a hash:
+ *   { key1: string, key2: hash, ...}
+ */
+
 class ErrorList extends React.Component {
   constructor(props) {
     super(props);
@@ -64,28 +69,39 @@ export default class ErrorBox extends React.Component {
     if (!errors) return <></>
 
     if (typeof(errors) === 'string' || errors instanceof String) {
-      if (errors.length > 256) {
-        errors = errors.slice(0, 256) + '...';
-      }
       errors = {general: errors}
     }
-
-    var general = null;
-    if (errors.general) {
-      general = errors.general
-      delete errors.general
+    else
+    if (errors instanceof Array) {
+      errors = {errors: errors}
     }
+
+    let strErrors = [];
+    let kwErrors = {};
+    Object.keys(errors).map((key, idx) => {
+      if (typeof(errors[key]) === 'string' || errors[key] instanceof String) {
+        strErrors.push(errors[key])
+      } else
+      if (errors[key] instanceof Array) {
+        // strErrors.concat(errors[key])
+      } else
+      if (
+        typeof errors[key] === 'object' && !Array.isArray(errors[key]) &&
+          errors[key] !== null ){
+        kwErrors = {...kwErrors, ...errors[key]}
+      }
+    })
 
     return (
       <div className="error-box">
         {
-          general && <div className="errors-general-text">{general}</div>
+          strErrors.map((err, idx) => <div className="errors-general-text" key={`err-gnr-txt-${idx}`}>{err}</div>)
         }
         {
-          Object.keys(errors).map((key, idx) => {
+          Object.keys(kwErrors).map((key, idx) => {
             return (
-              <div key={idx} className="error-sub">
-                <ErrorList errTitle={key} errData={errors[key]}/>
+              <div key={`err-sub-${idx}`} className="error-sub">
+                <ErrorList errTitle={key} errData={kwErrors[key]}/>
               </div>
             )
           })
