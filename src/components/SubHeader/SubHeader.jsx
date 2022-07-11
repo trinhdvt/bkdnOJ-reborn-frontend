@@ -30,19 +30,19 @@ class SubHeader extends React.Component {
 
         return (
             <div className='subheader expand-sm'>
-                <Container>
-                    <div className='float-left'>
-                        {/* <span className='left-padder d-none d-md-inline'>
+                <Container className="h-100">
+                    <div className="float-left d-inline-flex">
+                        <span className='left-padder d-none d-md-inline'>
                             {'Viewing As >>'}
                         </span>
                         {selectedOrg.slug
                             ? <div className="org-display org-uni"><FaUniversity size={14}/></div>
                             : <div className="org-display org-none"><FaGlobe size={14}/></div>
                         }
-                        <span>{selectedOrg.slug || "Global"}</span> */}
+                        <span>{selectedOrg.slug || "Global"}</span>
                     </div>
 
-                    <div className='float-right'>
+                    <div className="float-right d-inline-flex">
                         <span>{this.state.curTime}</span>
                     </div>
                 </Container>

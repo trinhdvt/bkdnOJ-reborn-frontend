@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.css": "/static/css/main.db9e44a3.css",
-    "main.js": "/static/js/main.7c932ce5.js",
+    "main.css": "/static/css/main.5ec0e847.css",
+    "main.js": "/static/js/main.705295c1.js",
     "static/media/default-org.png": "/static/media/default-org.3064b341d2701965b1ba.png",
-    "static/media/bkdn-uni-flag.png": "/static/media/bkdn-uni-flag.6093ea649f2018e006cf.png",
-    "static/media/bkdn-uni-icon-white.png": "/static/media/bkdn-uni-icon-white.361ade9a004daed664ca.png",
+    "static/media/bkdn-uni-banner-gray-transparent.png": "/static/media/bkdn-uni-banner-gray-transparent.ef485b833fec498d83e1.png",
+    "static/media/bkdn-uni-icon-white.png": "/static/media/bkdn-uni-icon-white.44c1b4d0588aad195b4c.png",
     "static/media/KaTeX_AMS-Regular.ttf": "/static/media/KaTeX_AMS-Regular.853be92419a6c3766b9a.ttf",
-    "static/media/bkdnoj-dropflag.png": "/static/media/bkdnoj-dropflag.44da85845554beb21edc.png",
+    "static/media/bkdnoj-dropflag.png": "/static/media/bkdnoj-dropflag.818d8ebdba382f0d2970.png",
     "static/media/KaTeX_Main-Regular.ttf": "/static/media/KaTeX_Main-Regular.9eba1d77abcf2aa6e94e.ttf",
     "static/media/bkdnoj-favicon-ring.png": "/static/media/bkdnoj-favicon-ring.04c395a8cf45e16372f1.png",
     "static/media/KaTeX_Main-Bold.ttf": "/static/media/KaTeX_Main-Bold.8169508bf58f8bd92ad8.ttf",
@@ -70,11 +70,11 @@
     "static/media/KaTeX_Size3-Regular.woff": "/static/media/KaTeX_Size3-Regular.7947224e8a9914fa332b.woff",
     "static/media/KaTeX_Size3-Regular.woff2": "/static/media/KaTeX_Size3-Regular.e1951519f6f0596f7356.woff2",
     "index.html": "/index.html",
-    "main.db9e44a3.css.map": "/static/css/main.db9e44a3.css.map",
-    "main.7c932ce5.js.map": "/static/js/main.7c932ce5.js.map"
+    "main.5ec0e847.css.map": "/static/css/main.5ec0e847.css.map",
+    "main.705295c1.js.map": "/static/js/main.705295c1.js.map"
   },
   "entrypoints": [
-    "static/css/main.db9e44a3.css",
-    "static/js/main.7c932ce5.js"
+    "static/css/main.5ec0e847.css",
+    "static/js/main.705295c1.js"
   ]
 }

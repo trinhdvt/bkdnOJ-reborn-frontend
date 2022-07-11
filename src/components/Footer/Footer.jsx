@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import './Footer.scss';
-import uniFlag from 'assets/images/bkdn-uni-flag.png';
+import uniFlag from 'assets/images/bkdn-uni-banner-gray-transparent.png';
 
 /*
     FOOTER
