@@ -132,6 +132,7 @@ div.rich-text-editor {
       }
       &.code-highlight, &.undefined {
         padding: 0 10px;
+        background-color: var(--color-neutral-muted);
       }
     }
     span {

@@ -151,8 +151,8 @@ class AdminJudgeDetails extends React.Component {
           <ErrorBox errors={this.state.errbox_errors} />
           { loaded && !errors && <>
             <Row className="mt-2">
-              <Form.Label column="sm" lg={1} > Password </Form.Label>
-              <Col lg={8} className="d-inline-flex">
+              <Form.Label column="sm" lg={2} > New Password </Form.Label>
+              <Col lg={7} className="d-inline-flex">
                 <Form.Control size="sm" type="text"
                       onChange={(e)=>this.setState({ password: e.target.value})}
                       value={this.state.password}/>

@@ -197,14 +197,19 @@ class AdminSubmissionList extends React.Component {
           </thead>
           <tbody>
             {
-              this.state.loaded === false
-                ? <tr><td colSpan="7"><SpinLoader margin="10px" /></td></tr>
-                : this.state.submissions.map((sub, idx) => <SubmissionListItem
+              this.state.loaded === false && <tr><td colSpan="7"><SpinLoader margin="10px" /></td></tr>
+            }{
+              this.state.loaded === true && (
+                this.state.count > 0 ? this.state.submissions.map((sub, idx) => <SubmissionListItem
                     key={`sub-${sub.id}`}
                     rowidx={idx} {...sub}
                     selectChk={this.state.selectChk[idx]}
                     onSelectChkChange={() => this.selectChkChangeHandler(idx)}
                   />)
+                : <tr><td colSpan="99">
+                    <em>No Submission be found.</em>
+                  </td></tr>
+              )
             }
           </tbody>
         </Table>

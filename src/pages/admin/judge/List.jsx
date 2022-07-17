@@ -198,14 +198,18 @@ class AdminJudgeList extends React.Component {
           </thead>
           <tbody>
             {
-              this.state.loaded === false
-                ? <tr><td colSpan="8"><SpinLoader margin="10px" /></td></tr>
-                : this.state.judges.map((judge, idx) => <JudgeListItem
+              this.state.loaded === false && <tr><td colSpan="99"><SpinLoader margin="10px" /></td></tr>
+            }{
+              this.state.loaded === true && 
+                this.state.count > 0 ? (this.state.judges.map((judge, idx) => <JudgeListItem
                     key={`judge-${judge.id}`}
                     rowidx={idx} {...judge}
                     selectChk={this.state.selectChk[idx]}
                     onSelectChkChange={() => this.selectChkChangeHandler(idx)}
-                  />)
+                  />
+                )) : (
+                  <tr><td colSpan={99}><em>No Judges at the moment.</em></td></tr>
+                )
             }
           </tbody>
         </Table>

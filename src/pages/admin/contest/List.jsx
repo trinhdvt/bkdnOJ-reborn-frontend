@@ -263,14 +263,19 @@ class AdminContestList extends React.Component {
             </thead>
             <tbody>
               {
-                this.state.loaded === false
-                  ? <tr><td colSpan="9"><SpinLoader margin="10px" /></td></tr>
-                  : this.state.contests.map((sub, idx) => <ContestListItem
+                this.state.loaded === false && <tr><td colSpan="9"><SpinLoader margin="10px" /></td></tr>
+              }{
+                this.state.loaded === true && (
+                  this.state.count > 0 ? this.state.contests.map((sub, idx) => <ContestListItem
                       key={`cont-${sub.id}`}
                       rowidx={idx} ckey={sub.key} {...sub}
                       selectChk={this.state.selectChk[idx]}
                       onSelectChkChange={() => this.selectChkChangeHandler(idx)}
                     />)
+                  : <tr><td colSpan="99">
+                      <em>No Contest can be found.</em>
+                    </td></tr>
+                )
               }
             </tbody>
           </Table>

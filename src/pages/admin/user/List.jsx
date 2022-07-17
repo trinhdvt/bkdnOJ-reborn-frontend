@@ -218,14 +218,18 @@ class AdminUserList extends React.Component {
           </thead>
           <tbody>
             {
-              this.state.loaded === false
-                ? <tr><td colSpan="99"><SpinLoader margin="10px" /></td></tr>
-                : this.state.objects.map((obj, idx) => <UserItem
+              this.state.loaded === false && <tr><td colSpan="99"><SpinLoader margin="10px" /></td></tr>
+            }{
+              this.state.loaded === true ? (
+                this.state.objects.map((obj, idx) => <UserItem
                     key={`user-${obj.username}`}
                     rowidx={idx} {...obj}
                     selectChk={this.state.selectChk[idx]}
                     onSelectChkChange={() => this.selectChkChangeHandler(idx)}
                   />)
+              ) : (
+                <tr><td colSpan={99}><em>No User can be found.</em></td></tr>
+              )
             }
           </tbody>
         </Table>

@@ -15,11 +15,27 @@ import { getLocalDateWithTimezone } from 'helpers/dateFormatter';
 import { setTitle } from 'helpers/setTitle';
 import { qmClarify } from 'helpers/components';
 import { withNavigation } from 'helpers/react-router';
+import { getYearMonthDate, getHourMinuteSecond } from 'helpers/dateFormatter';
 
 import './AdminProblemList.scss'
 import 'styles/ClassicPagination.scss';
 
 class ProblemListItem extends React.Component {
+  static formatDateTime(date) {
+    const d = new Date(date);
+    return (
+      <div className="flex-center-col">
+        <div style={{fontSize: "10px"}}>
+          {getYearMonthDate(d)}
+        </div>
+        <div style={{fontSize: "12px"}}>
+          {getHourMinuteSecond(d)}
+        </div>
+      </div>
+    )
+  }
+
+
   render() {
     const {shortname, title, points, short_circuit, partial, is_public, is_organization_private, modified} = this.props;
     const {rowidx, selectChk, onSelectChkChange} = this.props;
@@ -44,7 +60,7 @@ class ProblemListItem extends React.Component {
         <td>{visible}</td>
         <td>{short_circuit ? "Yes" : "No"}</td>
         <td>{partial ? "Yes" : "No"}</td>
-        <td>{modified ? getLocalDateWithTimezone(modified) : "n/a"}</td>
+        <td>{modified ? ProblemListItem.formatDateTime(modified) : "n/a"}</td>
         <td>
             <input type="checkbox" value={selectChk[rowidx]}
               onChange={(e) => onSelectChkChange(rowidx)}
@@ -289,9 +305,11 @@ class AdminProblemList extends React.Component {
                         onSelectChkChange={(i) => this.selectChkChangeHandler(i)}
                       />)
                     ) : (
-                      <tr><td colSpan="99"><em>No problems found.</em></td></tr>
+                        <tr><td colSpan="99">
+                          <em>No Submission be found.</em>
+                        </td></tr>
                     )
-                )
+                  )
               }
             </tbody>
           </Table>

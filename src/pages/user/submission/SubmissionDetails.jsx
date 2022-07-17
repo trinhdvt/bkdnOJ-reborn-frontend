@@ -176,12 +176,12 @@ class SubmissionDetails extends React.Component {
               {
                 (!!this.user && this.user.is_staff) && <>
                   <div className="admin-panel info-subsection">
-                    <h5>Admin Panel</h5>
+                    <h5>Staff Panel</h5>
                     <Row className="">
                       <Col >
                         <Link to="#" className="btn" style={{color: "red"}}
                           onClick={() => this.setState({redirectUrl: `/admin/submission/${this.state.id}`})}>
-                          Admin <FaWrench size={12}/>
+                          Staff <FaWrench size={12}/>
                         </Link>
                         <Link to="#" className="btn" style={{color: "red"}}
                           onClick={() => this.rejudge()}>
