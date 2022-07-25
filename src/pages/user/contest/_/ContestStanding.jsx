@@ -21,7 +21,7 @@ import top100 from 'assets/common/atcoder_top100.png';
 
 import {GiMeltingIceCube, GiIceCube} from 'react-icons/gi';
 import { FaUniversity } from 'react-icons/fa';
-import {AiOutlineEye} from 'react-icons/ai';
+import {AiOutlineEye, AiOutlineInfoCircle} from 'react-icons/ai';
 
 // Contexts
 import ContestContext from 'context/ContestContext';
@@ -53,7 +53,8 @@ class StandingItem extends React.Component {
       frozen_score, frozen_cumtime, frozen_tiebreaker,
       is_disqualified, virtual, format_data
     } = this.props;
-    const { probMapping, orgMapping, isFrozen } = this.props;
+
+    const { userMapping, probMapping, orgMapping, isFrozen } = this.props;
 
     let best = Array( Object.keys(probMapping).length ).fill(<></>);
     let data = JSON.parse(format_data);
@@ -124,7 +125,14 @@ class StandingItem extends React.Component {
           </div>
         </td>
         <td className="td-participant">
-          <UserCard displayMode={this.props.displayMode} user={user} organization={orgMapping[user.organization]}/>
+          
+          { 
+            userMapping 
+            ? 
+            <UserCard displayMode={this.props.displayMode} user={userMapping[user]} organization={orgMapping[user.organization]}/>
+            :
+            <span>{user}</span>
+          }
         </td>
 
         <td className="td-total">
@@ -155,6 +163,7 @@ class ContestStanding extends React.Component {
     this.state = {
       probId2idx: {},
       orgMapping: {},
+      userMapping: null,
 
       problems: null,
       standing: [],
@@ -171,70 +180,97 @@ class ContestStanding extends React.Component {
     }
   }
 
+  /* Set viewing mode of scoreboard to not frozen */
   meltingIce() {
     this.setState({ iceBroken: true, },
       () => this.refetch());
   }
+  /* Set viewing mode of scoreboard to Frozen */
   freezingIce() {
     this.setState({ iceBroken: false, },
       () => this.refetch())
   }
 
-  refetch(polling=false) {
+  /* Receive results of Contest Standing api and handle */
+  handleContestStanding(res) {
+    this.setState({
+      loaded: true,
+      isPolling: false,
+
+      standing: res.data.results,
+      problems: res.data.problems,
+      organizations: res.data.organizations,
+
+      frozenEnabled: res.data.is_frozen_enabled,
+      frozenTime: res.data.frozen_time,
+      isFrozen: res.data.is_frozen,
+      canBreakIce: (res.data.can_break_ice || false),
+
+      scoreboardCache: res.data.scoreboard_cache_duration,
+    })
+
+    // Contest - Problems mapping
+    let mapping = {}; // mapping here is a list of problems in the contest -> their id
+    let uniq=0;
+    res.data.problems.forEach( (prob) => {
+      if (mapping[prob.id]) return;
+      mapping[prob.id] = {
+        pos: uniq,
+        points: prob.points,
+      }
+      uniq++;
+    })
+    this.setState({ probId2idx : mapping })
+
+    // Contest - Organization mapping
+    mapping = {}; // mapping here is a list of problems in the contest -> their id
+    res.data.organizations.forEach( (org) => {
+      mapping[org.slug] = org;
+    })
+    this.setState({ orgMapping : mapping })
+  }
+
+  async refetch(polling=false) {
     if (polling) this.setState({ isPolling: true });
     else this.setState({ loaded: false, errors: null })
 
     const params = (this.state.iceBroken ? {view_full: 1} : {view_full: 0});
 
-    contestAPI.getContestStanding({key : this.state.contest.key, params})
-    .then((res) => {
-      this.setState({
-        loaded: true,
-        isPolling: false,
+    let apis = [];
+    // if participants profiles are not loaded, queue this api
+    if (!this.state.userMapping) {
+      apis.push(
+        contestAPI.getContestParticipants({key: this.state.contest.key })
+          .then((res) => {
+            let userMapping = {}
+            res.data.forEach((user) => {
+              userMapping[user.username] = user
+            })
+            this.setState({ userMapping })
+          })
+          .catch((err) => {
+            console.log('Cannot fetch participants profile. ',err)
+          })
+      )
+    }
+    // Contest Standing
+    apis.push(
+      contestAPI.getContestStanding({key: this.state.contest.key, params})
+        .then((res) => this.handleContestStanding(res))
+        .catch((err) => {
+          clearInterval(this.timer)
+          this.setState({
+            isPollingOn: false,
+            loaded: true,
+            errors: err.response && err.response.data,
+          })
+          toast.error(`Standing not available at the moment. (${err.response.status})`, {
+            toastId: "contest-standing-na",
+          })
+        }),
+    );
 
-        standing: res.data.results,
-        problems: res.data.problems,
-        organizations: res.data.organizations,
-
-        frozenEnabled: res.data.is_frozen_enabled,
-        frozenTime: res.data.frozen_time,
-        isFrozen: res.data.is_frozen,
-        canBreakIce: (res.data.can_break_ice || false),
-
-        scoreboardCache: res.data.scoreboard_cache_duration,
-      })
-
-      // Contest - Problems mapping
-      let mapping = {}; // mapping here is a list of problems in the contest -> their id
-      let uniq=0;
-      res.data.problems.forEach( (prob) => {
-        if (mapping[prob.id]) return;
-        mapping[prob.id] = {
-          pos: uniq,
-          points: prob.points,
-        }
-        uniq++;
-      })
-      this.setState({ probId2idx : mapping })
-
-      // Contest - Organization mapping
-      mapping = {}; // mapping here is a list of problems in the contest -> their id
-      res.data.organizations.forEach( (org) => {
-        mapping[org.slug] = org;
-      })
-      this.setState({ orgMapping : mapping })
-    })
-    .catch((err) => {
-      clearInterval(this.timer)
-      this.setState({
-        isPollingOn: false,
-        loaded: true,
-        errors: err.response.data,
-      })
-      toast.error(`Standing not available at the moment. Disconnected. (${err.response.status})`, {
-        toastId: "contest-standing-na",
-      })
-    })
+    await Promise.all(apis);
   }
 
   componentDidMount() {
@@ -329,8 +365,19 @@ class ContestStanding extends React.Component {
               <th className="th-participant">Participant</th>
               <th className="th-score">Score</th>
               {
-                problems.map((prob, idx) => <th key={`cs-th-prb-${idx}`}
-                  className={`th-p-best`}>{ prob.label }</th>)
+                problems.map((prob, idx) => {
+                  const probMode = prob.partial ? `${prob.points}p` : "icpc";
+                  const probInfo = prob.partial ? `You can earn partial points from 0pts upto ${prob.points}pts.` : `You either get 0pts or ${prob.points}pts.`;
+
+                  return <th key={`cs-th-prb-${idx}`} className={`th-p-best`}>
+                      <div className="flex-center-col" data-toggle="tooltip" data-placement="bottom" title={probInfo} style={{cursor: "help"}}>
+                        <strong>{ prob.label }</strong>
+                        <div className="border-top " style={{fontSize: "14px", width: "70%"}}>
+                          <span>{probMode}</span>
+                        </div>
+                      </div>
+                  </th>
+                })
               }
               </tr>
             </thead>
@@ -340,6 +387,7 @@ class ContestStanding extends React.Component {
                   key={`ct-st-row-${idx}`}
                   orgMapping={this.state.orgMapping}
                   probMapping={this.state.probId2idx}
+                  userMapping={this.state.userMapping}
                   rowIdx={idx}
                   isFrozen={isFrozen} displayMode={displayMode}
                   {...part} />)

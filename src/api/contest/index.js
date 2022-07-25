@@ -50,6 +50,10 @@ const submitContestProblem = ({ key, shortname, data }) => {
     return axiosClient.post(`/contest/${key}/problem/${shortname}/submit/`, JSON.stringify(data) );
 }
 
+const getContestParticipants = ({ key }) => {
+    return axiosClient.get(`/contest/${key}/participants/?view_full=1`);
+}
+
 const infoRejudgeContestProblem = ({ key, shortname, params}) => {
     return axiosClient.get(`/contest/${key}/problem/${shortname}/rejudge/`, (params && { params: {...params} }));
 }
@@ -92,6 +96,8 @@ const contestAPI = {
     getContestSubmissions,
 
     getContestParticipations, addContestParticipations,
+
+    getContestParticipants,
 
     // ContestProblem
     getContestProblems, getContestProblem, submitContestProblem,
