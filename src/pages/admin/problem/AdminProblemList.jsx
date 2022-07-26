@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button, Table, Form, Modal, Row, Col } from 'react-bootstrap';
 
 import { FaPaperPlane, FaRegFileArchive } from 'react-icons/fa';
-import { AiOutlineForm, AiOutlineUpload, AiOutlineArrowRight, AiOutlinePlusCircle } from 'react-icons/ai';
+import { AiOutlineForm, AiOutlineUpload, AiOutlineArrowRight, AiOutlinePlusCircle, AiOutlineQuestionCircle} from 'react-icons/ai';
 
 import { SpinLoader, ErrorBox, FileUploader } from 'components';
 import ProblemSearchForm from './ProblemSearchForm';
@@ -98,7 +98,7 @@ class AdminProblemList extends React.Component {
       selectedZip: null,
       submitting: false,
 
-      newModalShow: false,
+      newModalShow: false, helpModalShow: false,
     }
     setTitle('Admin | Problems')
   }
@@ -195,6 +195,9 @@ class AdminProblemList extends React.Component {
   newModalToggle(bool) {
     this.setState({ newModalShow : bool })
   }
+  helpModalToggle(bool) {
+    this.setState({ helpModalShow : bool })
+  }
 
   render() {
     const {selectedZip, submitting} = this.state;
@@ -203,6 +206,7 @@ class AdminProblemList extends React.Component {
       <div className="admin admin-problems ">
         {/* Options for Admins: Create New,.... */}
         <div className="admin-options wrapper-vanilla m-0 mb-1">
+
           <div className="border d-inline-flex p-1" >
           <Button size="sm"
             variant="dark" className="btn-svg"
@@ -250,6 +254,10 @@ class AdminProblemList extends React.Component {
                 <AiOutlineArrowRight/>
                 <FaRegFileArchive />
               </span>
+            </Button>
+
+            <Button className="btn-svg btn-light ml-1" onClick={() => this.helpModalToggle(true)}>
+              <AiOutlineQuestionCircle size={20} color="red"/>
             </Button>
           </div>
           <div className="admin-note flex-center text-center mb-1">
@@ -331,6 +339,7 @@ class AdminProblemList extends React.Component {
         </div>
 
         <NaviNewProb show={this.state.newModalShow} toggle={(b)=>this.newModalToggle(b)} />
+        <HelpModal show={this.state.helpModalShow} toggle={(b)=>this.helpModalToggle(b)} />
       </div>
     )
   }
@@ -389,5 +398,119 @@ class NewProblemModal extends React.Component {
   }
 }
 const NaviNewProb = withNavigation(NewProblemModal);
+
+class HelpModal extends React.Component {
+  close() {
+    this.props.toggle(false);
+  }
+
+  render() {
+    const {show, toggle} = this.props;
+    return (
+      <Modal show={show} onHide={() => this.close()} size="lg">
+        <Modal.Header>
+          <Modal.Title>Hướng dẫn tạo mới Problem bằng upload Zip</Modal.Title>
+          <em>Cập nhập ngày (26/7/2022)</em>
+        </Modal.Header>
+        <Modal.Body>
+          Để tự động hóa quá trình tạo mới Problem chỉ bằng thao tác upload Zip, file Zip của bạn cần phải có những tệp tin sau:
+          <ul>
+            <li>Những cặp file <code>(a/b/xxx.in), (a/b/xxx.out)</code>. Hệ thống sẽ tự tìm những file này để set làm một cặp input/output, 
+                phân biệt chúng bằng path đến file đó<code>a/b/xxx</code>.
+                Cụ thể những file nào được xét làm input, output, hãy xem file cấu hình ở backend <code>bkdnoj/settings.py</code>
+            </li>
+            <li>
+              Một file <code>problem.pdf</code> để làm đề. Cụ thể file nào được xét làm PDF, hãy xem file cấu hình ở backend <code>bkdnoj/settings.py</code>
+            </li>
+            <li>
+              <p>
+              Một file cấu hình <code>problem.ini</code> để làm tự động set các thuộc tính của Problem. 
+              Cụ thể, file là những dòng có định dạng <code>KEY = VALUE</code>, có thể bắt đầu bằng dấu <code>;</code> để comment dòng đó lại.
+              Ví dụ:
+              </p>
+              <pre className="border"><code>{
+                `; Đây là comment
+code = ProblemA
+name = Tiêu đề Problem A
+
+; Optional
+time_limit = 2.5
+memory_limit = 250000
+allow_submit = 1
+
+icpc=1`}
+              </code></pre>
+              <p>
+                Các thuộc tính sẽ như sau:
+              </p>
+              <table className="table table-bordered">
+              <thead>
+              <tr>
+              <th>Các key</th>
+              <th>Kiểu value</th>
+              <th>Thuộc tính tương ứng</th>
+              <th>Mô tả</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+              <td><code>['shortname', 'code', 'codename', 'probid']</code></td>
+              <td>String ký tự chữ, số và <code>-_</code>.</td>
+              <td><code>shortname</code></td>
+              <td>Code định danh Problem</td>
+              </tr>
+              <tr>
+              <td><code>['name', 'title', 'problem', 'code', 'codename']</code></td>
+              <td>String</td>
+              <td><code>title</code></td>
+              <td>Tiêu đề Problem</td>
+              </tr>
+              <tr>
+              <td><code>['time_limit', 'timelimit', 'time', 'tl']</code></td>
+              <td>Số thực</td>
+              <td><code>time_limit</code></td>
+              <td>Giới hạn thời gian đơn vị giây. Nếu không có mặc định là <code>1.0</code></td>
+              </tr>
+              <tr>
+              <td><code>['memory_limit', 'memorylimit', 'mem_limit', 'memlimit', 'memory', 'mem', 'ml']</code></td>
+              <td>Số nguyên</td>
+              <td><code>memory_limit</code></td>
+              <td>Giới hạn bộ nhớ đơn vị KB. Mặc định: <code>262144</code> (256MB).</td>
+              </tr>
+              <tr>
+              <td><code>['short_circuit', 'skip_non_ac', 'icpc']</code></td>
+              <td>Boolean</td>
+              <td><code>short_circuit</code></td>
+              <td>Dừng chấm nếu có test sai. Mặc định <code>0</code>.</td>
+              </tr>
+              <tr>
+              <td><code>['partial', 'allow_partial', 'ioi']</code></td>
+              <td>Boolean</td>
+              <td><code>partial</code></td>
+              <td>Cho phép ăn điểm từng test đúng. Mặc định <code>0</code>.</td>
+              </tr>
+              <tr>
+              <td><code>['is_published', 'published', 'public', 'allow_submit']</code></td>
+              <td>Boolean</td>
+              <td><code>is_public</code></td>
+              <td>Cho phép User bình thường nhìn thấy và nộp bài. Mặc định: <code>0</code>.</td>
+              </tr>
+              </tbody>
+              </table>
+              <p>
+              Cụ thể file nào được xét để chọn làm file <code>.ini</code>, hãy xem file cấu hình ở backend <code>bkdnoj/settings.py</code>
+              </p>
+            </li>
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="light" onClick={() => this.close()}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+}
 
 export default AdminProblemList;

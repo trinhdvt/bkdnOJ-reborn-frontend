@@ -127,7 +127,7 @@ class StandingItem extends React.Component {
         <td className="td-participant">
           
           { 
-            userMapping 
+            (userMapping && user in userMapping)
             ? 
             <UserCard displayMode={this.props.displayMode} user={userMapping[user]} organization={orgMapping[user.organization]}/>
             :
@@ -307,6 +307,7 @@ class ContestStanding extends React.Component {
       scoreboardCache,
       iceBroken, isPollingOn, isPolling
     } = this.state;
+
 
     return (
       <div className="wrapper-vanilla p-2" id="contest-standing">
