@@ -202,7 +202,7 @@ class ProblemDetails extends React.Component {
                   }{ // Logged-in, not registered for Contest
                     isLoggedIn && isInContest && !(contest.is_registered || contest.spectate_allow) && (
                     <Link to="#" className="btn"
-                      onClick={() => this.setState({redirectUrl: '/contest'})}>
+                      onClick={() => this.setState({redirectUrl: '/contests'})}>
                       Register to Submit <FaSignInAlt size={12}/>
                     </Link>)
                   }{ // Logged-in and (not in contest OR in contest and allow to submit)

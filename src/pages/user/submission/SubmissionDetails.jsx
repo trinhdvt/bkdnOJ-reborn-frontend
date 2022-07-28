@@ -15,6 +15,9 @@ import submissionAPI from 'api/submission';
 import { SpinLoader, ErrorBox } from 'components';
 import { CodeEditor } from 'components/CodeEditor';
 
+// Context
+import ContestContext from 'context/ContestContext';
+
 // Helpers
 import { withParams } from 'helpers/react-router'
 import { parseTime, parseMem } from 'helpers/textFormatter';
@@ -59,6 +62,8 @@ class SubmissionTestCase extends React.Component {
 }
 
 class SubmissionDetails extends React.Component {
+  static contextType = ContestContext;
+
   constructor(props) {
     super(props);
     const { id } = this.props.params;
@@ -73,7 +78,11 @@ class SubmissionDetails extends React.Component {
   }
 
   fetch() {
-    submissionAPI.getSubmissionDetails({id : this.state.id})
+    const contest = this.context.contest;
+    let params = {}
+    if (contest) params.contest = contest.key
+
+    submissionAPI.getSubmissionDetails({id : this.state.id, params})
       .then((res) => {
         setTitle(`Submission#${res.data.id}`)
         this.setState({ data: res.data, })
@@ -134,7 +143,8 @@ class SubmissionDetails extends React.Component {
       return <Navigate to={`${this.state.redirectUrl}`} />
     }
 
-    const { data, loaded, errors, contest } = this.state;
+    const { data, loaded, errors } = this.state;
+    const contest = this.context.contest;
 
     const isLoggedIn = !!this.user;
     const isInContest = !!contest;

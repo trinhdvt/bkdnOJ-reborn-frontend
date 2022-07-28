@@ -40,7 +40,7 @@ const getClassNameFromPoint = (point, maxPoint) => {
     if (percent <= 25) ptsClsName="one-fourth";
     else if (percent <= 50) ptsClsName="two-fourth";
     else if (percent <= 75) ptsClsName="three-fourth";
-    else if (percent < 100) ptsClsName="fourth-fourth";
+    else if (percent < 100) ptsClsName="four-fourth";
     else ptsClsName="full-points";
   }
   return ptsClsName

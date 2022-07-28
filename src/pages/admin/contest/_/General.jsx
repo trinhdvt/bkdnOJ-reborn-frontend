@@ -45,11 +45,7 @@ class General extends React.Component {
   setTime(key, v) {
     let time = new Date(v)
     const data = this.state.data;
-    console.log(key, time.toISOString())
-    console.log('Before', data)
-    this.setState({ data : { ...data, [key]: time.toISOString() } },
-    () => console.log('After', data)
-    );
+    this.setState({ data : { ...data, [key]: time.toISOString() } });
   }
 
   // -------------- apis

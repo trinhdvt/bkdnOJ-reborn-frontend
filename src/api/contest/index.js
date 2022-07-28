@@ -22,6 +22,11 @@ const leaveContest = ({ key }) => {
 const getContestStanding = ({ key, params }) => {
     return axiosClient.get(`/contest/${key}/standing/`, (params && { params: {...params} }));
 }
+
+const recomputeContestStanding = ({ key, params }) => {
+    return axiosClient.post(`/contest/${key}/standing/recompute/`, (params && { params: {...params} }));
+}
+
 const getContestParticipations = ({ key, params }) => {
     return axiosClient.get(`/contest/${key}/participations/`, (params && { params: {...params} }));
 }
@@ -92,7 +97,7 @@ const contestAPI = {
 
     joinContest, leaveContest,
 
-    getContestStanding,
+    getContestStanding, recomputeContestStanding,
     getContestSubmissions,
 
     getContestParticipations, addContestParticipations,

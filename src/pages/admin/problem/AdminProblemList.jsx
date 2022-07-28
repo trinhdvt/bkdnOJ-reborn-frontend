@@ -4,7 +4,7 @@ import ReactPaginate from 'react-paginate';
 import { Link } from 'react-router-dom';
 import { Button, Table, Form, Modal, Row, Col } from 'react-bootstrap';
 
-import { FaPaperPlane, FaRegFileArchive } from 'react-icons/fa';
+import { FaPaperPlane, FaRegFileArchive, FaQuestionCircle } from 'react-icons/fa';
 import { AiOutlineForm, AiOutlineUpload, AiOutlineArrowRight, AiOutlinePlusCircle, AiOutlineQuestionCircle} from 'react-icons/ai';
 
 import { SpinLoader, ErrorBox, FileUploader } from 'components';
@@ -257,7 +257,7 @@ class AdminProblemList extends React.Component {
             </Button>
 
             <Button className="btn-svg btn-light ml-1" onClick={() => this.helpModalToggle(true)}>
-              <AiOutlineQuestionCircle size={20} color="red"/>
+              <FaQuestionCircle size={20} color="red"/>
             </Button>
           </div>
           <div className="admin-note flex-center text-center mb-1">
@@ -479,19 +479,19 @@ icpc=1`}
               </tr>
               <tr>
               <td><code>['short_circuit', 'skip_non_ac', 'icpc']</code></td>
-              <td>Boolean</td>
+              <td>0, 1</td>
               <td><code>short_circuit</code></td>
               <td>Dừng chấm nếu có test sai. Mặc định <code>0</code>.</td>
               </tr>
               <tr>
               <td><code>['partial', 'allow_partial', 'ioi']</code></td>
-              <td>Boolean</td>
+              <td>0, 1</td>
               <td><code>partial</code></td>
               <td>Cho phép ăn điểm từng test đúng. Mặc định <code>0</code>.</td>
               </tr>
               <tr>
-              <td><code>['is_published', 'published', 'public', 'allow_submit']</code></td>
-              <td>Boolean</td>
+              <td><code>['is_public', 'public']</code></td>
+              <td>0, 1</td>
               <td><code>is_public</code></td>
               <td>Cho phép User bình thường nhìn thấy và nộp bài. Mặc định: <code>0</code>.</td>
               </tr>
