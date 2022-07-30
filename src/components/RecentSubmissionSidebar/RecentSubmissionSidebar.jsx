@@ -2,6 +2,7 @@ import React from 'react';
 
 // Redux
 import { connect } from 'react-redux';
+import ReactPaginate from 'react-paginate';
 import { stopPolling } from 'redux/RecentSubmission/actions';
 
 import { Table } from 'react-bootstrap';
@@ -48,7 +49,7 @@ class RSubItem extends React.Component {
             <div className="flex-center-col">
               <div className="prob-wrapper">
                 <Link id="sub-id" to={`/contest/${ckey}/submission/${id}`}>#{id}</Link>
-                |
+                -
                 <Link className="prob text-truncate-rv"
                   to={`/contest/${ckey}/problem/${problem.shortname}`}>{problem.shortname}</Link>
               </div>
@@ -92,6 +93,7 @@ class RecentSubmissionSidebar extends React.Component {
 
       contest: null,
       user: null,
+      currPage: 0,
 
       isPollingOn: true,
       isPolling: false,
@@ -99,20 +101,23 @@ class RecentSubmissionSidebar extends React.Component {
   }
 
   refetch(poll=false) {
-    if(poll)
+    if (poll)
       this.setState({ isPolling: true, errors: null })
     else
       this.setState({ loaded: false, count: null, errors: null })
 
+    const pageNo = {page: this.state.currPage+1}
+
     const { user } = this.state;
     contestAPI.getContestSubmissions({ key: this.state.contest.key,
-                                        params: {user: user.username} })
+                                        params: {user: user.username, ...pageNo } })
       .then((res) => {
         this.setState({
           isPolling: false,
           loaded: true,
           subs: res.data.results, // first page only
           count: res.data.count,
+          pageCount: res.data.total_pages,
         })
         // console.log(res);
       })
@@ -120,9 +125,14 @@ class RecentSubmissionSidebar extends React.Component {
         this.setState({
           isPolling: false,
           loaded: true,
-          errors: err,
+          errors: err.response.data,
+          count: 0,
         })
       })
+  }
+
+  handlePageClick = (event) => {
+    this.setState({ currPage: event.selected }, ()=>this.refetch())
   }
 
   pollResult() {
@@ -171,8 +181,6 @@ class RecentSubmissionSidebar extends React.Component {
 
   render() {
     const { subs, loaded, errors, user, contest, isPolling } = this.state;
-    if (errors)
-      return <></>
 
     return (
       <div className="wrapper-vanilla" id="recent-submission-sidebar">
@@ -181,32 +189,52 @@ class RecentSubmissionSidebar extends React.Component {
         { !!user && !contest && <span>Contest is not available.</span> }
         { !!user && !!contest && !loaded && <SpinLoader margin="20px"/>}
         { !!user && !!contest && !!loaded && <>
-          <ErrorBox errors={errors} />
-          <Table responsive hover size="sm" striped bordered className="rounded">
-            <thead>
-              <tr>
-                <th className="subid">Info</th>
-                <th className="responsive-date">When</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                loaded && !errors && <>
-                { this.state.count === 0 && <>
-                  <tr><td colSpan="4">
-                    <em>No Submissions Yet.</em>
-                  </td></tr>
-                </> }
-                { this.state.count > 0 &&
-                  subs.map((sub, idx) => <RSubItem
-                    key={`recent-sub-${sub.id}`} rowid={idx} ckey={this.state.contest && this.state.contest.key} {...sub} />) }
-                </>
-              }
-            </tbody>
-          </Table>
-          { !!user && !!contest && !!loaded && this.state.count > subs.length &&
-            <span style={{fontSize: "12px"}}><em>..and {this.state.count - subs.length} more.</em></span>
+          <div className="pl-1 pr-1">
+            <ErrorBox errors={errors} />
+          </div>
+
+          {
+            <Table responsive hover size="sm" striped bordered className="rounded">
+              <thead>
+                <tr>
+                  <th className="subid">Info</th>
+                  <th className="responsive-date">When</th>
+                </tr>
+              </thead>
+              <tbody>
+                { loaded && !errors && <>
+                  { this.state.count === 0 
+                    ? <tr><td colSpan="4">
+                      <em>No Submissions Yet.</em>
+                    </td></tr>
+                    : subs.map((sub, idx) => <RSubItem
+                      key={`recent-sub-${sub.id}`} rowid={idx} ckey={this.state.contest && this.state.contest.key} {...sub} />) 
+                  }
+                  </>
+                }
+              </tbody>
+            </Table>
           }
+              
+          { !!user && !!contest && 
+            this.state.loaded === false
+              ? <SpinLoader margin="0" />
+              : <span className="classic-pagination">Page: <ReactPaginate
+                  breakLabel="..."
+                  onPageChange={this.handlePageClick}
+                  forcePage={this.state.currPage}
+                  pageLabelBuilder={(page) => `[${page}]`}
+                  pageRangeDisplayed={5}
+                  pageCount={this.state.pageCount}
+                  renderOnZeroPageCount={null}
+                  previousLabel={null}
+                  nextLabel={null}
+                  /></span>
+          }
+
+          {/* { !!user && !!contest && !!loaded && this.state.count > subs.length &&
+            <span style={{fontSize: "12px"}}><em>..and {this.state.count - subs.length} more.</em></span>
+          } */}
         </>}
       </div>
     )

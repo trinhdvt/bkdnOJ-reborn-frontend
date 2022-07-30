@@ -120,6 +120,13 @@ class ProblemDetails extends React.Component {
     } else this.callApi({page: this.state.currPage})
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.shortname !== this.props.params.shortname) {
+      this.shortname = this.props.params.shortname
+      this.callApi()
+    }
+  }
+
   parseMemoryLimit() {
     return `${(this.state.data.memory_limit)} KB(s)`
   }
@@ -237,14 +244,19 @@ class ProblemDetails extends React.Component {
                 {
                   // TODO: cached this after first load so it doesn't hit the server everytime the user toggle doc type.
                   this.state.probStatementType === 'pdf' &&
-                  <div className="problem-pdf shadow">
-                    {/* <object data={`${data.pdf}`} type="application/pdf">
-                      <iframe title="problem-pdf-iframe"
-                        src={`https://docs.google.com/viewer?url=${this.state.data.pdf}&embedded=true`}>
-                      </iframe>
-                    </object> */}
-                    <PDFViewer pdf={`${data.pdf}${pdfExtraQuery}`} />
-                  </div>
+                  <>
+                    <span className="w-100 text-right text-danger">
+                      <em>**Đôi khi PDF mãi loading, hãy nhấn biểu tượng Kính lúp (resize) để refresh.</em>
+                    </span>
+                    <div className="problem-pdf shadow">
+                      {/* <object data={`${data.pdf}`} type="application/pdf">
+                        <iframe title="problem-pdf-iframe"
+                          src={`https://docs.google.com/viewer?url=${this.state.data.pdf}&embedded=true`}>
+                        </iframe>
+                      </object> */}
+                      <PDFViewer pdf={`${data.pdf}${pdfExtraQuery}`} />
+                    </div>
+                  </>
                 }{
                   this.state.probStatementType === 'text' &&
                   (

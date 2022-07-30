@@ -133,6 +133,12 @@ class SubmissionDetails extends React.Component {
       setTimeout(() => clearInterval(this.timer), __SUBMISSION_MAX_POLL_DURATION);
     }
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.params.id !== this.state.id) {
+      this.setState({ loaded: false, errors: false })
+      this.setState({ id: this.props.params.id }, ()=>this.fetch())
+    }
+  }
 
   componentWillUnmount() {
     clearInterval(this.timer)
