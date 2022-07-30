@@ -8,15 +8,15 @@ import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { __ls_get_access_token } from 'helpers/localStorageHelpers';
 import './PDFViewer.scss';
 
-let httpHeaders = {}
-const access_token = __ls_get_access_token();
-if (access_token) {
-  httpHeaders['Authorization'] = 'Bearer ' + access_token;
-}
-
 function PDFViewer({pdf}) {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const pdfUrl = (pdf)
+
+  let httpHeaders = {}
+  const access_token = __ls_get_access_token();
+  if (access_token) {
+    httpHeaders['Authorization'] = 'Bearer ' + access_token;
+  }
 
   return (
     <div className="problem-detail-pdf-container">
