@@ -120,9 +120,9 @@ class AdminContestNew extends React.Component {
               </Col>
             </Row>
 
-            <Row>
+            {/* <Row>
               <Form.Label column="sm" md={3}> Time Limit </Form.Label>
-              <Col md={9}> <Form.Control size="sm" id="time_limit" type="number"
+              <Col md={9}> <Form.Control size="sm" id="time_limit"
                       value={data.time_limit || ''} onChange={(e)=>this.inputChangeHandler(e)}
               />
               </Col>
@@ -133,7 +133,7 @@ class AdminContestNew extends React.Component {
                   Option này chủ yếu dành cho Virtual Participation (chưa triển khai).
                 </sub>
               </Col>
-            </Row>
+            </Row> */}
 
 
             <hr className="m-2" />

@@ -315,6 +315,9 @@ class ContestStanding extends React.Component {
           <h4 className="standing-head">
             Standing {isPolling && <SpinLoader size={18} margin="0 2px"/>}
           </h4>
+
+          <ErrorBox errors={this.state.errors} />
+
           <div className="flex-center-col standing-notice">
           {
             (scoreboardCache>0) && <span className="frozen-time">
@@ -357,8 +360,7 @@ class ContestStanding extends React.Component {
         </div>
 
         { !loaded && <SpinLoader margin="40px"/> }
-        { loaded && <>
-          <ErrorBox errors={this.state.errors} />
+        { loaded && !this.state.errors && <>
           <Table responsive hover size="sm" striped bordered className="rounded">
             <thead>
               <tr>
@@ -366,7 +368,7 @@ class ContestStanding extends React.Component {
               <th className="th-participant">Participant</th>
               <th className="th-score">Score</th>
               {
-                problems.map((prob, idx) => {
+                problems && problems.map((prob, idx) => {
                   const probMode = prob.partial ? `${prob.points}p` : "icpc";
                   const probInfo = prob.partial ? `You can earn partial points from 0pts upto ${prob.points}pts.` : `You either get 0pts or ${prob.points}pts.`;
 
