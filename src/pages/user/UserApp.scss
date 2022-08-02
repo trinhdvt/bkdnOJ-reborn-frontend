@@ -4,14 +4,14 @@
   // display: flex;
   // justify-content: center;
   // align-items: center;
-  display: block;
+  display: grid;
 
   // border: solid 2px $base;
   // border-radius: 3px;
   padding-top: 30px;
   padding-bottom: 30px;
 
-  min-height: 60vh;
+  min-height: 55vh;
 
 	background: linear-gradient(to bottom,
     $background-gray 0%, $background-gray 10%,

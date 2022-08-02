@@ -1,7 +1,10 @@
 import axiosClient from "api/axiosClient";
 
-const getOrgs = ({params}) => {
-    return axiosClient.get('/orgs/', (params && { params: {...params} }));
+const getOrgs = ({slug, params}) => {
+    if (slug)
+        return axiosClient.get(`/org/${slug}/orgs`, (params && { params: {...params} }));
+    else
+        return axiosClient.get('/orgs/', (params && { params: {...params} }));
 }
 
 const getMyOrgs = () => {
