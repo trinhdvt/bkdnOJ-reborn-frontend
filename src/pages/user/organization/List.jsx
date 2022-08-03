@@ -21,7 +21,7 @@ import { toast } from 'react-toastify';
 // Styles
 import 'styles/ClassicPagination.scss';
 import './List.scss';
-import { FaUniversity, FaGreaterThan, FaGlobe, FaLock, FaTimes, FaPlus, FaSignInAlt } from 'react-icons/fa';
+import { FaUniversity, FaGreaterThan, FaGlobe, FaLock, FaTimes, FaPlus, FaSignInAlt, FaWrench } from 'react-icons/fa';
 
 class OrgItem extends React.Component {
   constructor(props) {
@@ -114,7 +114,6 @@ class OrgList extends React.Component {
   componentDidUpdate(prevProps, prevState){
     if (this.props.path !== this.state.path) {
       this.setState({ path: this.props.path }, () => {
-        console.log(this.state.path)
         this.refetch()
       })
     }
@@ -206,6 +205,56 @@ class OrgDetail extends React.Component {
     }
   }
 
+  onJoinClick() {
+    const { org, slug } = this.state;
+    if (org.is_protected) {
+      const code = window.prompt(
+        `Tổ chức này cần mã truy cập để gia nhập.\n`+
+        (org.access_code_prompt ? `${org.access_code_prompt}\n` : "") +  "Code:");
+      if (code === null) return;
+      orgAPI.joinOrg( { slug, data: { access_code : code } } )
+        .then((res) => {
+          toast.success(`Welcome to ${slug}.`);
+          this.fetch();
+        })
+        .catch((err) => {
+          if (err.response.status === 400)
+            toast.error(`Mã truy cập không đúng. (${err.response.status})`)
+          else
+            toast.error(`Cannot join. (${err.response.status})`)
+        })
+    } else {
+      const conf = window.confirm(`Gia nhập tổ chức ${slug}?`)
+      if (!conf) return;
+
+      orgAPI.joinOrg( { slug } )
+        .then((res) => {
+          toast.success(`Welcome to ${slug}.`);
+          this.fetch();
+        })
+        .catch((err) => {
+          if (err.response.status === 400)
+            toast.error(`Mã truy cập không đúng. (${err.response.status})`)
+          else
+            toast.error(`Cannot join. (${err.response.status})`)
+        })
+    }
+  }
+  onLeaveClick() {
+    const { org, slug } = this.state;
+    const conf = window.confirm(`Rời khỏi tổ chức ${slug}?`)
+    if (!conf) return;
+
+    orgAPI.leaveOrg( { slug } )
+      .then((res) => {
+        toast.success(`Đã rời khỏi ${slug}.`);
+        this.fetch();
+      })
+      .catch((err) => {
+        toast.error(`Cannot leave. (${err.response.status})`)
+      })
+  }
+
   render() {
     if (this.state.redirectUrl) return <Navigate to={`${this.state.redirectUrl}`} />
 
@@ -213,10 +262,15 @@ class OrgDetail extends React.Component {
     const { user } = this.props;
 
     const isLoggedIn = (user !== null);
+    const isStaff = (isLoggedIn && user.is_staff);
 
     return <div className="org-detail-wrapper border" style={{ position: "relative" }}>
-              <Button   className="btn-svg" style={{ position: "absolute", right: 5, top: 5, width: "30px", }}
-                        variant="danger" size="sm" onClick={()=>this.props.deselectOrg()}> <FaTimes/> </Button>
+              <div style={{ position: "absolute", right: 5, top: 5, width: "30px", }}>
+                <Button   className="btn-svg" variant="secondary" size="sm" 
+                          onClick={()=>this.props.deselectOrg()}> <FaTimes/> </Button>
+                <Button   className="btn-svg" variant="danger" size="sm" 
+                          onClick={()=>this.setState({ redirectUrl: `/admin/org/${slug}/` })}> <FaWrench/> </Button>
+              </div>
       {
         !loaded && <div className="flex-center-col"><SpinLoader margin="0" size={50}/></div>
       }{
@@ -271,11 +325,13 @@ class OrgDetail extends React.Component {
             <div className="org-detail-item border d-flex justify-content-around">
               { isLoggedIn ? 
                   org.is_member ? 
-                    <Button size="sm" className="btn-svg" variant="danger">
+                    <Button size="sm" className="btn-svg" variant="danger"
+                        onClick={() => this.onLeaveClick()}>
                       Leave <FaTimes/>
                     </Button> 
                   : (
-                    org.is_open ? <Button size="sm" className="btn-svg" variant={org.is_protected ? "warning" : "primary"}>
+                    org.is_open ? <Button size="sm" className="btn-svg" variant={org.is_protected ? "warning" : "primary"}
+                        onClick={() => this.onJoinClick()}>
                       Join {org.is_protected ? <FaLock/> : <FaPlus/>}
                     </Button>
                     : <strong>This organization is private.</strong>

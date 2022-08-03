@@ -11,6 +11,16 @@ const getMyOrgs = () => {
     return axiosClient.get('/orgs/my/', );
 }
 
+
+const joinOrg = ({ slug, data }) => {
+    return axiosClient.post(`/org/${slug}/membership/`, data)
+}
+
+const leaveOrg = ({ slug }) => {
+    return axiosClient.delete(`/org/${slug}/membership/`)
+}
+
+
 const createOrg = ( data ) => {
     return axiosClient.post(`/orgs/`, data );
 }
@@ -47,6 +57,8 @@ const orgAPI = {
     createOrg,
     getOrg, updateOrg, deleteOrg,
     createSubOrg,
+
+    joinOrg, leaveOrg,
 
     getOrgMembers,
     addOrgMembers,
