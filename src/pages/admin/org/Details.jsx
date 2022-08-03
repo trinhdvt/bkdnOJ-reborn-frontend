@@ -153,15 +153,15 @@ class OrgDetail extends React.Component {
                         </Row>
 
                         <Row>
-                          <Form.Label column="sm" md={2} > Không hiển thị lên web? </Form.Label>
-                          <Col md={4}> <Form.Control size="sm" type="checkbox" id="is_unlisted" checked={data.is_unlisted || false}
+                          <Form.Label column="sm" md={3} > Không hiển thị lên web? </Form.Label>
+                          <Col md={3}> <Form.Control size="sm" type="checkbox" id="is_unlisted" checked={data.is_unlisted || false}
                                     onChange={(e) => this.inputChangeHandler(e, {isCheckbox: true})} />
                           </Col>
 
-                          {/* <Form.Label column="sm" md={2} > Ai cũng join được? </Form.Label>
-                          <Col > <Form.Control size="sm" type="checkbox" id="is_open" checked={data.is_open || false}
+                          <Form.Label column="sm" md={3} > Ai cũng join được? </Form.Label>
+                          <Col md={3}> <Form.Control size="sm" type="checkbox" id="is_open" checked={data.is_open || false}
                                     onChange={(e) => this.inputChangeHandler(e, {isCheckbox: true})} />
-                          </Col> */}
+                          </Col>
                         </Row>
 
                         <Row>
@@ -215,6 +215,40 @@ class OrgDetail extends React.Component {
                           </Col>
                         </Row>
 
+                        <strong>Mã truy cập tổ chức</strong>
+                        <Row>
+                          <Form.Label column="sm" md={4}> Protected? </Form.Label>
+                          <Col md={8}>
+                            <Form.Control size="sm" type="checkbox" id="is_protected" checked={data.is_protected || false}
+                                          onChange={(e) => this.inputChangeHandler(e, {isCheckbox: true})} />
+                          </Col>
+                          <Col xl={12}>
+                            <sub>Cần mã truy cập để tham gia vào tổ chức?</sub>
+                          </Col>
+
+                          <Form.Label column="sm" xl={12} > Access Code Prompt </Form.Label>
+                          <Col xl={12}>
+                            <Form.Control as="textarea" id="access_code_prompt"
+                              value={data.access_code_prompt || ''} onChange={(e)=>this.inputChangeHandler(e)}
+                            />
+                          </Col>
+                          <Col xl={12}>
+                            <sub>Thông điệp hiển thị ở màn hình hỏi mã truy cập tổ chức.</sub>
+                          </Col>
+
+                          <Form.Label column="sm" xl={12}> Access Code </Form.Label>
+                          <Col xl={12}>
+                            <Form.Control size="sm" type="text" id="access_code"
+                                  value={data.access_code || ''}
+                                  onChange={(e)=>this.inputChangeHandler(e)}/>
+                          </Col>
+                          <Col xl={12}>
+                            <sub>Mã truy cập vào tổ chức.</sub>
+                          </Col>
+                        </Row>
+
+
+                      <strong>Khác</strong>
                       <Row>
                         <Form.Label column="sm" xs={6}> Total Member count: </Form.Label>
                         <Col xs={6}>

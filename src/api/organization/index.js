@@ -1,12 +1,25 @@
 import axiosClient from "api/axiosClient";
 
-const getOrgs = ({params}) => {
-    return axiosClient.get('/orgs/', (params && { params: {...params} }));
+const getOrgs = ({slug, params}) => {
+    if (slug)
+        return axiosClient.get(`/org/${slug}/orgs`, (params && { params: {...params} }));
+    else
+        return axiosClient.get('/orgs/', (params && { params: {...params} }));
 }
 
 const getMyOrgs = () => {
     return axiosClient.get('/orgs/my/', );
 }
+
+
+const joinOrg = ({ slug, data }) => {
+    return axiosClient.post(`/org/${slug}/membership/`, data)
+}
+
+const leaveOrg = ({ slug }) => {
+    return axiosClient.delete(`/org/${slug}/membership/`)
+}
+
 
 const createOrg = ( data ) => {
     return axiosClient.post(`/orgs/`, data );
@@ -44,6 +57,8 @@ const orgAPI = {
     createOrg,
     getOrg, updateOrg, deleteOrg,
     createSubOrg,
+
+    joinOrg, leaveOrg,
 
     getOrgMembers,
     addOrgMembers,
