@@ -268,8 +268,12 @@ class OrgDetail extends React.Component {
               <div style={{ position: "absolute", right: 5, top: 5, width: "30px", }}>
                 <Button   className="btn-svg" variant="secondary" size="sm" 
                           onClick={()=>this.props.deselectOrg()}> <FaTimes/> </Button>
-                <Button   className="btn-svg" variant="danger" size="sm" 
-                          onClick={()=>this.setState({ redirectUrl: `/admin/org/${slug}/` })}> <FaWrench/> </Button>
+                {
+                  isStaff && (
+                    <Button className="btn-svg" variant="danger" size="sm" 
+                            onClick={()=>this.setState({ redirectUrl: `/admin/org/${slug}/` })}> <FaWrench/> </Button>
+                  )
+                }
               </div>
       {
         !loaded && <div className="flex-center-col"><SpinLoader margin="0" size={50}/></div>
