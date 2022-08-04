@@ -1,5 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import ReactPaginate from 'react-paginate';
+
 import { Link } from 'react-router-dom';
 import { Table, Button } from 'react-bootstrap';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -127,18 +130,22 @@ class ProblemList extends React.Component {
     setTitle('Problems')
   }
 
-  callApi(params) {
+  callApi(params = {page: 0}) {
     this.setState({loaded: false, errors: null})
 
-    let endpoint, data, prms;
+    let endpoint, data, prms = {};
+
     if (this.state.contest) {
       endpoint = contestApi.getContestProblems
       data = { key: this.state.contest.key }
-      prms = {page: params.page+1, contest: this.state.contest.key}
+      prms = {page: params.page+1, contest: this.state.contest.key, ...prms}
     } else {
       endpoint = problemApi.getProblems
       data = {}
-      prms = {page: params.page+1,}
+      prms = {page: params.page+1, ...prms}
+      if (this.props.selectedOrg.slug) {
+        prms.org = this.props.selectedOrg.slug;
+      }
     }
 
     endpoint({...data, params: prms })
@@ -168,6 +175,12 @@ class ProblemList extends React.Component {
         () => this.callApi({page: this.state.currPage})
       )
     } else this.callApi({page: this.state.currPage})
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.selectedOrg !== this.props.selectedOrg) {
+      this.callApi()
+    }
   }
 
   handlePageClick = (event) => {
@@ -237,5 +250,13 @@ ProblemList.contextType = ContestContext;
 
 let wrapped = ProblemList;
 wrapped = withParams(wrapped);
+
+const mapStateToProps = state => {
+  return {
+    user: state.user.user,
+    selectedOrg: state.myOrg.selectedOrg,
+  }
+}
+wrapped = connect(mapStateToProps, null)(wrapped);
 
 export default wrapped;

@@ -12,6 +12,8 @@ import UserCard from './UserCard';
 import RichTextEditor from './RichTextEditor/RichTextEditor';
 import DropdownTreeNoRerender from './DropdownTreeNoRerender';
 
+import SwitchOrgModal from './SwitchOrgModal';
+
 import ContestSidebar from './ContestSidebar';
 import RecentSubmissionSidebar from './RecentSubmissionSidebar';
 
@@ -29,6 +31,8 @@ export {
     UserCard,
     RichTextEditor,
     DropdownTreeNoRerender,
+
+    SwitchOrgModal,
 
     ContestSidebar,
     RecentSubmissionSidebar,

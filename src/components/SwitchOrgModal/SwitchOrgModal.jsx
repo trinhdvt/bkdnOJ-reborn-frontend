@@ -1,15 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Modal,Button} from 'react-bootstrap';
 
 import {connect} from 'react-redux';
 
-import {Modal,Button} from 'react-bootstrap';
-
+// Redux actions
+import { updateUser, clearUser } from 'redux/User/actions';
+import { updateProfile } from 'redux/Profile/actions';
+import { updateMyOrg } from 'redux/MyOrg/actions';
 import { updateSelectedOrg } from 'redux/MyOrg/actions';
+
+// API
+import orgAPI from 'api/organization';
 
 // import DropdownTreeSelect from 'react-dropdown-tree-select';
 import DropdownTreeSelect from 'components/DropdownTreeNoRerender';
 import 'react-dropdown-tree-select/dist/styles.css'
+import { toast } from 'react-toastify';
 
 const getDropdownTreeSelectData = (orgs, selectedOrgSlug=null) => {
     let list = []
@@ -31,25 +38,54 @@ class SwitchOrgModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loaded: false,
+
       selectedOrg: {},
       data: [],
     }
   }
+
+  refetch() {
+    orgAPI.getMyOrgs()
+      .then((res) => {
+        this.props.updateMyOrg({
+          adminOf: res.data.admin_of,
+          memberOf: res.data.member_of,
+        })
+      })
+      .catch((err) => {
+        // console.log('SwitchOrgModal err:', err)
+        toast.error(`Cannot fetch your organizations. (${err.response.status})`, {
+          toastId: 'cannot-fetch-my-orgs',
+        })
+      })
+  }
+
+  componentDidMount() {
+    this.refetch();
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevState.selectedOrg !== this.state.selectedOrg) {
       this.props.updateSelectedOrg(this.state.selectedOrg)
     }
 
+    // Update dropdown lsit everytime fetched data is different
     if (prevProps.myOrg !== this.props.myOrg || prevProps.selectedOrg !== this.props.selectedOrg) {
       let selectedOrgSlug = this.props.selectedOrg.slug;
       this.setState({ data: [
         ...getDropdownTreeSelectData(this.props.myOrg.memberOf, selectedOrgSlug),
       ]})
     }
+
+    // Refetch everytimes modal is shown
+    if (prevProps.show !== this.props.show && this.props.show === true) {
+      this.refetch()
+    }
   }
 
   onChangeHandler(currNode, selNodes) {
-    console.log(selNodes)
+    // console.log(selNodes)
     if (selNodes.length > 0) {
       const org = {
         short_name: selNodes[0].short_name,
@@ -76,13 +112,13 @@ class SwitchOrgModal extends React.Component {
       >
         <Modal.Header>
           <Modal.Title id="switch-org-modal">
-            Change Organization
+            Filter by Organization
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="flex-center-col">
           <p>
-            {/* Bạn đang xem với tư cách là thành viên của: */}
-            You are viewing as a member of organization:
+            Bạn đang xem với tư cách là thành viên của:
+            {/* You are viewing as a member of: */}
           </p>
 
           {/* <DropdownTreeSelect data={data} mode="radioSelect"
@@ -93,16 +129,15 @@ class SwitchOrgModal extends React.Component {
           />
 
           <em>
-            {/* Đổi thiết lập bên trên để có thể xem các tài nguyên mà chỉ
-            chia sẻ riêng tư cho một số tổ chức nhất định. */}
-            Change the above settings will allow you to view other resources
-            those are shared only to other organizations.
+            Đổi thiết lập bên trên cho phép lọc các tài nguyên
+            mà chỉ được chia sẻ riêng cho tổ chức đó.
+            {/* Change the above settings will allow you to view other resources
+            those are shared only to other organizations. */}
           </em>
 
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="dark" onClick={()=>setShow(false)}>Change</Button>
-          <Button variant="secondary" onClick={()=>setShow(false)}>Cancle</Button>
+          <Button variant="secondary" onClick={()=>setShow(false)}>Đóng</Button>
         </Modal.Footer>
       </Modal>
   )}
@@ -124,6 +159,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     updateSelectedOrg: (org) => dispatch(updateSelectedOrg({ selectedOrg: org })),
+    updateMyOrg: ({ memberOf, adminOf, selectedOrg }) => dispatch(updateMyOrg({ memberOf, adminOf, selectedOrg })),
   }
 }
 

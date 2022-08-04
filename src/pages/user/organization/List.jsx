@@ -33,7 +33,7 @@ class OrgItem extends React.Component {
 
     return (
       <tr key={`org-${slug}`} className="org-list org-item">
-        <td className="org-i" style={{height: "100px"}}>
+        <td className="org-i">
           <div className="org-img-wrapper">
             {
               logo_url ? <img id="org-img" src={logo_url}/>
@@ -49,16 +49,24 @@ class OrgItem extends React.Component {
               <h6 className="org-name">{name}</h6>
             </div>
 
-            <div className="org-about-wrapper text-truncate">
-              { about ? "" : <em>No description.</em> }
-            </div>
+            <div className="org-about-wrapper w-100 d-inline-flex justify-content-between">
+              <div className="org-info text-left" >
+                <span className="ml-2">
+                { about ? "" : <em>No description.</em> }
+                </span>
+              </div>
 
-            <div className="org-panel text-right">
-              <Link to="#" className="ml-2 mr-2"
-                    onClick={() => this.props.pushToPath(this.props.org)}>Browse</Link>
-              |
-              <Link to="#" className="ml-2 mr-2"
-                    onClick={this.props.onClick}>Detail</Link>
+              <div className="org-panel text-right">
+                {
+                  this.props.org.suborg_count === 0
+                  ? <span className="text-secondary ml-2 mr-2">Browse</span>
+                  : <Link to="#" className={`ml-2 mr-2`}
+                        onClick={() => this.props.pushToPath(this.props.org)}>Browse</Link>
+                }
+                |
+                <Link to="#" className="ml-2 mr-2"
+                      onClick={this.props.onClick}>Detail</Link>
+              </div>
             </div>
           </div>
         </td>
@@ -110,7 +118,7 @@ class OrgList extends React.Component {
   componentDidMount() {
     this.refetch();
   }
-  
+
   componentDidUpdate(prevProps, prevState){
     if (this.props.path !== this.state.path) {
       this.setState({ path: this.props.path }, () => {
@@ -138,7 +146,7 @@ class OrgList extends React.Component {
                   : (
                     !errors && <> {
                       count > 0
-                        ? orgs.map((org, ridx) => <OrgItem 
+                        ? orgs.map((org, ridx) => <OrgItem
                             {...this.props}
                             org={org} ridx={ridx} key={`org${org.slug}`}
                             onClick={() => {
@@ -266,11 +274,11 @@ class OrgDetail extends React.Component {
 
     return <div className="org-detail-wrapper border" style={{ position: "relative" }}>
               <div style={{ position: "absolute", right: 5, top: 5, width: "30px", }}>
-                <Button   className="btn-svg" variant="secondary" size="sm" 
+                <Button   className="btn-svg" variant="secondary" size="sm"
                           onClick={()=>this.props.deselectOrg()}> <FaTimes/> </Button>
                 {
                   isStaff && (
-                    <Button className="btn-svg" variant="danger" size="sm" 
+                    <Button className="btn-svg" variant="danger" size="sm"
                             onClick={()=>this.setState({ redirectUrl: `/admin/org/${slug}/` })}> <FaWrench/> </Button>
                   )
                 }
@@ -281,13 +289,13 @@ class OrgDetail extends React.Component {
         loaded && <>
           <span className="d-flex justify-content-center align-items-center">
             {
-              org.logo_url 
-              ? <img className="org-path-item-img" src={org.logo_url} alt={`${org.slug} logo`} height={ORG_PATH_IMG_SIZE}/> 
+              org.logo_url
+              ? <img className="org-path-item-img" src={org.logo_url} alt={`${org.slug} logo`} height={ORG_PATH_IMG_SIZE}/>
               : <FaUniversity size={ORG_PATH_IMG_SIZE}/>
             }
             <h5 className="m-0 p-2 org-detail-title">{org.short_name}</h5>
           </span>
-          
+
           { isLoggedIn && <span><code>You are {!org.is_member && "not"} a member of this organization.</code></span> }
 
           <div className="org-detail-item border" >
@@ -321,18 +329,18 @@ class OrgDetail extends React.Component {
                     <li><strong>Name</strong>: {user.first_name} {user.last_name}</li>
                     <li><strong>Email</strong>: <code>{user.email}</code></li>
                   </ul>
-                </li>)} 
+                </li>)}
               </ul>
             }
           </div>
 
             <div className="org-detail-item border d-flex justify-content-around">
-              { isLoggedIn ? 
-                  org.is_member ? 
+              { isLoggedIn ?
+                  org.is_member ?
                     <Button size="sm" className="btn-svg" variant="danger"
                         onClick={() => this.onLeaveClick()}>
                       Leave <FaTimes/>
-                    </Button> 
+                    </Button>
                   : (
                     org.is_open ? <Button size="sm" className="btn-svg" variant={org.is_protected ? "warning" : "primary"}
                         onClick={() => this.onJoinClick()}>
@@ -347,7 +355,7 @@ class OrgDetail extends React.Component {
               }
             </div>
         </>
-      } 
+      }
     </div>
   }
 }
@@ -370,7 +378,7 @@ class OrgMain extends React.Component {
   deselectOrg() {
     this.setState({ selectedOrg: null })
   }
-  
+
   componentDidMount() {
     setTitle("Organizations");
   }
@@ -387,7 +395,7 @@ class OrgMain extends React.Component {
           <Col className="org-path" style={{width: "100%", heigth: "100%", overflow: "hidden"}}>
             <div style={{width: "100%", heigth: "100%", overflowX: "auto", boxSizing: "content-box"}} className="d-flex">
 
-              <div className="org-path-item"> 
+              <div className="org-path-item">
                 <Link to="#" onClick={() => this.setState({ path: [] })} className="text-dark">
                   <FaGlobe size={ORG_PATH_IMG_SIZE}/>
                 </Link>
@@ -401,11 +409,14 @@ class OrgMain extends React.Component {
                         <FaGreaterThan/>
                       </div>
                     </div>
-                    <div className="org-path-item"> 
-                      <Link className="d-inline-flex" to="#" onClick={() => this.setState({ path: path.slice(0, idx+1) }) } >
-                        { 
-                          org.logo_url ? 
-                          <img className="org-path-item-img" src={org.logo_url} alt={`${org.slug} logo`} height={ORG_PATH_IMG_SIZE}/> 
+                    <div className="org-path-item">
+                      <Link className="d-inline-flex justify-content-center align-items-center text-dark"
+                            to="#" onClick={() => {
+                              this.setState({ path: path.slice(0, idx+1) })
+                            }} >
+                        {
+                          org.logo_url ?
+                          <img className="org-path-item-img" src={org.logo_url} alt={`${org.slug} logo`} height={ORG_PATH_IMG_SIZE}/>
                           : <FaUniversity size={ORG_PATH_IMG_SIZE}/>
                         }
                         <div className="org-path-item-slug text-truncate"> {org.slug} </div>
@@ -426,15 +437,15 @@ class OrgMain extends React.Component {
         }
 
         <Row>
-          <Col className="org-table-wrapper-col ml-1 mr-1" >
-            <OrgList  selectedOrg={selectedOrg} selectOrg={(slug) => this.selectOrg(slug)} deselectOrg={() => this.deselectOrg()} 
+          <Col className="org-table-wrapper-col ml-1 mr-1" md={selectedOrg ? 6 : 12}>
+            <OrgList  selectedOrg={selectedOrg} selectOrg={(slug) => this.selectOrg(slug)} deselectOrg={() => this.deselectOrg()}
                       path={path} pushToPath={(newOrg) => {
-                        this.setState({ path: path.concat(newOrg) }) 
+                        this.setState({ path: path.concat(newOrg) })
                       }} />
           </Col>
           {
-            selectedOrg && 
-            <Col className="org-detail-wrapper-col mr-1 mb-1" md={6}>
+            selectedOrg &&
+            <Col className="org-detail-wrapper-col mr-1 mb-1" >
               <OrgDetail {...this.props} slug={selectedOrg} deselectOrg={() => this.deselectOrg()} />
             </Col>
           }
@@ -451,4 +462,3 @@ const mapStateToProps = state => {
 }
 wrappedPD = connect(mapStateToProps, null)(wrappedPD);
 export default wrappedPD;
-

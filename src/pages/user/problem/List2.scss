@@ -68,7 +68,8 @@
 
     .ac-count {
       font-size: 14px;
-      display: flex;
+      white-space: nowrap;
+      display: inline-flex;
       justify-content: flex-end;
 
       color: $accepted;
@@ -76,7 +77,8 @@
       font-weight: bold;
     }
     .ac-rate {
-      display: flex;
+      white-space: nowrap;
+      display: inline-flex;
       justify-content: flex-end;
 
       font-family: $font-codeforces;

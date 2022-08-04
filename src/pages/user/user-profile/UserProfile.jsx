@@ -48,11 +48,6 @@ class UserProfile extends React.Component {
         })
         this.props.updateUser({...res.data.user, avatar: res.data.avatar});
         this.props.updateProfile({ ...res.data, });
-        this.props.updateMyOrg({
-          memberOf: res.data.member_of,
-          adminOf: res.data.admin_of,
-          // selectedOrg: res.data.organization,
-        })
       }).catch((err) => {
         this.setState({
           loaded: true,
