@@ -258,7 +258,12 @@ class NPContestList extends React.Component {
   callApi(params) {
     this.setState({loaded: false, errors: null})
 
-    contestAPI.getContests()
+    let prms = {}
+    if (this.props.selectedOrg.slug) {
+      prms.org = this.props.selectedOrg.slug;
+    }
+
+    contestAPI.getContests(prms)
       .then((cont) => {
         this.setState({
           contests: cont.data,
@@ -268,13 +273,18 @@ class NPContestList extends React.Component {
       .catch((err) => {
         this.setState({
           loaded: true,
-          errors: {errors: err.response.data} || ["Cannot fetch contests. Please retry again."],
+          errors: "Cannot fetch contests at the moment. Please retry again after a few minutes.",
         })
       })
   }
 
   componentDidMount() {
     this.callApi({page: this.state.currPage});
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.selectedOrg !== this.props.selectedOrg) {
+      this.callApi()
+    }
   }
 
   render() {
@@ -352,10 +362,15 @@ class ContestList extends React.Component {
     setTitle('Contests')
   }
 
-  callApi(params) {
+  callApi(params = {page: 0}) {
     this.setState({loaded: false, errors: null})
 
-    contestAPI.getPastContests({page: params.page+1})
+    let prms = {page: params.page+1}
+    if (this.props.selectedOrg.slug) {
+      prms.org = this.props.selectedOrg.slug;
+    }
+
+    contestAPI.getPastContests(prms)
       .then((pastcont) => {
         this.setState({
           pastContests: pastcont.data.results,
@@ -368,13 +383,18 @@ class ContestList extends React.Component {
       .catch((err) => {
         this.setState({
           loaded: true,
-          errors: {errors: err.response.data} || ["Cannot fetch contests. Please retry again."],
+          errors: "Cannot fetch contests at the moment. Please retry again after a few minutes.",
         })
       })
   }
 
   componentDidMount() {
     this.callApi({page: this.state.currPage});
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.selectedOrg !== this.props.selectedOrg) {
+      this.callApi()
+    }
   }
 
   handlePageClick = (event) => {
@@ -447,6 +467,7 @@ const mapStateToProps = state => {
   return {
     user: state.user.user,
     profile: state.profile.profile,
+    selectedOrg: state.myOrg.selectedOrg,
   }
 }
 export default connect(mapStateToProps, null)(wrapped);

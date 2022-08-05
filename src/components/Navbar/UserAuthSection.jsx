@@ -81,6 +81,7 @@ class AuthorizedMenu extends React.Component {
         .then((res) => {
             this.props.clearUser();
             this.props.clearProfile();
+            this.props.clearMyOrg();
             toast.success("See you later!");
         })
         .catch((err) => {

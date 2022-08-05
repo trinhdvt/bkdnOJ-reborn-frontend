@@ -152,7 +152,7 @@ class SubmissionList extends React.Component {
     setTitle(`Submissions`)
   }
 
-  callApi(params) {
+  callApi(params = {page: 0}) {
     this.setState({loaded: false, errors: null})
 
     if (this.state.contest) {
@@ -174,7 +174,12 @@ class SubmissionList extends React.Component {
           })
         })
     } else {
-      submissionApi.getSubmissions({page: params.page+1})
+      let prms = {page: params.page+1}
+      if (this.props.selectedOrg.slug) {
+        prms.org = this.props.selectedOrg.slug;
+      }
+
+      submissionApi.getSubmissions(prms)
         .then((res) => {
           this.setState({
             submissions: res.data.results,
@@ -203,6 +208,13 @@ class SubmissionList extends React.Component {
     } else this.callApi({page: this.state.currPage})
 
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.selectedOrg !== this.props.selectedOrg) {
+      this.callApi()
+    }
+  }
+
 
   handlePageClick = (event) => {
     this.callApi({page: event.selected});
@@ -270,7 +282,10 @@ class SubmissionList extends React.Component {
 let wrapped = SubmissionList;
 // wrapped = withParams(wrapped);
 const mapStateToProps = state => {
-  return { user : state.user.user }
+  return {
+    user: state.user.user,
+    selectedOrg: state.myOrg.selectedOrg,
+  }
 }
 wrapped = connect(mapStateToProps, null)(wrapped);
 export default wrapped;
