@@ -1,4 +1,4 @@
-import ProblemList from './List2';
+import ProblemList from './List';
 import ProblemDetails from './ProblemDetails';
 
 export {

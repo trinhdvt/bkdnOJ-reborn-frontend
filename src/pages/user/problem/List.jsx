@@ -21,6 +21,7 @@ import { withParams } from 'helpers/react-router'
 import ContestContext from 'context/ContestContext';
 
 // Assets
+import { FaGlobe, FaUniversity, FaRegEyeSlash } from 'react-icons/fa';
 import { ImBook } from 'react-icons/im';
 import { BsPersonFill } from 'react-icons/bs';
 
@@ -28,7 +29,7 @@ import { BsPersonFill } from 'react-icons/bs';
 import { parseTime, parseMem } from 'helpers/textFormatter';
 
 // Styles
-import './List2.scss'
+import './List.scss'
 import 'styles/ClassicPagination.scss';
 
 class ProblemListItem extends React.Component {
@@ -37,11 +38,16 @@ class ProblemListItem extends React.Component {
       solved, attempted,
       shortname, title, solved_count, attempted_count, points, partial,
       time_limit, memory_limit,
+      is_public, is_organization_private,
     } = this.props;
     const { contest, label, } = this.props;
 
     const link = contest ? `${shortname}` :  `/problem/${shortname}`;
     const rate = (attempted_count === 0 ? '?' : `${(solved_count*100.0/attempted_count).toFixed(2)}%`);
+
+    const mode = !is_public ? 'Private' : (
+      is_organization_private ? 'Organization' : 'Public'
+    );
 
     let msg, color;
     if (solved) {
@@ -54,6 +60,7 @@ class ProblemListItem extends React.Component {
       msg = `Unattempted.`
       color = 'gray';
     }
+
 
     return (
       <tr>
@@ -86,6 +93,12 @@ class ProblemListItem extends React.Component {
                 </>) : (<>
                   <div className="problem-code">
                     <Link to={link}>{shortname}</Link>
+                    <span className="visibility-tag text-secondary">
+                      { mode === 'Public' && <FaGlobe/> }
+                      { mode === 'Organization' && <FaUniversity/> }
+                      { mode === 'Private' && <FaRegEyeSlash/> }
+                      <span style={{fontSize: "12px"}} className="ml-1 d-none d-md-flex">{ mode }</span>
+                    </span>
                   </div>
                   <div className="problem-title">
                     <Link to={link}>{title}</Link>

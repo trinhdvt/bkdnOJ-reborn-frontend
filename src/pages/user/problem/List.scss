@@ -55,6 +55,22 @@
     div.problem-code {
       font-family: $font-codeforces;
       font-size: 18px;
+      display: flex;
+
+      align-items: center;
+      column-gap: 3px;
+
+      span.visibility-tag {
+        border: solid 1px $background-gray-dark;
+        border-radius: 10px;
+        padding: 1px 4px;
+
+        display: flex;
+        justify-items: center;
+        align-items: center;
+
+        margin: 0 5px;
+      }
     }
     div.problem-title {
       font-size: 14px;

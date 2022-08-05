@@ -21,7 +21,10 @@ import { toast } from 'react-toastify';
 // Styles
 import 'styles/ClassicPagination.scss';
 import './List.scss';
-import { FaUniversity, FaGreaterThan, FaGlobe, FaLock, FaTimes, FaPlus, FaSignInAlt, FaWrench } from 'react-icons/fa';
+import {
+  FaUniversity, FaGreaterThan, FaGlobe, FaLock, FaTimes, FaPlus, FaSignInAlt, FaWrench,
+  FaDoorOpen, FaDoorClosed, FaRegEyeSlash, FaRegEye,
+} from 'react-icons/fa';
 
 class OrgItem extends React.Component {
   constructor(props) {
@@ -29,11 +32,11 @@ class OrgItem extends React.Component {
   }
 
   render() {
-    const { slug, name, logo_url, suborg_count, member_count, about } = this.props.org;
+    const { slug, name, logo_url, suborg_count, member_count, is_open, is_unlisted } = this.props.org;
 
     return (
       <tr key={`org-${slug}`} className="org-list org-item">
-        <td className="org-i">
+        <td className="org-i h-100">
           <div className="org-img-wrapper">
             {
               logo_url ? <img id="org-img" src={logo_url}/>
@@ -44,15 +47,27 @@ class OrgItem extends React.Component {
         </td>
 
         <td className="org-name-td" >
-          <div className="d-block ">
             <div className="org-name-wrapper border-bottom m-2" >
               <h6 className="org-name">{name}</h6>
             </div>
 
-            <div className="org-about-wrapper w-100 d-inline-flex justify-content-between">
-              <div className="org-info text-left" >
-                <span className="ml-2">
-                { about ? "" : <em>No description.</em> }
+            <div className="org-about-wrapper w-100 d-inline-flex">
+                <span className="org-tag">
+                  { is_open ? <>
+                      <FaDoorOpen size={18}/><span className="d-none d-md-flex">Open</span>
+                    </> : <>
+                      <FaDoorClosed size={18}/><span className="d-none d-md-flex">Private</span>
+                    </> }
+                </span>
+                <span className="org-tag">
+                  { is_unlisted ? <>
+                      <FaRegEyeSlash size={18}/><span className="d-none d-md-flex">Hidden</span>
+                    </> : <>
+                      <FaRegEye size={18}/><span className="d-none d-md-flex">Public</span>
+                    </> }
+                </span>
+                <span className="org-tag">
+                  <FaUniversity size={18}/><span>{suborg_count}</span>
                 </span>
               </div>
 
@@ -67,8 +82,6 @@ class OrgItem extends React.Component {
                 <Link to="#" className="ml-2 mr-2"
                       onClick={this.props.onClick}>Detail</Link>
               </div>
-            </div>
-          </div>
         </td>
         {/* <td className="suborg_count">{suborg_count}</td>
         <td className="member_count">{member_count}</td> */}
@@ -226,8 +239,8 @@ class OrgDetail extends React.Component {
           this.fetch();
         })
         .catch((err) => {
-          if (err.response.status === 400)
-            toast.error(`Mã truy cập không đúng. (${err.response.status})`)
+          if (err.response.data.error)
+            toast.error(`${err.response.data.error}`)
           else
             toast.error(`Cannot join. (${err.response.status})`)
         })
@@ -241,8 +254,8 @@ class OrgDetail extends React.Component {
           this.fetch();
         })
         .catch((err) => {
-          if (err.response.status === 400)
-            toast.error(`Mã truy cập không đúng. (${err.response.status})`)
+          if (err.response.data.error)
+            toast.error(`${err.response.data.error}`)
           else
             toast.error(`Cannot join. (${err.response.status})`)
         })
@@ -259,7 +272,10 @@ class OrgDetail extends React.Component {
         this.fetch();
       })
       .catch((err) => {
-        toast.error(`Cannot leave. (${err.response.status})`)
+          if (err.response.data.error)
+            toast.error(`${err.response.data.error}`)
+          else
+            toast.error(`Cannot leave. (${err.response.status})`)
       })
   }
 
