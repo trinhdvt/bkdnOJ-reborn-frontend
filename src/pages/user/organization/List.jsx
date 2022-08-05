@@ -124,7 +124,7 @@ class OrgList extends React.Component {
       })
     })
     .catch((err) => {
-      this.setState({loaded: true, errors: {errors: err.response.data} || "Cannot fetch Organizations at the moment."})
+      this.setState({loaded: true, errors: "Cannot fetch Organizations at the moment."})
     })
   }
 
@@ -151,11 +151,12 @@ class OrgList extends React.Component {
       <div className="org-table">
         {/* <h4>Organizations</h4> */}
         <div className="org-table-wrapper ml-1 mr-1 border-bottom">
+          <ErrorBox errors={errors}/>
           <Table responsive hover size="sm" striped bordered className="rounded">
             <tbody className="w-100">
               {
                 !loaded
-                  ? <tr style={{ height: "400px" }}><td colSpan="99"><SpinLoader margin="10px" /></td></tr>
+                  ? <tr style={{ height: "200px" }}><td colSpan="99"><SpinLoader margin="10px" /></td></tr>
                   : (
                     !errors && <> {
                       count > 0
@@ -167,7 +168,7 @@ class OrgList extends React.Component {
                               else this.props.selectOrg(org.slug);
                             }}
                         />)
-                        : <tr style={{ height: "400px" }}><td colSpan={99}><em>No orgs are available yet.</em></td></tr>
+                        : <tr style={{ height: "200px" }}><td colSpan={99}><em>No orgs are available yet.</em></td></tr>
                       }</>
                   )
               }
@@ -302,7 +303,11 @@ class OrgDetail extends React.Component {
       {
         !loaded && <div className="flex-center-col"><SpinLoader margin="0" size={50}/></div>
       }{
-        loaded && <>
+        loaded && errors && <>
+          <ErrorBox errors={errors} />
+        </>
+      }{
+        loaded && !errors && <>
           <span className="d-flex justify-content-center align-items-center">
             {
               org.logo_url

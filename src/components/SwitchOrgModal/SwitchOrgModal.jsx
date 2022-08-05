@@ -54,10 +54,9 @@ class SwitchOrgModal extends React.Component {
         })
       })
       .catch((err) => {
-        // console.log('SwitchOrgModal err:', err)
-        toast.error(`Cannot fetch your organizations. (${err.response.status})`, {
-          toastId: 'cannot-fetch-my-orgs',
-        })
+        // toast.error(`Cannot fetch your organizations. (${err.response.status})`, {
+        //   toastId: 'cannot-fetch-my-orgs',
+        // })
       })
   }
 
