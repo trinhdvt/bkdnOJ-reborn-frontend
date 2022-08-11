@@ -35,18 +35,34 @@ div#contest-standing {
     width: 70px !important;
     overflow: hidden;
   }
+  td.td-p-best > div.points-container {
+    -webkit-transition: background-color 100ms linear;
+    -ms-transition: background-color 100ms linear;
+    transition: background-color 100ms linear;
+
+    &.frozen {
+      background-color: $blue-light-transparent;
+    }
+    &.full-points {
+      background-color: $green-light-transparent;
+    }
+    &:hover {
+      background: rgba(0, 0, 0, .2);
+      background-blend-mode: darken;
+
+      -webkit-transition: background-color 100ms linear;
+      -ms-transition: background-color 100ms linear;
+      transition: background-color 100ms linear;
+
+      cursor: pointer;
+    }
+
+  }
 
   div.rank-display {
     column-gap: 5px;
     font-size: 20px;
     font-weight: bold;
-  }
-
-  .points-container.frozen {
-    background-color: $blue-light-transparent;
-  }
-  .points-container.full-points {
-    background-color: $green-light-transparent;
   }
 
   .points {

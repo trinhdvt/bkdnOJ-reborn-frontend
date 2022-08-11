@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { Button, Table } from 'react-bootstrap';
 
 import { SpinLoader, ErrorBox, UserCard } from 'components';
+import SubListModal from './SubListModal';
+
 import submissionApi from 'api/submission';
 import contestAPI from 'api/contest';
 
@@ -73,7 +75,8 @@ class StandingItem extends React.Component {
         const ptsClsName = getClassNameFromPoint(points, problemMaxPoints);
 
         best[i] = (
-          <div className={`flex-center-col points-container ` + ((tries_after_frozen > 0) ? "frozen" : ptsClsName)}>
+          <div className={`flex-center-col points-container ` + ((tries_after_frozen > 0) ? "frozen" : ptsClsName)}
+            onClick={() => this.props.setSubListData({ user, problem: probMapping[k].shortname })}>
             <div className={`p-best-points points ${ptsClsName}`}>
               {`${points}`}
               {
@@ -125,10 +128,10 @@ class StandingItem extends React.Component {
           </div>
         </td>
         <td className="td-participant">
-          
-          { 
+
+          {
             (userMapping && user in userMapping)
-            ? 
+            ?
             <UserCard displayMode={this.props.displayMode} user={userMapping[user]} organization={orgMapping[user.organization]}/>
             :
             <span>{user}</span>
@@ -147,8 +150,7 @@ class StandingItem extends React.Component {
         </td>
 
         {
-          best.map((c, i) => <td className="td-p-best"
-            key={`ct-st-pb-${user.username}-${i}`} >{c}</td>)
+          best.map((c, i) => <td className="td-p-best" key={`ct-st-pb-${user.username}-${i}`}>{c}</td>)
         }
       </tr>
     )
@@ -177,7 +179,16 @@ class ContestStanding extends React.Component {
       contest: null, user: null,
 
       isPollingOn: true, isPolling: false,
+
+      // SubList Modal
+      subListShow: false, subListData: null,
     }
+  }
+  setSubListData(data) {
+    this.setState({ subListShow: true, subListData: data })
+  }
+  clearSubListData() {
+    this.setState({ subListShow: false, subListData: null })
   }
 
   /* Set viewing mode of scoreboard to not frozen */
@@ -217,6 +228,7 @@ class ContestStanding extends React.Component {
       mapping[prob.id] = {
         pos: uniq,
         points: prob.points,
+        shortname: prob.shortname,
       }
       uniq++;
     })
@@ -231,6 +243,9 @@ class ContestStanding extends React.Component {
   }
 
   async refetch(polling=false) {
+    // Dont do fetch if user is viewing the modal
+    if (this.state.subListShow) return;
+
     if (polling) this.setState({ isPolling: true });
     else this.setState({ loaded: false, errors: null })
 
@@ -264,7 +279,7 @@ class ContestStanding extends React.Component {
             loaded: true,
             errors: err.response && err.response.data,
           })
-          toast.error(`Standing not available at the moment. (${err.response.status})`, {
+          toast.error(`Standing not available at the moment. (${err.response.status || 'NETWORK_ERR'})`, {
             toastId: "contest-standing-na",
           })
         }),
@@ -393,10 +408,15 @@ class ContestStanding extends React.Component {
                   userMapping={this.state.userMapping}
                   rowIdx={idx}
                   isFrozen={isFrozen} displayMode={displayMode}
-                  {...part} />)
+                  {...part}
+
+                  setSubListData={(d)=>this.setSubListData(d)}
+                  />)
               }
             </tbody>
           </Table>
+          <SubListModal show={this.state.subListShow} onHide={()=>this.clearSubListData()}
+                        data={{...this.state.subListData, contest: this.state.contest.key}} />
         </>}
       </div>
     )
