@@ -50,4 +50,13 @@ div.participant-container {
       cursor: help;
     }
   }
+
+  div.participant-name-wrapper {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  svg.favorite-icon {
+    cursor: pointer;
+  }
 }
