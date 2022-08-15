@@ -8,6 +8,7 @@ import {AiOutlineHeart, AiFillHeart} from "react-icons/ai";
 import defaultOrgImg from "assets/images/default-org.png";
 
 import "./UserCard.scss";
+import {toggleTeamFavorite} from "../../redux/StandingFilter/action";
 
 class UserCard extends React.Component {
   static findRankByRating(rating, ranks) {
@@ -34,7 +35,7 @@ class UserCard extends React.Component {
 
   render() {
     const {user, displayMode, organization} = this.props;
-    const {isFavorite, onUserFavorite} = this.props;
+    const {isFavorite, contestId} = this.props;
 
     const rank_obj = UserCard.findRankByRating(user.rating, this.props.ranks);
 
@@ -54,8 +55,13 @@ class UserCard extends React.Component {
     if (displayMode === "org" && !orgName) {
       orgTooltipTitle = "This user hasn't set their Display Organization.";
     }
+
     const onFavoriteClick = () => {
-      onUserFavorite(user.username, !isFavorite);
+      this.props.toggleFavorite({
+        contestId,
+        teamName: user.username,
+        isFavorite: !isFavorite,
+      });
     };
 
     return (
@@ -93,7 +99,7 @@ class UserCard extends React.Component {
               />
             ) : (
               <AiOutlineHeart
-                title="Mask as favorite"
+                title="Mark as favorite"
                 data-toogle="tooltip"
                 data-placement="right"
                 className="favorite-icon"
@@ -149,4 +155,17 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, null)(UserCard);
+const mapDispatchToPros = dispatch => {
+  return {
+    toggleFavorite: ({contestId, teamName, isFavorite}) =>
+      dispatch(
+        toggleTeamFavorite({
+          contestId,
+          teamName,
+          isFavorite,
+        })
+      ),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToPros)(UserCard);

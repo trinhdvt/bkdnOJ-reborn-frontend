@@ -26,6 +26,7 @@ import {
 
 // Context
 import ContestContext, { ContestProvider } from 'context/ContestContext';
+import {addContest} from "redux/StandingFilter/action";
 
 /*
 
@@ -84,6 +85,10 @@ class ContestApp extends React.Component {
         contest: contest,
         loaded: true,
       })
+      const contestId = contest.key;
+      if(!Object.hasOwn(this.props.standingFilter, contestId)) {
+        this.props.addContestFilter(contestId);
+      }
     })
     .catch((err) => {
       this.setState({
@@ -145,6 +150,13 @@ const mapStateToProps = state => {
     user: state.user.user,
     // profile: state.profile.profile,
     contest: state.contest.contest,
-  }
-}
-export default connect(mapStateToProps, null)(wrapped);
+    standingFilter: state.standingFilter.standingFilter,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    addContestFilter: contestId => dispatch(addContest({contestId})),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(wrapped);

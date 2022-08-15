@@ -6,20 +6,26 @@ import "styles/Ratings.scss";
 import "./StandingFilter.scss";
 import {FaFilter} from "react-icons/fa";
 import {BiTrash} from "react-icons/bi";
+import {useDispatch, useSelector} from "react-redux";
+import {
+  addOrgToFilter,
+  toggleFavoriteOnly,
+  toggleOrgFilter,
+} from "redux/StandingFilter/action";
 
 const ClearIcon = props => {
   return <BiTrash className="clear-icon" size={18} {...props} />;
 };
 
-const StandingFilter = ({
-  orgList,
-  onSave,
-  onToggleOrgFilter,
-  onToggleFavoriteFilter,
-  isOrgFilterEnable,
-  isFavoriteEnable,
-}) => {
+const StandingFilter = ({contestId, orgList}) => {
+  const filter = useSelector(
+    state => state.standingFilter.standingFilter[contestId]
+  );
+  const dispatch = useDispatch();
   const [selectedOrg, setSelectedOrg] = React.useState([]);
+
+  const isOrgFilterEnable = filter?.isOrgFilterEnable;
+  const isFavoriteEnable = filter?.isFavoriteOnly;
 
   const onOrgFilterSelectChange = e => {
     let selectedIds = [];
@@ -30,17 +36,28 @@ const StandingFilter = ({
     setSelectedOrg(selectedIds);
   };
 
-  const toggleOrgFilter = e => onToggleOrgFilter(e.target.checked);
-  const toggleFavoriteFilter = e => onToggleFavoriteFilter(e.target.checked);
-  const onSaveClick = () => onSave(selectedOrg);
+  const onToggleOrgFilter = e => {
+    dispatch(toggleOrgFilter({contestId, isEnable: e.target.checked}));
+  };
+  const onToggleFavoriteFilter = e => {
+    dispatch(toggleFavoriteOnly({contestId, isEnable: e.target.checked}));
+  };
+
+  const onSaveClick = () => {
+    dispatch(addOrgToFilter({contestId, orgList: selectedOrg}));
+  };
 
   const onClearOrgFilter = () => {
-    onSave([]);
-    onToggleOrgFilter(false);
+    dispatch(toggleOrgFilter({contestId, isEnable: false}));
+    dispatch(addOrgToFilter({contestId, orgList: []}));
     setSelectedOrg([]);
   };
 
-  const onClearFavoriteFilter = () => onToggleFavoriteFilter(false, true);
+  const onClearFavoriteFilter = () => {
+    dispatch(
+      toggleFavoriteOnly({contestId, isEnable: false, isClearAll: true})
+    );
+  };
 
   return (
     <Dropdown>
@@ -60,7 +77,7 @@ const StandingFilter = ({
               <label>
                 <input
                   type="checkbox"
-                  onChange={toggleOrgFilter}
+                  onChange={onToggleOrgFilter}
                   checked={!!isOrgFilterEnable}
                 />
                 <span>Organization</span>
@@ -92,7 +109,7 @@ const StandingFilter = ({
               <input
                 type="checkbox"
                 checked={isFavoriteEnable}
-                onChange={toggleFavoriteFilter}
+                onChange={onToggleFavoriteFilter}
               />
               <span>Favorite Only</span>
             </label>

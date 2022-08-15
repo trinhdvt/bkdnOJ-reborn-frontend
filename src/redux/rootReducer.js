@@ -5,8 +5,9 @@ import userReducer from "./User/reducer.js";
 import profileReducer from "./Profile/reducer.js";
 import contestReducer from "./Contest/reducer";
 
-import recentSubmissionReducer from "./RecentSubmission/reducer";
+import standingFilterReducer from "./StandingFilter/reducer";
 import subFilterReducer from "./SubFilter/reducer";
+import recentSubmissionReducer from "./RecentSubmission/reducer";
 
 import ranksReducer from "./Rank/reducer";
 import myOrgReducer from "./MyOrg/reducer";
@@ -18,9 +19,8 @@ const rootReducer = combineReducers({
   contest: contestReducer,
   recentSubmission: recentSubmissionReducer,
   subFilter: subFilterReducer,
-
+  standingFilter: standingFilterReducer,
   ranks: ranksReducer,
-
   myOrg: myOrgReducer,
 });
 

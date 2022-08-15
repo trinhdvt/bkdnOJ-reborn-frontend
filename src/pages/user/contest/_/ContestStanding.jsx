@@ -63,9 +63,9 @@ class StandingItem extends React.Component {
       is_disqualified,
       virtual,
       format_data,
-      favoriteTeams,
-      onUserFavorite,
+      isFavorite,
       filteredRank,
+      contestId,
     } = this.props;
 
     const {userMapping, probMapping, orgMapping, isFrozen} = this.props;
@@ -126,8 +126,6 @@ class StandingItem extends React.Component {
       showCumtime = cumtime;
     }
 
-    const isFavorite = favoriteTeams.includes(user);
-
     return (
       <tr>
         <td className="td-rank">
@@ -149,17 +147,17 @@ class StandingItem extends React.Component {
             ) : (
               ""
             )}
-            {filteredRank && (
-              <span
-                className="text-secondary"
-                title="Rank in filtered team"
-                data-toogle="tooltip"
-                data-placement="right"
-              >
-                #({filteredRank})
-              </span>
-            )}
           </div>
+          {filteredRank && (
+            <span
+              className="text-secondary"
+              title="Rank in filtered team"
+              data-toogle="tooltip"
+              data-placement="right"
+            >
+              (#{filteredRank})
+            </span>
+          )}
         </td>
         <td className="td-participant">
           {userMapping && user in userMapping ? (
@@ -168,7 +166,7 @@ class StandingItem extends React.Component {
               user={userMapping[user]}
               organization={orgMapping[userMapping[user].organization]}
               isFavorite={isFavorite}
-              onUserFavorite={onUserFavorite}
+              contestId={contestId}
             />
           ) : (
             <span>{user}</span>
@@ -223,36 +221,7 @@ class ContestStanding extends React.Component {
       // SubList Modal
       subListShow: false,
       subListData: null,
-
-      // filter
-      filteredOrg: [],
-      isOrgFilterEnable: false,
-      favoriteTeams: [],
-      isFavoriteOnly: false,
     };
-  }
-
-  saveFilteredOrgList(filteredOrg) {
-    this.setState({filteredOrg});
-  }
-
-  toggleOrgFilter(isOrgFilterEnable) {
-    this.setState({isOrgFilterEnable});
-  }
-
-  onUserFavorite(username, isFavorite) {
-    const oldFavorite = this.state.favoriteTeams;
-    if (!isFavorite) {
-      const newFavorite = oldFavorite.filter(team => team !== username);
-      this.setState({favoriteTeams: newFavorite});
-    } else {
-      this.setState({favoriteTeams: [...oldFavorite, username]});
-    }
-  }
-
-  toggleFavoriteFilter(isEnable, clearAll) {
-    this.setState({isFavoriteOnly: isEnable});
-    if (clearAll) this.setState({favoriteTeams: []});
   }
 
   setSubListData(data) {
@@ -479,14 +448,8 @@ class ContestStanding extends React.Component {
               </Button>
             )}
             <StandingFilter
+              contestId={this.state.contest?.key}
               orgList={this.state.organizations}
-              onSave={orgList => this.saveFilteredOrgList(orgList)}
-              onToggleOrgFilter={isEnable => this.toggleOrgFilter(isEnable)}
-              onToggleFavoriteFilter={(isEnable, isClearAll) =>
-                this.toggleFavoriteFilter(isEnable, isClearAll)
-              }
-              isOrgFilterEnable={this.state.isOrgFilterEnable}
-              isFavoriteEnable={this.state.isFavoriteOnly}
             />
           </div>
         </div>
@@ -540,16 +503,23 @@ class ContestStanding extends React.Component {
               </thead>
               <tbody>
                 {standing.map((part, idx) => {
-                  const {isOrgFilterEnable, isFavoriteOnly} = this.state;
+                  const contestId = this.state.contest?.key;
+                  const standingFilter = this.props.standingFilter[contestId];
+
+                  const {
+                    isOrgFilterEnable,
+                    isFavoriteOnly,
+                    filteredOrg,
+                    favoriteTeams,
+                  } = standingFilter;
+
                   const isFilterEnable = isOrgFilterEnable || isFavoriteOnly;
+                  const {user} = part;
+                  const isFavorite = favoriteTeams.includes(user);
 
                   let userFilteredRank = undefined;
                   if (isFilterEnable) {
-                    const {user} = part;
-                    const {filteredOrg} = this.state;
                     const orgName = this.state.userMapping[user].organization;
-                    const isFavorite = this.state.favoriteTeams.includes(user);
-
                     const isShow = filteredOrg.includes(orgName) || isFavorite;
                     if (isShow) userFilteredRank = baseFilteredRank++;
                     else return <></>;
@@ -565,10 +535,8 @@ class ContestStanding extends React.Component {
                       isFrozen={isFrozen}
                       displayMode={displayMode}
                       filteredRank={userFilteredRank}
-                      favoriteTeams={this.state.favoriteTeams}
-                      onUserFavorite={(username, isFavorite) =>
-                        this.onUserFavorite(username, isFavorite)
-                      }
+                      isFavorite={isFavorite}
+                      contestId={contestId}
                       {...part}
                       setSubListData={d => this.setSubListData(d)}
                     />
@@ -595,6 +563,7 @@ let wrapped = ContestStanding;
 const mapStateToProps = state => {
   return {
     user: state.user.user,
+    standingFilter: state.standingFilter.standingFilter,
     // profile: state.profile.profile,
   };
 };
