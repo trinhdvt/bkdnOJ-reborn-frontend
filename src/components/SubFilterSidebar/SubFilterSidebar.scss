@@ -1,0 +1,27 @@
+@import 'global.scss';
+
+div#sub-filter {
+  div.filter-panel {
+    label {
+      font-size: 14px;
+      font-family: $font-codeforces;
+      color: $base;
+    }
+    span {
+      color: $base;
+      white-space: nowrap;
+      word-break: keep-all;
+    }
+    div.checkbox-panel {
+      padding: 0 5px;
+      justify-content: center;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .staff-only {
+      color: $red-light;
+    }
+  }
+}

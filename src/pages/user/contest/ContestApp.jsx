@@ -90,7 +90,7 @@ class ContestApp extends React.Component {
         loaded: true,
         errors: err.response.data || ["Contest not available"],
       })
-      let msg = (err.response.data && err.response.data.detail && err.response.data.detail) || `Contest is not available. (${err.response.status})`;
+      let msg = (err.response.data && err.response.data.detail && err.response.data.detail) || `Contest is not available. (${err.response.status || 'NETWORK_ERR'})`;
 
       toast.error(msg, {
         toastId: "contest-na",

@@ -100,7 +100,7 @@ class RecentSubmissionSidebar extends React.Component {
     }
   }
 
-  refetch(poll=false) {
+  refetch(poll=false,) {
     if (poll)
       this.setState({ isPolling: true, errors: null })
     else
@@ -157,8 +157,11 @@ class RecentSubmissionSidebar extends React.Component {
     const { contest } = this.context;
     if (!user || !contest) return; // skip if no user or no contest
 
-    // Refetch if: state.contest was updated, state.user was updated
-    if (prevState.contest !== contest || prevState.user !== user) {
+
+    // Update when: prevState is null, or prevState is different to currentState
+    if (  !prevState.contest || !prevState.user ||
+          (prevState.contest.key !== contest.key) || (prevState.user.username !== user.username)
+    ) {
       this.setState({ user, contest }, () => {
         this.refetch()
       });
@@ -173,8 +176,8 @@ class RecentSubmissionSidebar extends React.Component {
         setTimeout(() => this.props.stopPolling(), __RECENT_SUBMISSION_MAX_POLL_DURATION);
       }
     }
-
   }
+
   componentWillUnmount(){
     clearInterval(this.timer)
   }
@@ -203,20 +206,20 @@ class RecentSubmissionSidebar extends React.Component {
               </thead>
               <tbody>
                 { loaded && !errors && <>
-                  { this.state.count === 0 
+                  { this.state.count === 0
                     ? <tr><td colSpan="4">
                       <em>No Submissions Yet.</em>
                     </td></tr>
                     : subs.map((sub, idx) => <RSubItem
-                      key={`recent-sub-${sub.id}`} rowid={idx} ckey={this.state.contest && this.state.contest.key} {...sub} />) 
+                      key={`recent-sub-${sub.id}`} rowid={idx} ckey={this.state.contest && this.state.contest.key} {...sub} />)
                   }
                   </>
                 }
               </tbody>
             </Table>
           }
-              
-          { !!user && !!contest && 
+
+          { !!user && !!contest &&
             this.state.loaded === false
               ? <SpinLoader margin="0" />
               : <span className="classic-pagination">Page: <ReactPaginate

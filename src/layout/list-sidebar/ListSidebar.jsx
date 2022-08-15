@@ -88,7 +88,7 @@ export default class ListSidebar extends React.Component {
           <Col md={4} className="side-bar center d-none d-md-flex">
             {
               sideComponents.map( (comp, indx) => (
-                <div key={`side-component-${indx}`} className="">
+                <div key={`side-component-${indx}`} className="mb-2">
                   <div className="side-component">
                     {comp}
                   </div>
