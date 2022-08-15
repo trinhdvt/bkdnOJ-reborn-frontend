@@ -298,7 +298,7 @@ class ContestSubFilterSidebar extends React.Component {
                       ASC
                     </option>
                     <option key={`ct-fltr-ln-dec`} value="1">
-                      DEC
+                      DESC
                     </option>
                   </select>
                 </Col>
