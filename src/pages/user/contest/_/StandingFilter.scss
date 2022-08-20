@@ -39,6 +39,11 @@ div#standing-filter {
             margin-bottom: 0;
             display: inline-flex;
             align-items: center;
+
+            span {
+                margin-left: 4px;
+                margin-right: 8px;
+            }
         }
     }
 

@@ -73,7 +73,6 @@ const StandingFilter = ({contestId, orgList}) => {
         <div id="standing-filter">
           <div className="filter-col org-filter">
             <div className="filter-label">
-              <span className="mr-1">Filter by </span>
               <label>
                 <input
                   type="checkbox"

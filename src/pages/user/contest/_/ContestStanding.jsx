@@ -22,18 +22,21 @@ import top10 from "assets/common/atcoder_top10.png";
 import top30 from "assets/common/atcoder_top30.png";
 import top100 from "assets/common/atcoder_top100.png";
 
-import {GiMeltingIceCube, GiIceCube} from "react-icons/gi";
+import {GiIceCube} from "react-icons/gi";
 import {FaUniversity} from "react-icons/fa";
-import {AiOutlineEye, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineEye} from "react-icons/ai";
+import {BiTargetLock} from "react-icons/bi";
 
 // Contexts
 import ContestContext from "context/ContestContext";
+import shuffle from "helpers/shuffle";
 
 // Styles
 import "./ContestStanding.scss";
 import "styles/Ratings.scss";
 
 const __STANDING_POLL_DELAY = 5000;
+const __STANDING_HIGHLIGHT_TIME = 5000;
 
 const getClassNameFromPoint = (point, maxPoint) => {
   let ptsClsName = "";
@@ -127,7 +130,7 @@ class StandingItem extends React.Component {
     }
 
     return (
-      <tr>
+      <tr id={`standing-${user}`} className={this.props.className}>
         <td className="td-rank">
           <div className="flex-center rank-display">
             <div className="rank-position">{rowIdx + 1}</div>
@@ -221,6 +224,7 @@ class ContestStanding extends React.Component {
       // SubList Modal
       subListShow: false,
       subListData: null,
+      highlightUser: "",
     };
   }
 
@@ -335,6 +339,26 @@ class ContestStanding extends React.Component {
     await Promise.all(apis);
   }
 
+  setHighlightUser(username) {
+    this.setState({highlightUser: username}, () => {
+      setTimeout(() => {
+        this.setState({highlightUser: ""});
+      }, __STANDING_HIGHLIGHT_TIME);
+    });
+  }
+
+  scrollToCurrentStanding(username) {
+    const userDiv = document.getElementById(`standing-${username}`);
+    if (!userDiv) return;
+
+    userDiv.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    this.setHighlightUser(username);
+  }
+
   componentDidMount() {
     this.setState({
       contest: (this.context && this.context.contest) || null,
@@ -382,6 +406,7 @@ class ContestStanding extends React.Component {
     } = this.state;
 
     let baseFilteredRank = 1;
+    const isRegistered = this.context.contest.is_registered;
 
     return (
       <div className="wrapper-vanilla p-2" id="contest-standing">
@@ -451,6 +476,18 @@ class ContestStanding extends React.Component {
               contestId={this.state.contest?.key}
               orgList={this.state.organizations}
             />
+            {isRegistered && (
+              <Button
+                variant="warning"
+                className="ml-auto btn-svg "
+                onClick={() =>
+                  this.scrollToCurrentStanding(this.props.user.username)
+                }
+              >
+                <BiTargetLock size={20} />
+                My Standing
+              </Button>
+            )}
           </div>
         </div>
 
@@ -525,9 +562,13 @@ class ContestStanding extends React.Component {
                     else return <></>;
                   }
 
+                  const isHighlight = this.state.highlightUser === user;
                   return (
                     <StandingItem
                       key={`ct-st-row-${idx}`}
+                      className={`scroll__margin ${
+                        isHighlight ? "scroll__highlight" : ""
+                      }`}
                       orgMapping={this.state.orgMapping}
                       probMapping={this.state.probId2idx}
                       userMapping={this.state.userMapping}
