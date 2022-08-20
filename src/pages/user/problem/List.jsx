@@ -202,7 +202,7 @@ class ProblemList extends React.Component {
 
   render() {
     const contest = this.context.contest;
-    const { loaded, errors } = this.state;
+    const { loaded, errors, count } = this.state;
 
     return (
       <div className="problem-table wrapper-vanilla">
@@ -243,7 +243,8 @@ class ProblemList extends React.Component {
           {
             this.state.loaded === false
               ? <SpinLoader margin="0" />
-              : <span className="classic-pagination">Page: <ReactPaginate
+              : <>
+                <span className="classic-pagination">Page: <ReactPaginate
                   breakLabel="..."
                   onPageChange={this.handlePageClick}
                   forcePage={this.state.currPage}
@@ -254,6 +255,8 @@ class ProblemList extends React.Component {
                   previousLabel={null}
                   nextLabel={null}
                   /></span>
+              <span className="count-text"><span className="number">{count}</span> problem(s)</span>
+              </>
           }
       </div>
     )

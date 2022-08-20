@@ -111,7 +111,8 @@ class SubListModal extends React.Component {
                   </span>
                   -
 
-                  <a href={`/contest/${contest_key}/submission/${sub.id}`} target="_blank" rel="noreferrer">
+                  {/* <a href={`/contest/${contest_key}/submission/${sub.id}`} target="_blank" rel="noreferrer"> */}
+                  <a href={`/submission/${sub.id}`} target="_blank" rel="noreferrer">
                     <span className="d-inline-flex align-items-baseline m-1" style={{columnGap: "5px"}}>
                       #{sub.id} <FaExternalLinkAlt size={14}/>
                     </span>

@@ -222,10 +222,22 @@ class App extends React.Component {
               element={<ListSidebar mainContent={<Submit />} />}
             /> */}
 
-            <Route
+            {/* <Route
               path="/submissions"
               element={<OneColumn mainContent={<SubmissionList />} />}
+            /> */}
+            <Route
+              path="/submissions"
+              element={
+                <ListSidebar
+                  mainContent={<SubmissionList />}
+                  sideComponents={[
+                    <SubFilterSidebar/>,
+                  ]}
+                />
+              }
             />
+
             <Route
               path="/submission/:id"
               element={<OneColumn mainContent={<SubmissionDetails />} />}
@@ -271,7 +283,7 @@ class App extends React.Component {
                   <ListSidebar
                     mainContent={<SubmissionList />}
                     sideComponents={[
-                      <SubFilterSidebar />,
+                      <SubFilterSidebar/>,
                       <RecentSubmissionSidebar />,
                     ]}
                   />

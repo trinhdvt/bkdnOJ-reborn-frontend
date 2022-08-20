@@ -35,7 +35,7 @@ axiosClient.interceptors.response.use(
   function (error) {
     let error_obj = JSON.parse(JSON.stringify(error))
     if (error_obj.message && error_obj.message === 'Network Error') {
-      log('Network Error detected.')
+      // log('Network Error detected.')
       toast.error("Cannot connect to the server. Please check your internet or contact the admins.", {
         toastId: 'network-error',
         autoClose: false,

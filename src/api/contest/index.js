@@ -38,6 +38,10 @@ const getContestSubmissions = ({ key, params }) => {
     return axiosClient.get(`/contest/${key}/submission/`, (params && { params: {...params} }));
 }
 
+const rejudgeContestSubmissions = ({ key, params }) => {
+    return axiosClient.patch(`/contest/${key}/submission/`, null, (params && { params: {...params} }));
+}
+
 const getContestProblems = ({ key, params }) => {
     return axiosClient.get(`/contest/${key}/problem/`, (params && { params: {...params} }));
 }
@@ -98,7 +102,7 @@ const contestAPI = {
     joinContest, leaveContest,
 
     getContestStanding, recomputeContestStanding,
-    getContestSubmissions,
+    getContestSubmissions, rejudgeContestSubmissions,
 
     getContestParticipations, addContestParticipations,
 

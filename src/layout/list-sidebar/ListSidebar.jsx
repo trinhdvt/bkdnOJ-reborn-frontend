@@ -51,11 +51,11 @@ export default class ListSidebar extends React.Component {
 
   render() {
     const mainContent = this.props.mainContent || (<p>This is main content</p>);
-    const sideComponents = this.props.sideComponents || [
+    const sideComponents = (this.props.sideComponents || [
       (<p> Component 1 </p>),
       (<p> Component 2 </p>),
       (<p> Component 3 </p>),
-    ]
+    ])
 
     return (
       <div className="list-sidebar-wrapper">
@@ -97,17 +97,6 @@ export default class ListSidebar extends React.Component {
             }
           </Col>
         </Row>
-        {/* <Row className="d-none d-md-flex">
-          <Col md={4} className="center">
-            {
-              sideComponents.map( (comp, indx) => (
-                <div key={`side-component-${indx}`} className="side-component rounded shadow">
-                  {comp}
-                </div>
-              ))
-            }
-          </Col>
-        </Row>  */}
       </div>
     )
   }

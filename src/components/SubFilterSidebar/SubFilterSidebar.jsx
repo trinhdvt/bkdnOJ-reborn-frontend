@@ -87,6 +87,7 @@ const ORDER_BY = [
     name: "Submit Time",
   },
 ];
+const DATETIME_LOCAL_KEYS = ["date_before", "date_after"];
 
 class ContestSubFilterSidebar extends React.Component {
   static contextType = ContestContext;
@@ -109,11 +110,26 @@ class ContestSubFilterSidebar extends React.Component {
     }
   }
 
+  getTime(key) {
+    const data = this.state.queryParams;
+    if (data && data[key]) {
+      let time = new Date(data[key])
+      time.setMinutes(time.getMinutes() - time.getTimezoneOffset());
+      return time.toISOString().slice(0, 19);
+    }
+    return '';
+  }
+
   onFilter() {
     const {contest} = this.context;
-    if (contest)
-      this.props.setContestParams(contest.key, this.state.queryParams);
-    else this.props.setPublicParams(this.state.queryParams);
+    let params = {...this.state.queryParams};
+
+    DATETIME_LOCAL_KEYS.forEach(key => {
+      if (params[key]) params[key] = new Date(params[key]).toISOString();
+    });
+
+    if (contest) this.props.setContestParams(contest.key, params);
+    else this.props.setPublicParams(params);
   }
   onClear() {
     const {contest} = this.context;
@@ -122,7 +138,7 @@ class ContestSubFilterSidebar extends React.Component {
     else this.props.clearPublicParams();
   }
 
-  componentDidMount() {
+  initFromRedux() {
     const {contest} = this.context;
     if (contest)
       this.setState({
@@ -133,31 +149,43 @@ class ContestSubFilterSidebar extends React.Component {
         queryParams: this.props.subFilter[NO_CONTEST_KEY] || {},
       });
   }
-  componentDidUpdate() {}
+  componentDidMount() {
+    this.initFromRedux();
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.subFilter !== prevProps.subFilter)
+      this.initFromRedux();
+  }
 
   render() {
     const {contest} = this.context;
     const {user} = this.props;
 
-    const problems = contest.problems || [];
+    const problems = contest?.problems || [];
 
     const isLoggedIn = !!user;
     const isStaff = isLoggedIn && user.is_staff;
     const isSuperuser = isStaff && user.is_superuser;
+    const isInContest = !!contest;
 
     return (
       <div className="wrapper-vanilla" id="sub-filter">
         <h4>Submissions Filter</h4>
-        {!contest && <span>Contest is not available.</span>}
-        {!!contest && (
+        {/* {!contest && <span>Contest is not available.</span>} */}
+        {true && (
           <>
             <div className="flex-center-col text-left filter-panel">
-              <Row>
+              <Row className="m-0 w-100">
                 <Col>
                   <label
                     id="user-text-lbl"
                     className="m-0 w-100"
                     htmlFor="user-text"
+                    style={{
+                      textDecoration: this.state.queryParams.me
+                        ? "line-through"
+                        : "none",
+                    }}
                   >
                     Participant
                   </label>
@@ -168,10 +196,11 @@ class ContestSubFilterSidebar extends React.Component {
                     onChange={e => this.setParams("user", e.target.value)}
                     value={this.state.queryParams.user || ""}
                     style={{fontSize: "12px"}}
+                    disabled={!!this.state.queryParams.me}
                   ></input>
                 </Col>
               </Row>
-              <Row>
+              <Row className="m-0 w-100">
                 <Col>
                   <label
                     id="problem-select-lbl"
@@ -180,25 +209,37 @@ class ContestSubFilterSidebar extends React.Component {
                   >
                     Problem
                   </label>
-                  <select
-                    id="problem-select"
-                    className="m-0 w-100"
-                    onChange={e => this.setParams("problem", e.target.value)}
-                    value={this.state.queryParams.problem || ""}
-                  >
-                    <option key={`ct-fltr-pr-df`} value="">
-                      --
-                    </option>
-                    {problems.map((p, idx) => (
-                      <option
-                        key={`ct-fltr-pr-${idx}`}
-                        value={p.shortname}
-                      >{`${p.label}. ${p.title}`}</option>
-                    ))}
-                  </select>
+                  {problems.length > 0 && (
+                    <select
+                      id="problem-select"
+                      className="m-0 w-100"
+                      onChange={e => this.setParams("problem", e.target.value)}
+                      value={this.state.queryParams.problem || ""}
+                    >
+                      <option key={`ct-fltr-pr-df`} value="">
+                        --
+                      </option>
+                      {problems.map((p, idx) => (
+                        <option
+                          key={`ct-fltr-pr-${idx}`}
+                          value={p.shortname}
+                        >{`${p.label}. ${p.title}`}</option>
+                      ))}
+                    </select>
+                  )}
+                  {problems.length === 0 && (
+                    <input
+                      type="text"
+                      id="problem-input"
+                      className="m-0 w-100"
+                      onChange={e => this.setParams("problem", e.target.value)}
+                      value={this.state.queryParams.problem || ""}
+                      style={{fontSize: "12px"}}
+                    />
+                  )}
                 </Col>
               </Row>
-              <Row>
+              <Row className="m-0 w-100">
                 <Col xs={4}>
                   <label
                     id="language-select-lbl"
@@ -246,19 +287,35 @@ class ContestSubFilterSidebar extends React.Component {
                       </option>
                     ))}
                     {isStaff && (
-                      <option
-                        key={`ct-fltr-vd-ie`}
-                        value={"IE"}
-                        className="text-danger"
-                      >
-                        Internal Error
-                      </option>
+                      <>
+                        <option
+                          key={`ct-fltr-vd-q`}
+                          value={"Q"}
+                          className="text-danger"
+                        >
+                          Not Done Judging
+                        </option>
+                        <option
+                          key={`ct-fltr-vd-ie`}
+                          value={"IE"}
+                          className="text-danger"
+                        >
+                          Internal Error
+                        </option>
+                        <option
+                          key={`ct-fltr-vd-sc`}
+                          value={"SC"}
+                          className="text-danger"
+                        >
+                          Skipped
+                        </option>
+                      </>
                     )}
                   </select>
                 </Col>
               </Row>
-              <Row>
-                <Col xs={9}>
+              <Row className="m-0 w-100">
+                <Col xs={8}>
                   <label
                     id="order-by-select-lbl"
                     className="m-0 w-100"
@@ -280,9 +337,15 @@ class ContestSubFilterSidebar extends React.Component {
                         {ord.name}
                       </option>
                     ))}
+                    {isStaff && <>
+                      <option key={`ct-fltr-ln-rjd`} value="rejudged_date" className="text-danger">
+                        Rejudge Date
+                      </option>
+                    </>
+                    }
                   </select>
                 </Col>
-                <Col xs={3}>
+                <Col xs={4}>
                   <label
                     id="order-by-ordering-select-lbl"
                     className="m-0 w-100"
@@ -301,6 +364,46 @@ class ContestSubFilterSidebar extends React.Component {
                       DESC
                     </option>
                   </select>
+                </Col>
+              </Row>
+              <Row className="m-0 w-100">
+                <Col>
+                  <label
+                    id="date-after-lbl"
+                    className="m-0 w-100"
+                    htmlFor="date-after"
+                  >
+                    Submitted After
+                  </label>
+                  <input
+                    className="w-100 m-0"
+                    type="datetime-local"
+                    step="1"
+                    id="date-after"
+                    value={this.getTime("date_after")}
+                    onChange={e => this.setParams("date_after", e.target.value)}
+                  ></input>
+                </Col>
+              </Row>
+              <Row className="m-0 w-100">
+                <Col>
+                  <label
+                    id="date-before-lbl"
+                    className="m-0 w-100"
+                    htmlFor="date-before"
+                  >
+                    Submitted Before
+                  </label>
+                  <input
+                    className="w-100 m-0"
+                    type="datetime-local"
+                    id="date-before"
+                    step="1"
+                    value={this.getTime("date_before")}
+                    onChange={e =>
+                      this.setParams("date_before", e.target.value)
+                    }
+                  ></input>
                 </Col>
               </Row>
 
@@ -322,7 +425,7 @@ class ContestSubFilterSidebar extends React.Component {
                     <span style={{flex: 2}}>Mine</span>
                   </label>
                 )}
-                {isStaff && (
+                {isInContest && isStaff && (
                   <>
                     <label
                       id="only-participants-lbl"

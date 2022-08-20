@@ -1,26 +1,35 @@
 import React from "react";
-import {connect} from "react-redux";
+import {toast} from "react-toastify";
 import ReactPaginate from "react-paginate";
 import {Link} from "react-router-dom";
-import {Table} from "react-bootstrap";
 
-// import { FaPaperPlane } from 'react-icons/fa';
-import {GiTrophyCup} from "react-icons/gi";
+// Redux
+import {connect} from "react-redux";
+import {setPublicParams, setContestParams} from "redux/SubFilter/actions";
 
+// Components
+import {Button, Table} from "react-bootstrap";
 import {SpinLoader, ErrorBox} from "components";
+
+// APIs
 import submissionApi from "api/submission";
 import contestApi from "api/contest";
+
+// Assets
+import {FaRegEyeSlash, FaRedoAlt, FaSyncAlt, FaFilter, FaPlus} from "react-icons/fa";
+import {GiTrophyCup} from "react-icons/gi";
+import {TbFilterOff} from "react-icons/tb";
+// import { FaPaperPlane } from 'react-icons/fa';
+
+// Helpers
 import dateFormatter, {
   getYearMonthDate,
   getHourMinuteSecond,
 } from "helpers/dateFormatter";
-
-// Assets
-import {FaRegEyeSlash} from "react-icons/fa";
-
-// Helpers
 import {setTitle} from "helpers/setTitle";
 import {parseTime, parseMem} from "helpers/textFormatter";
+import {isLoggedIn, isStaff, isSuperUser} from "helpers/auth";
+import {isEmpty} from "helpers/checkObject";
 
 // Contexts
 import ContestContext from "context/ContestContext";
@@ -29,6 +38,9 @@ import "./SubmissionList.scss";
 import "styles/ClassicPagination.scss";
 import {NO_CONTEST_KEY} from "redux/SubFilter/types";
 
+// Constants
+import {messages, values} from "./constants";
+
 const verdictExplains = {
   AC: "Your solution gives correct output within given contraints.",
   WA: "Your solution gives wrong output.",
@@ -36,13 +48,31 @@ const verdictExplains = {
   MLE: "Your solution used too much memory.",
   OLE: "Your solution printed too much data.",
   IR: "Your solution did not return exitcode 0.",
-  RTE: "Your solution did no return exitcode 0.",
-  IE: "There is something wrong with the servers. The admins are notified.",
+  RTE: "Your solution did not return exitcode 0.",
+  IE: "There is something wrong with the servers. Please notify the admin.",
   CE: "There is syntax error in your solution. Please Double-check the language and version.",
   FR: "Results are frozen and will be revealed later.",
 };
 function getVerdict(ver) {
   return verdictExplains[ver] || ver;
+}
+
+class FilterPlus extends React.Component {
+  render() {
+    return (
+      <Link
+        className="btn-svg ml-1 border border-dark text-dark rounded d-inline-flex"
+        style={{padding: "2px 2px"}}
+        data-toggle="tooltip"
+        data-placement="right"
+        title={`Add this to Filters`}
+        to="#"
+        {...this.props}
+      >
+        <FaFilter size={10}/><FaPlus size={8}/>
+      </Link>
+    )
+  }
 }
 
 class SubListItem extends React.Component {
@@ -102,24 +132,28 @@ class SubListItem extends React.Component {
 
         <td className="general-info">
           <div className="general-info-container">
-            <span className="problem text-truncate">
-              <Link to={`${linkPrefix}/problem/${problem.shortname}`}>
+            <span className="problem">
+              <Link to={`${linkPrefix}/problem/${problem.shortname}`}
+              >
                 {problem.title}
               </Link>
-              {contest_object && (
-                <span
-                  className="ml-1"
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  title={`This submission was made in contest ${contest_object}`}
-                >
-                  <Link to={`/contest/${contest_object}`}>
-                    (<GiTrophyCup />
-                    {contest_object})
-                  </Link>
-                </span>
-              )}
+              <FilterPlus onClick={()=>this.props.setFilterParams('problem', problem.shortname)}/>
             </span>
+            {contest_object && (
+              <span
+                className="ml-1"
+                data-toggle="tooltip"
+                data-placement="right"
+                title={`This submission was made in contest ${contest_object}`}
+                style={{fontSize: "12px", fontStyle: "italic"}}
+              >
+                <Link to={`/contest/${contest_object}`}>
+                  (<GiTrophyCup />
+                  {contest_object})
+                </Link>
+              </span>
+            )}
+
             <span className="author text-truncate">
               <em>
                 {`by `}
@@ -130,8 +164,9 @@ class SubListItem extends React.Component {
                     <span>{user}</span>
                   )}
                 </Link>
+                <FilterPlus onClick={()=>this.props.setFilterParams('user', user)}/>
               </em>
-              <span className="language text-truncate">({language})</span>
+              <span className="language ml-1">({language})</span>
             </span>
           </div>
         </td>
@@ -200,18 +235,28 @@ class SubmissionList extends React.Component {
       contest: null,
 
       submissions: [],
+      count: 0,
       currPage: 0,
       pageCount: 1,
       loaded: false,
       errors: null,
+
+      isFiltered: false,
+
+      refetchDisable: false,
+      rejudgeDisable: false,
     };
     setTitle(`Submissions`);
   }
 
-  callApi(params = {page: 0}) {
-    this.setState({loaded: false, errors: null});
+  isInContest() {
+    return !!this.state.contest;
+  }
 
-    if (this.state.contest) {
+  callApi(params = {page: 0}) {
+    this.setState({loaded: false, errors: null, isFiltered: false});
+
+    if (this.isInContest()) {
       const extraParams = this.props.subFilter[this.state.contest.key] || {};
 
       contestApi
@@ -226,6 +271,7 @@ class SubmissionList extends React.Component {
             pageCount: res.data.total_pages,
             currPage: params.page,
             loaded: true,
+            isFiltered: !isEmpty(extraParams),
           });
         })
         .catch(err => {
@@ -252,6 +298,7 @@ class SubmissionList extends React.Component {
             pageCount: res.data.total_pages,
             currPage: params.page,
             loaded: true,
+            isFiltered: !isEmpty(extraParams),
           });
         })
         .catch(err => {
@@ -284,14 +331,111 @@ class SubmissionList extends React.Component {
     this.callApi({page: event.selected});
   };
 
+  onRefetchClick() {
+    if (this.state.refetchDisable) return;
+    this.setState({refetchDisable: true}, () => {
+      this.callApi();
+      setTimeout(
+        () => this.setState({refetchDisable: false}),
+        values.refetchDisableDuration
+      );
+    });
+  }
+
+  onMassRejudgeClick() {
+    const count = this.state.count;
+    if (count === 0) {
+      window.alert(messages.getMassRejudgeAlert());
+      return;
+    }
+
+    const conf = window.confirm(messages.getMassRejudgeConfirm(count));
+    if (!conf) return;
+
+    let request;
+    if (this.isInContest()) {
+      const extraParams = this.props.subFilter[this.state.contest.key] || {};
+      request = contestApi.rejudgeContestSubmissions({
+        key: this.state.contest.key,
+        params: {...extraParams},
+      });
+    } else {
+      const filterParams = this.props.subFilter[NO_CONTEST_KEY] || {};
+      let prms = {...filterParams};
+
+      if (this.props.selectedOrg.slug) {
+        prms.org = this.props.selectedOrg.slug;
+      }
+      request = submissionApi.rejudgeSubmissions(prms);
+    }
+
+    request
+      .then(() => {
+        toast.success(messages.toast.rejudging.getOK());
+        this.callApi()
+      })
+      .catch(err => {
+        toast.error(
+          err.response?.data?.message
+            ? `${err.response.data.message}`
+            : messages.toast.rejudging.getErr(err.response.status)
+        );
+      });
+  }
+
+  setFilterParams(key, value) {
+    const {contest} = this.context;
+    const oldParams = this.props.subFilter[ !!contest ? contest.key : NO_CONTEST_KEY ];
+    const newParams = {...oldParams, [key]: value}
+    if (contest) this.props.setContestParams(contest.key, newParams);
+    else this.props.setPublicParams(newParams);
+  }
+
   render() {
-    const {loaded, errors, count} = this.state;
+    const {loaded, errors, count, isFiltered} = this.state;
     const {user} = this.props;
     const username = (user && user.username) || "";
 
     return (
       <div className="submission-table wrapper-vanilla">
+        <div className="submission-table-control">
+          <div
+            className="d-flex align-items-center mr-2"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title={isFiltered ? "Filter is on" : "Filter is off"}
+          >
+            {isFiltered ? (
+              <FaFilter className="text-success" size={18} />
+            ) : (
+              <TbFilterOff className="text-secondary" size={20} />
+            )}
+          </div>
+
+          {/* {(isSuperUser(user) || (isStaff(user) && this.isInContest())) && ( */}
+          {isStaff(user) && (
+            <Button
+              size="sm"
+              className="btn-svg"
+              variant={this.state.rejudgeDisable ? "secondary" : "danger"}
+              disabled={this.state.rejudgeDisable}
+              onClick={() => this.onMassRejudgeClick()}
+            >
+              Rejudge <FaSyncAlt />
+            </Button>
+          )}
+          <Button
+            size="sm"
+            className="btn-svg"
+            variant={this.state.refetchDisable ? "secondary" : "dark"}
+            disabled={!!this.state.refetchDisable}
+            onClick={() => this.onRefetchClick()}
+          >
+            <FaRedoAlt />
+          </Button>
+        </div>
         <h4>Submissions</h4>
+
         <ErrorBox errors={errors} />
         <Table responsive hover size="sm" striped bordered className="rounded">
           <thead>
@@ -322,6 +466,7 @@ class SubmissionList extends React.Component {
                         rowid={idx}
                         {...sub}
                         yourUsername={username}
+                        setFilterParams={(key, value) => this.setFilterParams(key, value)}
                       />
                     ))
                   ) : (
@@ -339,20 +484,23 @@ class SubmissionList extends React.Component {
         {this.state.loaded === false ? (
           <SpinLoader margin="0" />
         ) : (
-          <span className="classic-pagination">
-            Page:{" "}
-            <ReactPaginate
-              breakLabel="..."
-              onPageChange={this.handlePageClick}
-              forcePage={this.state.currPage}
-              pageLabelBuilder={page => `[${page}]`}
-              pageRangeDisplayed={5}
-              pageCount={this.state.pageCount}
-              renderOnZeroPageCount={null}
-              previousLabel={null}
-              nextLabel={null}
-            />
-          </span>
+          <>
+            <span className="classic-pagination">
+              Page:{" "}
+              <ReactPaginate
+                breakLabel="..."
+                onPageChange={this.handlePageClick}
+                forcePage={this.state.currPage}
+                pageLabelBuilder={page => `[${page}]`}
+                pageRangeDisplayed={5}
+                pageCount={this.state.pageCount}
+                renderOnZeroPageCount={null}
+                previousLabel={null}
+                nextLabel={null}
+              />
+            </span>
+            <span className="count-text"><span className="number">{count}</span> sub(s)</span>
+          </>
         )}
       </div>
     );
@@ -368,5 +516,13 @@ const mapStateToProps = state => {
     subFilter: state.subFilter,
   };
 };
-wrapped = connect(mapStateToProps, null)(wrapped);
+const mapDispatchToProps = dispatch => {
+  return {
+    setContestParams: (key, params) =>
+      dispatch(setContestParams({key, params})),
+    setPublicParams: params => dispatch(setPublicParams({params})),
+  };
+};
+
+wrapped = connect(mapStateToProps, mapDispatchToProps)(wrapped);
 export default wrapped;

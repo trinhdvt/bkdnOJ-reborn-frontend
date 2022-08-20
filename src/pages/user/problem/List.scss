@@ -1,6 +1,7 @@
 @import 'global.scss';
 
 .problem-table {
+  position: relative;
   a {
     color: $blue-dark;
     &:hover {
@@ -101,4 +102,16 @@
       font-weight: bold;
     }
   }
+
+  .count-text {
+    position: absolute;
+    right: 5px;
+    bottom: 0;
+    font-size: 14px;
+    .number {
+      font-family: $font-monospace;
+      font-weight: bold;
+    }
+  }
+
 }
