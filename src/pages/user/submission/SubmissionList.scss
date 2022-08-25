@@ -161,14 +161,18 @@ $HEADLINE-HEIGHT: 36px;
     }
   }
 
-  .count-text {
+  .submission-count-text {
     position: absolute;
-    right: 5px;
-    bottom: 0;
-    font-size: 14px;
-    .number {
-      font-family: $font-monospace;
-      font-weight: bold;
+    left: 5px;
+    top: 5px;
+    height: 26px;
+
+    .count-text {
+      font-size: 14px;
+      .number {
+        font-family: $font-monospace;
+        font-weight: bold;
+      }
     }
   }
 

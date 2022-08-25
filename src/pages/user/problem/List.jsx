@@ -206,7 +206,11 @@ class ProblemList extends React.Component {
 
     return (
       <div className="problem-table wrapper-vanilla">
-        <h4>Problem Set</h4>
+        <div className="problem-count-text">
+          <span className="count-text"><span className="number">{count || "?"}</span> problem(s)</span>
+        </div>
+        <h4 className="d-flex justify-content-center align-items-center ">Problem Set</h4>
+
         <ErrorBox errors={this.state.errors} />
           <Table responsive hover size="sm" striped bordered className="rounded">
             <thead>
@@ -255,7 +259,6 @@ class ProblemList extends React.Component {
                   previousLabel={null}
                   nextLabel={null}
                   /></span>
-              <span className="count-text"><span className="number">{count}</span> problem(s)</span>
               </>
           }
       </div>

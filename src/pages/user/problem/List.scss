@@ -1,7 +1,10 @@
 @import 'global.scss';
 
+$HEADLINE-HEIGHT: 36px;
+
 .problem-table {
   position: relative;
+
   a {
     color: $blue-dark;
     &:hover {
@@ -12,6 +15,7 @@
   h4, h5 {
     margin: unset;
     padding: 4px;
+    height: $HEADLINE-HEIGHT;
 
     font-size: medium;
     font-weight: bold;
@@ -103,14 +107,17 @@
     }
   }
 
-  .count-text {
+  .problem-count-text {
     position: absolute;
-    right: 5px;
-    bottom: 0;
-    font-size: 14px;
-    .number {
-      font-family: $font-monospace;
-      font-weight: bold;
+    left: 5px;
+    top: 5px;
+
+    .count-text {
+      font-size: 14px;
+      .number {
+        font-family: $font-monospace;
+        font-weight: bold;
+      }
     }
   }
 

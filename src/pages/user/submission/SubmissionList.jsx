@@ -421,7 +421,7 @@ class SubmissionList extends React.Component {
               disabled={this.state.rejudgeDisable}
               onClick={() => this.onMassRejudgeClick()}
             >
-              Rejudge <FaSyncAlt />
+              <span className="d-none d-sm-inline">Rejudge</span> <FaSyncAlt />
             </Button>
           )}
           <Button
@@ -433,6 +433,9 @@ class SubmissionList extends React.Component {
           >
             <FaRedoAlt />
           </Button>
+        </div>
+        <div className="submission-count-text">
+          <span className="count-text"><span className="number">{count || "?"}</span> sub(s)</span>
         </div>
         <h4>Submissions</h4>
 
@@ -484,7 +487,7 @@ class SubmissionList extends React.Component {
         {this.state.loaded === false ? (
           <SpinLoader margin="0" />
         ) : (
-          <>
+          <div className="d-flex flex-column">
             <span className="classic-pagination">
               Page:{" "}
               <ReactPaginate
@@ -499,8 +502,7 @@ class SubmissionList extends React.Component {
                 nextLabel={null}
               />
             </span>
-            <span className="count-text"><span className="number">{count}</span> sub(s)</span>
-          </>
+          </div>
         )}
       </div>
     );
