@@ -66,9 +66,9 @@ class SubHeader extends React.Component {
                             </span>
                         </Link>
 
-                        <span className="text-danger font-bold d-inline-flex">
+                        {/* <span className="text-danger font-bold d-inline-flex">
                             {'<< Click'}
-                        </span>
+                        </span> */}
                     </div>
 
                     <div className="float-right">

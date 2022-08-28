@@ -153,7 +153,8 @@ export default class TestDataDetails extends React.Component {
                 <option value="identical">Byte identical</option>
                 <option value="linecount">Line-by-line</option>
                 <option value="custom-PY3">Custom checker (Py3)</option>
-                <option value="custom-CPP17">Custom checker (C++)</option>
+                <option value="custom-CPP17">Custom checker (C++17)</option>
+                <option value="interactive-CPP17">Interactive checker (C++17)</option>
               </Form.Select>
           </Col>
 
@@ -339,7 +340,7 @@ export default class TestDataDetails extends React.Component {
             </Accordion.Item>
 
             <Accordion.Item eventKey="9" className="custom-checker-c++-help">
-              <Accordion.Header>Custom Checker: C++ (17)</Accordion.Header>
+              <Accordion.Header>Custom Checker: C++17</Accordion.Header>
               <Accordion.Body className="p-1">
                 <p><code>custom-checker</code>
                   sử dụng cho những bài có nhiều đáp án, cần phải có một cách để kiểm tra đáp án của thí sinh là đúng.
@@ -400,6 +401,76 @@ export default class TestDataDetails extends React.Component {
       `}        </code></pre>
               </Accordion.Body>
             </Accordion.Item>
+
+            <Accordion.Item eventKey="10" className="interactive-cheker-c++-help">
+              <Accordion.Header>Interactive Checker: C++17</Accordion.Header>
+              <Accordion.Body className="p-1">
+                <p>
+                  Là checker dành cho các bài tập tương tác (<code>interactive</code>), nghĩa là yêu cầu thí sinh
+                  implement một thuật toán online, hay phải checker phải tạo ra input dựa vào output của thí sinh.
+                  Đầu <code>stdin</code> của interactor được nối với đầu <code>stdout</code> của submission, và ngược lại.
+                  Không nhất thiết phải flush sau khi output, nhưng khuyến nghị nên flush. Ở C++, chúng ta flush bằng
+                  việc xuất ra <code>std::flush</code> sau khi output, hoặc xuất ra <code>std::endl</code> để vừa newline và vừa flush.
+                </p>
+                <p>
+                  Interactor có exitcode là <code>0</code> tương ứng với AC, là <code>1</code> tương ứng với WA.
+                </p>
+                <p>
+                  Một vài option cho <code>args</code> như sau:
+                </p>
+                <ul>
+                  <li><code>flags</code>: các cờ để truyền vào cho compiler</li>
+                  <li><code>compiler_time_limit</code>: giới hạn thời gian compile interactor (giây)</li>
+                  <li><code>preprocessing_time</code>: giới hạn thời gian chạy của interactor sẽ bằng giá trị này cộng với <code>time_limit</code> của problem(giây)</li>
+                  <li><code>memory_limit</code>: giới hạn bộ nhớ cho interactor. Giá trị mặc định <code>env['generator_memory_limit']</code>.</li>
+                </ul>
+                <p>
+                  Xét problem sau: Thí sinh phải lần lượt đọc những word từ stdin và output ra lại word đó ngay sau mỗi lần đọc.
+                  Nhưng nếu word đó là xâu <code>"EXIT"</code> thì dừng chương trình. Đây là interactor tương ứng với problem đó:
+                </p>
+                <pre><code>
+      {`
+      #include <iostream>
+      #include <fstream>
+      using namespace std;
+
+      void __ac(string msg="OK") {
+        cerr << msg << endl;
+        exit(0);
+      }
+
+      void __wa(string msg="Output is wrong") {
+        cerr << msg << endl;
+        exit(1);
+      }
+
+      int main(int argc, char *argv[]) {
+        // inp là dữ liệu đầu vào (file .in trong zip)
+        ifstream inp (argv[1]);
+
+        string word;
+        bool terminated = false;
+
+        while (inp >> word) {
+          string tmp;
+          // Xuất word ra stdout, thí sinh có thể đọc word này từ stdin
+          cout << word << endl;
+          if (word == "EXIT") terminated = true;
+          if (terminated) {
+            if(cin >> tmp) __wa("program should be terminated already");
+            continue;
+          }
+          // Đọc từ stdin, là stdout của thí sinh
+          cin >> tmp;
+          if (tmp != word) __wa(string("Expected '")+word+"' but got '"+tmp+"' instead");
+        }
+        __ac();
+      }
+      `}
+                </code></pre>
+              </Accordion.Body>
+            </Accordion.Item>
+
             </Accordion>
           </Col>
         </Row>

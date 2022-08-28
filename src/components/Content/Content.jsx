@@ -65,7 +65,7 @@ class Content extends React.Component {
                   <h5 className="">
                     ver. <span className="code-markup">preALPHA</span>
                   </h5>
-                  <span className="code-markup">22年08月20日</span>
+                  <span className="code-markup">22年08月28日</span>
                 </div>
               </div>
               <span className="subtext text-center">
