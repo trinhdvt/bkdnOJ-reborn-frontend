@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 
 import contestAPI from 'api/contest';
-import { SpinLoader, ErrorBox } from 'components';
+import { SpinLoader, ErrorBox, RichTextEditor } from 'components';
 import { withNavigation } from 'helpers/react-router';
 
 import UserMultiSelect from 'components/SelectMulti/User';
@@ -203,9 +203,21 @@ class General extends React.Component {
 
             <Row>
               <Form.Label column="sm" xl={12}> Mô tả </Form.Label>
-              <Col> <Form.Control size="sm" xl={12} as="textarea" placeholder="Contest Description" id="description"
+              <Col> 
+                  {/* <Form.Control size="sm" xl={12} as="textarea" placeholder="Contest Description" id="description"
                       value={data.description || ''} onChange={(e) => this.inputChangeHandler(e)}
-              /></Col>
+                  /> */}
+                  <RichTextEditor 
+                    value={data.description || ''} 
+                    enableEdit={true}
+                    onChange={(v) => {
+                      let newData = this.state.data;
+                      let key = "description";
+                      newData[key] = v;
+                      this.setState({ data : newData })
+                    }}
+                  />
+              </Col>
             </Row>
 
             <Row>

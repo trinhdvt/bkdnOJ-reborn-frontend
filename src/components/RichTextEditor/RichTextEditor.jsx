@@ -19,6 +19,7 @@ export default class RichTextEditor extends React.Component {
         preview={enableEdit ? 'live' : 'preview'}
         hideToolbar={enableEdit ? false : true }
         height={enableEdit ? 200 : 600}
+        {...this.props}
         // previewOptions={{
         //   rehypePlugins: [[rehypeSanitize]],
         //   components: {

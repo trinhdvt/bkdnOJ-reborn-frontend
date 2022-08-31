@@ -7,7 +7,7 @@ import { UserProfile } from './user-profile';
 import { OrgList, OrgDetail } from './organization';
 
 import {
-    ContestList, ContestApp, ContestNav, ContestStanding
+    ContestList, ContestApp, ContestNav, ContestStanding, ContestAbout
 } from './contest';
 
 export {
@@ -16,5 +16,5 @@ export {
 
     OrgList, OrgDetail,
 
-    ContestList, ContestApp, ContestNav, ContestStanding
+    ContestList, ContestApp, ContestNav, ContestStanding, ContestAbout
 };

@@ -1,0 +1,20 @@
+@import "global";
+
+div.contest-about {
+    .contest-info {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+
+        span {
+            margin-right: 4px;
+            margin-bottom: 4px;
+            font-size: 90%;
+        }
+    }
+
+    .contest-author {
+        text-decoration: none;
+        color: unset;
+    }
+}

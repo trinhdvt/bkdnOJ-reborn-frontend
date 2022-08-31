@@ -17,6 +17,7 @@ import SwitchOrgModal from './SwitchOrgModal';
 import ContestSidebar from './ContestSidebar';
 import SubFilterSidebar from './SubFilterSidebar';
 import RecentSubmissionSidebar from './RecentSubmissionSidebar';
+import ScrollToTopBtn from './ScrollToTopBtn/ScrollToTopBtn';
 
 export {
     Header,
@@ -38,4 +39,5 @@ export {
     ContestSidebar,
     SubFilterSidebar,
     RecentSubmissionSidebar,
+    ScrollToTopBtn,
 };

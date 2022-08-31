@@ -485,7 +485,7 @@ class ContestStanding extends React.Component {
                 }
               >
                 <BiTargetLock size={20} />
-                My Standing
+                <span className="d-none d-sm-block">My Standing</span>
               </Button>
             )}
           </div>

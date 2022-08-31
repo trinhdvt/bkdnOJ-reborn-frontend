@@ -6,7 +6,7 @@ import { addClass, removeClass } from 'helpers/dom_functions';
 
 import { VscChevronLeft } from 'react-icons/vsc';
 
-const ContestAppNavHeaders = ['problem', 'submission', 'standing'];
+const ContestAppNavHeaders = ['about', 'problem', 'submission', 'standing'];
 class ContestNav extends React.Component {
   constructor(props) {
     super(props);

@@ -31,6 +31,7 @@ import {
   ContestList,
   ContestApp,
   ContestStanding,
+  ContestAbout,
   OrgList,
   OrgDetail,
 } from "pages/user";
@@ -260,6 +261,10 @@ class App extends React.Component {
 
             <Route path="/contest/:key" element={<ContestApp />}>
               <Route
+                path="about"
+                element={<OneColumn mainContent={<ContestAbout />} />}
+              />
+              <Route
                 path="problem"
                 element={
                   <ListSidebar
@@ -299,8 +304,8 @@ class App extends React.Component {
                 }
               />
               <Route path="standing" element={<ContestStanding />} />
-              <Route path="" element={<Navigate to="problem" replace />} />
-              <Route path="*" element={<Navigate to="problem" replace />} />
+              <Route path="" element={<Navigate to="about" replace />} />
+              <Route path="*" element={<Navigate to="about" replace />} />
             </Route>
 
             <Route
