@@ -62,6 +62,13 @@ const adminGetProblemDetailsTest = ({shortname, params}) => {
   );
 };
 
+const adminGetTestcaseDetails = async ({shortName, testId}) => {
+  const {data} = await axiosClient.get(
+    `/problem/${shortName}/data/test/${testId}/?=`
+  );
+  return data;
+};
+
 const problemAPI = {
   getProblems,
   createProblem,
@@ -79,6 +86,7 @@ const problemAPI = {
 
   adminGetProblemDetailsData,
   adminGetProblemDetailsTest,
+  adminGetTestcaseDetails,
 
   adminDeleteProblem,
 

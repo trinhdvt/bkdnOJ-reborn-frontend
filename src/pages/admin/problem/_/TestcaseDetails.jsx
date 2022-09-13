@@ -5,6 +5,7 @@ import {ErrorBox, SpinLoader} from "components";
 import {VscRefresh} from "react-icons/vsc";
 
 import problemAPI from "api/problem";
+import TestcaseEditor from "./TestcaseEditor";
 
 class TestcaseItem extends React.Component {
   render() {
@@ -17,11 +18,24 @@ class TestcaseItem extends React.Component {
       onPretestToggle,
       isSelected,
       onSelectChkChange,
+      input_preview,
+      output_preview,
+      onEditLinkClick,
     } = this.props;
 
     return (
       <tr>
         <td>{order}</td>
+        <td>
+          <pre className="mb-0" style={{backgroundColor: "#d6d6d6"}}>
+            {input_preview}
+          </pre>
+        </td>
+        <td>
+          <pre className="mb-0" style={{backgroundColor: "#d6d6d6"}}>
+            {output_preview}
+          </pre>
+        </td>
         <td>{input_file}</td>
         <td>{output_file}</td>
         <td>{points}</td>
@@ -33,9 +47,44 @@ class TestcaseItem extends React.Component {
           />
         </td>
         <td>
+          <div className="row row-cols-5 border-0">
+            <Link to="#" className="col" onClick={_e => onEditLinkClick()}>
+              Edit
+            </Link>
+            <Link
+              to="#"
+              className="col"
+              onClick={_e => alert("Not implemented.")}
+            >
+              Move
+            </Link>
+            <Link
+              to="#"
+              className="col"
+              onClick={_e => alert("Not implemented.")}
+            >
+              Group
+            </Link>
+            <Link
+              to="#"
+              className="col"
+              onClick={_e => alert("Not implemented.")}
+            >
+              Points
+            </Link>
+            <Link
+              to="#"
+              onClick={_e => alert("Not implemented.")}
+              className="text-danger col"
+            >
+              Delete
+            </Link>
+          </div>
+        </td>
+        <td>
           <input
             type="checkbox"
-            value={isSelected}
+            checked={isSelected}
             onChange={() => onSelectChkChange()}
           />
         </td>
@@ -54,6 +103,7 @@ export default class TestcaseDetails extends React.Component {
 
       selectChk: [],
       submitting: false,
+      editingTestId: null,
     };
   }
 
@@ -68,6 +118,29 @@ export default class TestcaseDetails extends React.Component {
           .concat(!val, selectChk.slice(idx + 1)),
       });
     }
+  }
+
+  flipAllSelectChkHandler(isToggleAll) {
+    const {selectChk} = this.state;
+    this.setState({
+      selectChk: selectChk.map(() => isToggleAll),
+    });
+  }
+
+  deleteAllSelectedTestHandler() {
+    const {selectChk} = this.state;
+    const selectedCount = selectChk.filter(v => v).length;
+    if (selectedCount == 0) return;
+
+    if (window.confirm(`Xác nhận xóa ${selectedCount} testcases đã chọn?`)) {
+      alert("Chưa code đâu ạ, hiu");
+    }
+  }
+
+  setEditingTest(id) {
+    this.setState({
+      editingTestId: id,
+    });
   }
 
   pretestToggleHandler(id) {
@@ -129,8 +202,18 @@ export default class TestcaseDetails extends React.Component {
   }
 
   render() {
-    const {data, loaded} = this.state;
+    const {data, loaded, editingTestId} = this.state;
+    const {shortname} = this.props;
     const testcases = data;
+    if (editingTestId) {
+      return (
+        <TestcaseEditor
+          shortName={shortname}
+          testId={editingTestId}
+          onCancel={() => this.setEditingTest(null)}
+        />
+      );
+    }
 
     return (
       <Form
@@ -173,15 +256,60 @@ export default class TestcaseDetails extends React.Component {
               >
                 <thead>
                   <tr>
-                    <th style={{width: "5%"}}>#</th>
-                    <th style={{width: "12%"}}>Input File</th>
+                    <th style={{width: "4%"}}>#</th>
+                    <th style={{width: "12%"}}>Input Preview</th>
+                    <th style={{width: "12%"}}>Output Preview</th>
+                    <th style={{width: "6%"}}>Input File</th>
                     <th style={{width: "10%"}}>Output File</th>
-                    <th style={{width: "13%"}}>Trọng số</th>
-                    <th style={{width: "10%"}}>Pretest?</th>
-                    <th style={{width: "8%"}}>
-                      <Link to="#" onClick={() => alert("Not implemented.")}>
-                        Action
-                      </Link>
+                    <th style={{width: "5%"}}>Trọng số</th>
+                    <th style={{width: "5%"}}>Pretest?</th>
+                    <th style={{width: "100%"}} className="d-flex flex-column">
+                      <div>Action</div>
+                      <div className="row row-cols-5 border-0">
+                        <Link
+                          to="#"
+                          onClick={_e => alert("Not implemented.")}
+                          className="col"
+                        >
+                          Copy
+                        </Link>
+                        <Link
+                          to="#"
+                          onClick={_e => alert("Not implemented.")}
+                          className="col"
+                        >
+                          Move
+                        </Link>
+                        <Link
+                          to="#"
+                          onClick={_e => alert("Not implemented.")}
+                          className="col"
+                        >
+                          Group
+                        </Link>
+                        <Link
+                          to="#"
+                          onClick={_e => alert("Not implemented.")}
+                          className="col"
+                        >
+                          Points
+                        </Link>
+                        <Link
+                          to="#"
+                          onClick={() => this.deleteAllSelectedTestHandler()}
+                          className="text-danger col"
+                        >
+                          Delete
+                        </Link>
+                      </div>
+                    </th>
+                    <th style={{width: "2%"}}>
+                      <input
+                        type="checkbox"
+                        onChange={e =>
+                          this.flipAllSelectChkHandler(e.target.checked)
+                        }
+                      />
                     </th>
                   </tr>
                 </thead>
@@ -200,6 +328,7 @@ export default class TestcaseDetails extends React.Component {
                         {...tc}
                         onPretestToggle={() => this.pretestToggleHandler(tc.id)}
                         isSelected={this.state.selectChk[idx]}
+                        onEditLinkClick={() => this.setEditingTest(tc.id)}
                         onSelectChkChange={() =>
                           this.selectChkChangeHandler(idx)
                         }
